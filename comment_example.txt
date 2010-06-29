@@ -1,0 +1,67 @@
+This is the class example file for users creating or commenting. The file is to be uses to store
+file comment examples so that we can keep the code unifom.
+
+This is the comment width guide. No comment or description should be greater than this length so
+that is can be read easily on smaller displays. Variable and return comments can be greater but it
+is recommended that you keep it short.
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~COMMENT~WIDTH~GUIDE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
+
+This is a page comment example. All pages should start with this comment regardless of purpose.
+/**
+ * @version		0.90
+ * @package		Atsumi.Framework
+ * @copyright	Copyright (C) 2008, James A. Forrester-Fellowes. All rights reserved.
+ * @license		GNU/GPL, see license.txt
+ * The Atsumi Framework is open-source software. This version may have been modified pursuant to
+ * the GNU General Public License, and as distributed it includes or is derivative of works
+ * licensed under the GNU General Public License or other free or open source software licenses.
+ * See copyright.txt for copyright notices and details.
+ */
+
+This is a class comment and class structure example. All 
+/**
+ * Description of the class
+ * @package		Atsumi.Framework
+ * @subpackage	Cache
+ * @since		0.90
+ */
+class namespace_ClassName {
+	/* CONSTANTS */
+	/* PROPERTIES */
+	/* CONSTRUCTOR & DESTRUCTOR */
+	/* GET METHODS */
+	/* SET METHODS */
+	/* MAGIC METHODS */
+	/* METHODS */
+	
+	/*
+	 * +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~COMMENT~WIDTH~GUIDE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
+	 * NOTE: Below are all static functions which will be removed when php 5.3.0+ becomes the
+	 * common and the PHP magic function __callStatic works correctly
+	 */
+}
+
+
+This is an exception example
+/**
+ * Description of the class
+ * @package		Atsumi.Framework
+ * @subpackage	Cache
+ * @since		0.90
+ */
+class namespace_ExceptionName extends Exception {}
+
+
+This is an interface example. Note that variable comments have been removed
+/**
+ * Description of the class
+ * @package		Atsumi.Framework
+ * @subpackage	Cache
+ * @since		0.90
+ */
+interface namespace_InterfaceName {
+	/* CONSTRUCTOR & DESTRUCTOR */
+	/* GET METHODS */
+	/* SET METHODS */
+	/* METHODS */
+}
