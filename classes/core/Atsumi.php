@@ -135,8 +135,8 @@ class Atsumi {
 	 */
 	public function _initApp(atsumi_AbstractAppSettings $settings) {
 		if($settings->getDebug()) {
-			atsumi_Debugger::setActive(true);
-			atsumi_Debugger::setConfig($settings);
+			atsumi_Debug::setActive(true);
+			atsumi_Debug::setConfig($settings);
 			$this->testEnviroment();
 		} else {
 			$this->errorHandler->setDisplayErrors(false);

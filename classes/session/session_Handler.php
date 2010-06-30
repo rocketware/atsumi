@@ -55,7 +55,7 @@ class session_Handler {
 		Atsumi::debug__log(
 			'Session Created',
 			sf('The atsumi session constructer compleated in %s', $debugger->endTimer()),
-			atsumi_Debugger::AREA_SESSION
+			atsumi_Debug::AREA_SESSION
 		);
 	}
 

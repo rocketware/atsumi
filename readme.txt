@@ -6,7 +6,8 @@
 
  Atsumui is an open-source PHP MVC Framework.
 
- Project homepage 		http://atsumi.org/
+
+ Project homepage 			http://atsumi.org/
  Technical documentation	http://docs.atsumi.org/
  Project wiki & tutorials 	http://wiki.github.com/atsumi/atsumi/
- Get the code			http://github.com/atsumi/atsumi
+ Get the code				http://github.com/atsumi/atsumi

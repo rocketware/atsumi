@@ -82,6 +82,16 @@ abstract class atsumi_AbstractAppSettings {
 		$this->settings[$key] = $data;
 	}
 
+	/**
+	 * Used to set an array of setting
+	 * @access public
+	 * @param array $settings The array of settings to set
+	 */
+	public function setArray ($settings) {
+		$this->settings = array_merge($this->settings, $settings);
+	}
+	
+	
 	/* MAGIC METHODS */
 
 	/**

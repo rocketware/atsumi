@@ -16,7 +16,7 @@
  * @subpackage	Core
  * @since		0.90
  */
-class atsumi_Debugger {
+class atsumi_Debug {
 	/* CONSTANTS */
 
 	/**
@@ -128,7 +128,7 @@ class atsumi_Debugger {
 	/* CONSTRUCTOR & DESTRUCTOR */
 
 	/**
-	 * Creates a new atsumi_Debugger instance
+	 * Creates a new atsumi_Debug instance
 	 * Note: Private prevents anything externally creating the debugger. Use static functions.
 	 * @access private
 	 */
@@ -277,7 +277,7 @@ class atsumi_Debugger {
 		if(method_exists($instance, '_'.$name))
 			return call_user_func_array(array($instance, '_'.$name), $arguments);
 
-		throw new Exception('Undefined call to atsumi_Debugger::'.$name);
+		throw new Exception('Undefined call to atsumi_Debug::'.$name);
 	}
 
 	/* METHODS */
@@ -514,21 +514,21 @@ class atsumi_Debugger {
 	 */
 	protected function returnCss() {
 		return '
-			#DebugConsole {background-color: #ededed; color: #black; font-size:12px; height: 260px; width: 100%; position: absolute; bottom: 0px; cursor: default; overflow: hidden; left: 0;}
+			#DebugConsole {background-color: #ededed; color: #black; font-size:15px !important; height: 260px; width: 100%;  cursor: default; overflow: hidden; }
 			#DebugConsole, #DebugConsole table, #DebugConsole ul {font-family: \'trebuchet ms\', trebuchet, verdana, sans-serif;}
 			#DebugConsoleInner {height:100%;width:100%;}
 			#DebugConsoleHightAdjuster {height: 7px; cursor:n-resize; background-color: #ffffff;}
 			#DebugConsoleHightAdjuster td {border-bottom: 1px solid #a3a3a3;}
 			.DebugConsoleToggle {height:4px;border-width:0px 1px;border-color:#5d453d;border-style:solid;margin:1px auto;display:block;padding:0 1px;}
-			#DebugConsole h3 {font-size: 22px; font-weight: bold; text-decoration: underline; margin: 0px; padding: 0px;}
+			#DebugConsole h3 {font-size: 22px !important; font-weight: bold; text-decoration: underline; margin: 0px; padding: 0px;}
 			#DebugConsoleMenu {border-bottom:1px solid #a3a3a3; height:32px;background-color:#dddddd;}
 			#DebugConsoleMenu ul {padding:0;margin:0;}
-			#DebugConsoleMenu .DebugConsoleMenuButton {margin: 6px 6px 0 6px; display: inline; padding: 4px; cursor: pointer;}
+			#DebugConsoleMenu .DebugConsoleMenuButton {margin: 6px 6px 0 6px; display: inline; padding: 4px; cursor: pointer; font-size:1em !important; }
 			#DebugConsoleMenu .DebugConsoleMenuButton:HOVER {margin: 5px 5px 0 5px; border-width: 1px 1px 0 1px; border-style: solid; border-color: white; background-color: CadetBlue;}
 			#DebugConsoleMenu .DebugConsoleMenuButton.Selected {margin: 5px 5px 0 5px; border-width: 1px 1px 0 1px; border-style: solid; border-color: black; background-color: CadetBlue;}
-			#DebugConsoleDisplay {height: 100%; vertical-align:top; overflow-y: auto; display: block;}
-			.DebugConsoleWindow {display: none;height:100%;}
-			.DebugConsoleWindowInner {padding: 2px 10px;}
+			#DebugConsoleDisplay {height: 100%; vertical-align:top; overflow-y: auto; display: block; text-align:left !important; }
+			.DebugConsoleWindow {display: none;height:100%; text-align:left !important;  }
+			.DebugConsoleWindowInner {padding: 2px 10px; text-align:left !important;  }
 			#DebugConsoleRenderTime {border-top:1px solid #cacaca;height:22px;background-color: #f9f9f9; padding:0 6px; text-align: right;}
 			.logItem {border-width: 1px 1px 1px 10px; border-style: solid; margin: 2px 0px; padding: 2px;}
 			.logTitle {font-size: 16px; font-weight: bold;}

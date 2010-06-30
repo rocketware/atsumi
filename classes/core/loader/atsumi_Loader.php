@@ -110,7 +110,7 @@ class atsumi_Loader {
 		if(method_exists($instance, '_'.$name))
 			return call_user_func_array(array($instance, '_'.$name), $arguments);
 
-		throw new Exception('Undefined call to atsumi_Debugger::'.$name);
+		throw new Exception('Undefined call to atsumi_Debug::'.$name);
 	}
 
 	/* METHODS */
@@ -233,6 +233,7 @@ class atsumi_Loader {
 
 			if(is_file($fullPath) && preg_match('/^([a-zA-Z_][a-zA-Z0-9_]*)[\.inc\|]*.php$/', $fileName, $matches)) {
 				$className = str_replace('.php', '', $matches[0]);
+				$className = str_replace('.inc', '', $className);
 				self::_registerClass($className, $fullPath);
 			}
 		}
@@ -263,9 +264,8 @@ class atsumi_Loader {
 	 */
 	public function _loadClass($classname) {
 		$classname = strtolower($classname);
-
 		if(!array_key_exists($classname, $this->classes)) {
-			throw new loader_ClassNotFoundException('Atsumi failed to find the class required', $classname);
+			throw new loader_ClassNotFoundException('Atsumi failed to find the class required \''.$classname.'\'', $classname);
 		}
 
 		require_once($this->classes[$classname]);

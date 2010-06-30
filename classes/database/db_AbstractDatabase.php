@@ -31,7 +31,7 @@ abstract class db_AbstractDatabase implements db_InterfaceDatabase {
 		}
 		$this->encrypter = $config['encrypter'];
 
-		atsumi_Debugger::addDatabase($this);
+		atsumi_Debug::addDatabase($this);
 	}
 
 	/**
