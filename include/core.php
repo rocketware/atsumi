@@ -299,7 +299,7 @@ function sf_escapes($str) {
 				$ret .= "\r";
 				break;
 			default:
-				throw new Exception('Illegal escape character: ' . $match {1});
+				throw new Exception('Illegal escape character: ' . $match {1} .' in string: <pre>'.$str.'</pre>');
 			}
 		} else {
 			$ret .= $match;

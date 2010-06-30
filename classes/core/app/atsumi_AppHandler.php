@@ -87,7 +87,7 @@ class atsumi_AppHandler {
 	 * @param atsumi_AbstractAppSettings $settings The applications settings
 	 * @param atsumi_ErrorHandler $errorHandler The applications error handler
 	 */
-	public function __construct($settings, &$errorHandler) {
+	public function __construct($settings, $errorHandler) {
 		if(!($settings instanceof atsumi_AbstractAppSettings))
 			throw new Exception('Settings must be an instance of atsumi_AbstractAppSettings');
 
@@ -166,8 +166,11 @@ class atsumi_AppHandler {
 	 * @param string $uri The uri to processed
 	 */
 	public function go($uri) {
-		$this->setBaseUri(str_replace(array($_SERVER['DOCUMENT_ROOT'], end(explode('/',$_SERVER['SCRIPT_NAME']))), '', $_SERVER['SCRIPT_FILENAME']));
 
+		$scriptArr = explode('/',$_SERVER['SCRIPT_NAME']);
+		$baseUri = str_replace(array($_SERVER['DOCUMENT_ROOT'],  end($scriptArr)), '', $_SERVER['SCRIPT_FILENAME']);
+		$this->setBaseUri($baseUri);
+		
 		$this->setUri($uri);
 		$this->parseUri();
 		$this->process();

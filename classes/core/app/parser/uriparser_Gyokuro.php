@@ -31,7 +31,7 @@ class uriparser_Gyokuro implements uriparser_Interface {
 	 * @param string $uri The uri to be converted
 	 * @return array The URI as an array
 	 */
-	protected static function createUriArr($uri) {
+	protected function createUriArr($uri) {
 		$uri		= str_replace('__', '/_', $uri);
 		$uriArr 	= explode('/', $uri);
 		return self::trimUriArr($uriArr);
@@ -113,7 +113,7 @@ class uriparser_Gyokuro implements uriparser_Interface {
 	 * @param array $specfication The specification to parse against
 	 */
 	public function parseUri($uri, $specification) {
-		$pathSlice = $path = self::createUriArr($uri);
+		$pathSlice = $path = $this->createUriArr($uri);
 		//if(empty($pathSlice)) $pathSlice = array("");
 		$specSlice = $specification;
 		$stackKey = 0;
@@ -244,7 +244,7 @@ class uriparser_Gyokuro implements uriparser_Interface {
 
 		$meta['path'] = array(
 			"raw"			=> $uri,
-			"arr"			=> self::createUriArr($uri),
+			"arr"			=> $this->createUriArr($uri),
 			"components"	=> $path
 		);
 

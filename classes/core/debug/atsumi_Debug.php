@@ -720,7 +720,7 @@ foreach($this->databases as $key => $database) :
 		self::__callStatic(__FUNCTION__, $args);
 	}
 
-	public static function setParserData(&$data) {
+	public static function setParserData($data) {
 		$args = func_get_args();
 		self::__callStatic(__FUNCTION__, $args);
 	}

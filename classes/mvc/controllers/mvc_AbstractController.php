@@ -76,7 +76,7 @@ abstract class mvc_AbstractController {
 
 	/* CONSTRUCTOR & DESTRUCTOR */
 
-	function __construct(&$app, &$errorHandler) {
+	function __construct($app, $errorHandler) {
 		$this->app 			= $app;
 		$this->errorHandler = $errorHandler;
 	}

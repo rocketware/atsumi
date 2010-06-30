@@ -150,7 +150,7 @@ class mvc_AbstractEntity extends atsumi_DebugModel {
 		array_unshift($args, $this->table);
 		array_unshift($args, $this->keys);
 
-		$result = call_user_func_array(array(&$db, 'select'), $args);
+		$result = call_user_func_array(array($db, 'select'), $args);
 
 		if($result === null)
 			throw new Exception('Entity not found');
@@ -190,7 +190,7 @@ class mvc_AbstractEntity extends atsumi_DebugModel {
 
 		array_unshift($args, $this->table);
 
-		$result = call_user_func_array(array(&$db, $method), $args);
+		$result = call_user_func_array(array($db, $method), $args);
 	}
 
 	/**

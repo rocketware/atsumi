@@ -293,7 +293,7 @@ class atsumi_Loader {
 		return self::__callStatic(__FUNCTION__, $args);
 	}
 
-	public function loadClass($className) {
+	static public function loadClass($className) {
 		$args = func_get_args();
 		return self::__callStatic(__FUNCTION__, $args);
 	}
