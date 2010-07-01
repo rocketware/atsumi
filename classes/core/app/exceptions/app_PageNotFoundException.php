@@ -41,7 +41,7 @@ class app_PageNotFoundException extends atsumi_AbstractException {
 	 * @param string $controller The name of the controller being called
 	 * @param string $method The name of the method being called
 	 */
-	public function __construct($controller, $method) {
+	public function __construct($controller, $method = null) {
 		parent::__construct('ERROR 404: Page Not Found');
 	}
 
