@@ -122,17 +122,17 @@ class atsumi_ErrorParser {
 	public static function getHtmlCss() {
 		return sfl('
 			<style type="text/css">
-			div.atsumiError { border:4px double #8c897e; min-width:500px; margin:20px; padding:20px; background-color:#e1ded4;  font-family:arial, sans, verdana; line-height:1.5em; }
+			div.atsumiError { border:1px solid #8c897e; min-width:500px; margin:20px; padding:20px; background-color:#e1ded4;  font-family:arial, sans, verdana; line-height:1.5em; -moz-border-radius:0.5em; -webkit-border-radius:0.5em; }
 			div.atsumiError * { }
-			div.atsumiError h1 { font-size:26px;  }
+			div.atsumiError h1 { font-size:26px; color:#222;  }
 			div.atsumiError h2 { font-size:22px; color:#8f8a7f;  }
 			div.atsumiError h3 { font-size:17px; margin:0px; color:#8f8a7f; }
 			div.atsumiError h4 { color:#8f8a7f; font-size:14px; margin:0px; }
-			div.atsumiError .atsumiObject,div.atsumiError .atsumiClass { color:#4b8000; }
-			div.atsumiError .atsumiMethod { color:#017dab; }
+			div.atsumiError .atsumiObject,div.atsumiError .atsumiClass { color:#724a23; }
+			div.atsumiError .atsumiMethod { color:#658823; }
 			div.atsumiError .atsumiFile { color:#444; }
-			div.atsumiError strong {  color:#356823;  }
-			div.atsumiError .atsumiDetailsContainer { overflow-x: auto; margin:5px 0px 0px 0px; padding:5px 10px 5px 10px; background-color:#efeeea; border:1px solid #8f8a7f; }
+			div.atsumiError strong {  color:#724a23;  }
+			div.atsumiError .atsumiDetailsContainer { overflow-x: auto; margin:5px 0px 0px 0px; padding:5px 10px 5px 10px; background-color:#efeeea; border:1px solid #f4f4f4; -moz-border-radius:0.5em; -webkit-border-radius:0.5em; }
 			div.atsumiError pre.code { background-color:#222; color:#fff; padding:15px 15px 15px 50px; border:1px solid #7db722; margin:10px 10px 15px 10px;  }
 			div.atsumiError pre.code strong { color:#d3ff3b; }
 			</style>'
