@@ -175,6 +175,7 @@ class atsumi_Loader {
 			}
 
 			foreach($parts as $part) {
+				if (empty($part)) continue;
 				$success = false;
 				if($this->useRequire($domain, $part)) $success = true;
 				if($this->useClasses($domain, $part)) $success = true;
@@ -224,13 +225,12 @@ class atsumi_Loader {
 			if(substr($fileName, 0, 1) == '.') continue;
 
 			$fullPath = $path.'/'.$fileName;
-
+			
 			// Recursive loading of subdirectories
 			if(is_dir($fullPath)) {
 				self::useClassDir($fullPath);
 				continue;
 			}
-
 			if(is_file($fullPath) && preg_match('/^([a-zA-Z_][a-zA-Z0-9_]*)[\.inc\|]*.php$/', $fileName, $matches)) {
 				$className = str_replace('.php', '', $matches[0]);
 				$className = str_replace('.inc', '', $className);
@@ -264,10 +264,9 @@ class atsumi_Loader {
 	 */
 	public function _loadClass($classname) {
 		$classname = strtolower($classname);
-		if(!array_key_exists($classname, $this->classes)) {
+		if(!array_key_exists($classname, $this->classes)) 
 			throw new loader_ClassNotFoundException('Atsumi failed to find the class required \''.$classname.'\'', $classname);
-		}
-
+		
 		require_once($this->classes[$classname]);
 	}
 
