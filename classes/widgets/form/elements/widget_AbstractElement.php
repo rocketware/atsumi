@@ -142,7 +142,7 @@ abstract class widget_AbstractElement {
 		$this->style = $in;	
 	}
 	
-	public function setValue($input, $files) {
+	public function setValue($input, $files = array()) {
 		$this->value = isset($input[$this->name]) ? $input[$this->name] : null;	
 	}
 	

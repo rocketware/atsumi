@@ -21,11 +21,11 @@ class widget_CheckBoxArrayElement extends widget_AbstractElement {
 		
 	}
 	
-	function setValue($input) {
+	function setValue($input, $files = array()) {
 		if(empty($input[$this->name])) $input[$this->name] = $this->default;
 		// creates an array of ids holding boolean values
 		foreach($this->options as $option => $name) {
-			if(!isset($input[$this->name][$option])) $input[$this->name][$option] = false;
+			if(!isset($input[$this->name][$option]) || !$input[$this->name][$option]) $input[$this->name][$option] = false;
 			else $input[$this->name][$option] = true;	
 		}		
 		$this->value = $input[$this->name];
