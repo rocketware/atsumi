@@ -99,6 +99,9 @@ class uriparser_Kabusecha implements uriparser_Interface {
 	 * @param array $specfication The specification to parse against
 	 */
 	public function parseUri($uri, $spec) {
+		/* strip get parameters if any */
+		if(strpos($uri, '?')) $uri = substr($uri, 0, strpos($uri, '?'));
+
 		// Force the user to have an index controller
 		if(!array_key_exists('', $spec))
 			throw new Exception('Spec must contain an index controller');

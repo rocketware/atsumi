@@ -113,10 +113,10 @@ class uriparser_Gyokuro implements uriparser_Interface {
 	 * @param array $specfication The specification to parse against
 	 */
 	public function parseUri($uri, $specification) {
-		
-		/* strip get parameters if any*/
-		if (strpos($uri, '?')) $uri = substr($uri, 0, strpos($uri, '?'));
-		
+
+		/* strip get parameters if any */
+		if(strpos($uri, '?')) $uri = substr($uri, 0, strpos($uri, '?'));
+
 		$pathSlice = $path = $this->createUriArr($uri);
 		//if(empty($pathSlice)) $pathSlice = array("");
 		$specSlice = $specification;
