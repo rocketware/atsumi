@@ -139,8 +139,10 @@ class atsumi_Debug {
 	 * @access public
 	 */
 	public function __destruct() {
-		if($this->active && $this->autoRender)
-			echo $this->render();
+		try {
+			if($this->active && $this->autoRender)
+				 echo $this->render();
+		} catch (Exception $e) { }
 	}
 
 	// GET FUNCTIONS
@@ -555,6 +557,7 @@ class atsumi_Debug {
 	 * @return string The debugger as a valid HTML5 string
 	 */
 	public function _render() {
+
 		if(!$this->active) return;
 
 		$this->startTimer();

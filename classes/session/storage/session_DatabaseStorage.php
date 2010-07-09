@@ -18,13 +18,13 @@ class session_DatabaseStorage extends session_AbstractStorage {
 	}
 
 	public function read($id) {
-
 		try {
 			$result = $this->database->select_1('SELECT * FROM session WHERE checksum = %i AND session_id = %s', crc32($id), $id);
 
 		}
 		catch(Exception $e) {
-			Atsumi::debug__log(
+
+			atsumi_Debug::record(
 				'Session Failed to load from DB',
 				sf('The session(%s) session could not load', $id),
 				atsumi_Debug::AREA_SESSION,
@@ -36,7 +36,7 @@ class session_DatabaseStorage extends session_AbstractStorage {
 		if(is_null($result))
 			return '';
 
-		Atsumi::debug__log(
+		atsumi_Debug::record(
 			'Session loaded from DB',
 			sf('The session loaded from the db.' ),
 			atsumi_Debug::AREA_SESSION,
@@ -50,7 +50,7 @@ class session_DatabaseStorage extends session_AbstractStorage {
 		if($this->database->exists('session', 'checksum = %i AND session_id = %s', crc32($id), $id)) {
 
 
-			Atsumi::debug__log(
+			atsumi_Debug::record(
 				'Updating Session',
 				sf('The session(%s) is being updated to the DB', $id ),
 				atsumi_Debug::AREA_SESSION,
@@ -65,14 +65,12 @@ class session_DatabaseStorage extends session_AbstractStorage {
 			);
 		}
 		else {
-
-			Atsumi::debug__log(
+			atsumi_Debug::record(
 				'Inserting Session',
 				sf('The atsumi(%s) is being inserted to the DB: ', $id ),
 				atsumi_Debug::AREA_SESSION,
 				$sessionData
 			);
-
 			$this->database->insert(
 				'session',
 				'checksum		= %i', crc32($id),

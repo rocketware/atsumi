@@ -35,10 +35,10 @@ class session_Handler {
 	 * Constructor - Must use getInstance to get a session singalton object
 	 */
 	protected function __construct($options = array()) {
-		$debugger = Atsumi::debugger();
+
 
 		// Start timer for constructor compleate time
-		$debugger->startTimer();
+		atsumi_Debug::startTimer();
 
 		$this->configure($options);
 
@@ -52,9 +52,9 @@ class session_Handler {
 		$this->start();
 
 		// Add debug information
-		Atsumi::debug__log(
+		atsumi_Debug::record(
 			'Session Created',
-			sf('The atsumi session constructer compleated in %s', $debugger->endTimer()),
+			sf('The atsumi session constructer compleated in %s', atsumi_Debug::endTimer()),
 			atsumi_Debug::AREA_SESSION
 		);
 	}
@@ -63,7 +63,9 @@ class session_Handler {
 	 * Destructor - Will end and write the session if destroyed
 	 */
 	public function __destruct() {
-		$this->close();
+		try {
+			$this->close();
+		} catch (Exception $e) { }
 	}
 
 	public function getId() {
