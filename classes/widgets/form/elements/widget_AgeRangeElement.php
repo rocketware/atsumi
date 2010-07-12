@@ -34,9 +34,10 @@ class widget_AgeRangeElement extends widget_AbstractElement {
 		}
 
 		$maxOptions = sfl("<option value='' >Any</option>");
-		for($i = $this->ageMin; $i <= $this->ageMax; $i++) {
-			// TODO: Bug here days don't always return the correct number of days...
 
+		for($i = $this->ageMin; $i <= $this->ageMax; $i++) {
+
+			// TODO: Bug here days don't always return the correct number of days...
 			if($maxValue == $i)
 				$maxOptions .= sfl("<option value='%s' selected='selected'>%s</option>",$i,$i);
 			else
@@ -44,17 +45,14 @@ class widget_AgeRangeElement extends widget_AbstractElement {
 
 		}
 
+		$out =	sfl("<select name='%s[min]' id='form_%s' class='inputAgeRange inputAgeRangeMin' >%s</select>",
+						$this->getName(), $this->getName(), $minOptions
+					);
 
-		$out =	sfl("<select name='%s[min]' id='form_%s' style='width:100px;' >%s</select>",
-						$this->getName(),
-						$this->getName(),
-						$minOptions
+		$out .=	sfl("to <select name='%s[max]' id='form_%s' class='inputAgeRange inputAgeRangeMax' >%s</select>",
+						$this->getName(), $this->getName(), $maxOptions
 					);
-		$out .=	sfl("to <select name='%s[max]' id='form_%s' style='width:100px;' >%s</select>",
-						$this->getName(),
-						$this->getName(),
-						$maxOptions
-					);
+
 		return $out;
 
 	}

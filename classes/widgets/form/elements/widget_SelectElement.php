@@ -44,7 +44,7 @@ class widget_SelectElement extends widget_AbstractElement {
 				);
 		}
 
-		return(	sfl("<select name='%s' id='form_%s' >%s</select>",
+		return(	sfl("<select name='%s' id='form_%s'  class='inputSelect'>%s</select>",
 						$this->getName(),
 						$this->getName(),
 						$opionHtml

@@ -29,7 +29,7 @@ class widget_TermsAndConditionsElement extends widget_AbstractElement {
 
 	}
 	function renderElement() {
-		return(sf("<div class='termsContainer'><div class='termsText'>%s</div>%s<div class='termsConfirmation'><input type='checkbox' name='%s' %s id='form_%s' class='checkbox' /> %s</div></div>",
+		return(sf("<div class='inputTermsContainer'><div class='inputTermsText'>%s</div>%s<div class='inputTerms'><input type='checkbox' name='%s' %s id='form_%s' class='inputTermsCheckbox' /> %s</div></div>",
 							$this->termsText,
 							$this->renderErrors(),
 							$this->getName(),

@@ -48,14 +48,14 @@ class widget_FileElement extends widget_AbstractElement {
 	}
 
 		if($this->validates && count($parts)>1)
-		return(sf("<div class='f09'>file uploaded: <strong>%s</strong></div><input type='hidden' name='%s' value='%s' id='form_%s' />",
+		return(sf("<div class='inputFileDone'>file uploaded: <strong>%s</strong></div><input type='hidden' name='%s' value='%s' id='form_%s' />",
 							$parts[0],
 							$this->getName(),
 							$this->originalName.",".$this->fileToken,
 							$this->getName()
 				));
 		else
-		return(sf("<input type='file' name='%s'  id='form_%s' />",
+		return(sf("<input type='file' name='%s'  id='form_%s' class='inputFile' />",
 							$this->getName(),
 							$this->getName()
 				));
