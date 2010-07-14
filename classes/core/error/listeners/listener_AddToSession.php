@@ -18,6 +18,9 @@
  */
 class listener_AddToSession implements atsumi_Observer {
 	/* CONSTANTS */
+	const METHOD_SET 	= 0;
+	const METHOD_PUSH 	= 1;
+
 	/* PROPERTIES */
 
 	/**
@@ -41,6 +44,8 @@ class listener_AddToSession implements atsumi_Observer {
 	 */
 	private $namespace;
 
+	private $method;
+
 	/* CONSTRUCTOR & DESTRUCTOR */
 
 	/**
@@ -50,10 +55,12 @@ class listener_AddToSession implements atsumi_Observer {
 	 * @param mixed $data The data to add when the error occurs
 	 * @param string $namespace The namespace to add under if atsumi session is being used [optional, default: session_Handler::DEFAULT_NAMESPACE]
 	 */
-	public function __construct($key, $data, $namespace = session_Handler::DEFAULT_NAMESPACE) {
-		$this->data 		= $data;
-		$this->key 			= $key;
-		$this->namespace 	= $namespace;
+	public function __construct($key, $data, $namespace = session_Handler::DEFAULT_NAMESPACE, $method= self::METHOD_SET) {
+
+		$this->data 				= $data;
+		$this->key 					= $key;
+		$this->namespace 			= $namespace;
+		$this->method 				= $method;
 	}
 
 	/* GET METHODS */
@@ -67,8 +74,19 @@ class listener_AddToSession implements atsumi_Observer {
 	 * @param string $errorText The text representation of the error
 	 */
 	protected function mergeDataToSession($errorText) {
+
 		$session = session_Handler::getInstance();
-		$session->set($this->key, $this->data, $this->namespace);
+
+		switch ($this->method) {
+		case self::METHOD_SET:
+			$session->set($this->key, $this->data, $this->namespace);
+			break;
+		case self::METHOD_PUSH:
+			if (!$session->has($this->key, $this->namespace) || !is_array($session->get($this->key, $this->namespace)))
+					$session->set($this->key, array($this->data), $this->namespace);
+			else 	$session->push($this->key, $this->data, $this->namespace);
+			break;
+		}
 	}
 
 	/**

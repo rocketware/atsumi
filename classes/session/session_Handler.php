@@ -100,7 +100,6 @@ class session_Handler {
 	}
 
 	/* SET FUNCTIONS */
-
 	public function set($name, $value, $namespace = self::DEFAULT_NAMESPACE) {
 		// Add prefix to prevent namespace collisions
 		$namespace = '__'.$namespace;
@@ -115,12 +114,21 @@ class session_Handler {
 		return $old;
 	}
 
-	/* HAS FUNCTIONS */
-
-	public function has($name, $namespace = self::DEFAULT_NAMESPACE) {
+	public function push($name, $value, $namespace = self::DEFAULT_NAMESPACE) {
 		// Add prefix to prevent namespace collisions
 		$namespace = '__'.$namespace;
 
+		if(!isset($_SESSION[$namespace][$name]) || !is_array($_SESSION[$namespace][$name]))
+			throw new Exception ("Target not array");
+		else
+			$_SESSION[$namespace][$name][] = $value;
+
+	}
+
+	/* HAS FUNCTIONS */
+	public function has($name, $namespace = self::DEFAULT_NAMESPACE) {
+		// Add prefix to prevent namespace collisions
+		$namespace = '__'.$namespace;
 		return isset($_SESSION[$namespace][$name]);
 	}
 
