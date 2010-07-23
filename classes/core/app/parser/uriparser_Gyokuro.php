@@ -76,7 +76,7 @@ class uriparser_Gyokuro implements uriparser_Interface {
    				$newPathArr = $pathArr;
    				$newPathArr[] = $path;
 
-			$out = $this->searchSpec($class, $controller, $newPathArr);
+			$out = self::searchSpec($class, $controller, $newPathArr);
 				if(is_array($out)) return $out;
 		}
 		elseif($class == $controller) {

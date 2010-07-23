@@ -5,7 +5,7 @@
  * the implementation of the database interface.
  * @package Database
  */
-abstract class db_AbstractDatabase implements db_InterfaceDatabase {
+abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 
 	/* The database connection object */
 	protected $pdo;
@@ -14,7 +14,9 @@ abstract class db_AbstractDatabase implements db_InterfaceDatabase {
 	protected $encrypter;
 	protected $affectedRows;
 	protected $debug = true;
-
+	protected $parser;
+	
+	abstract protected function initParser ();
 	/**
 	 * Constructor
 	 */
@@ -32,6 +34,14 @@ abstract class db_AbstractDatabase implements db_InterfaceDatabase {
 		$this->encrypter = $config['encrypter'];
 
 		atsumi_Debug::addDatabase($this);
+		$this->initParser();
+	}
+
+	protected function parse ($args) {
+		if (is_null($this->parser))
+			throw new db_Exception ('Parser not loaded.');
+		
+		return $this->parser->parseString(func_get_args());
 	}
 
 	/**
@@ -65,40 +75,6 @@ abstract class db_AbstractDatabase implements db_InterfaceDatabase {
 	}
 
 	/**
-	 * Return a database spersific, formatted string
-	 *
-	 * @param $format string The string to be formated
-	 * @param $args mixed Format args
-	 * @return string A string produced according to the formatting string format
-	 */
-	public function format($format, $args = null, $_ = null) {
-		$args = func_get_args();
-		$format = array_shift($args);
-
-		if(count($args) <= 0)
-			return $format;
-
-		$ret = "";
-		$pos0 = 0;
-		$i = 0;
-		while(true) {
-			$pos1 = strpos($format, '%', $pos0);
-			if($pos1 === false)
-				return $ret . substr($format, $pos0);
-			if($pos1 + 2 > strlen($format))
-				throw new Exception('Invalid format string');
-			$ret .= substr($format, $pos0, $pos1 - $pos0);
-			$char = substr($format, $pos1 + 1, 1);
-
-			if(!method_exists($this, $char))
-				throw new Exception(sf('Unrecognised format char: %s(%s)', $ch, $format));
-
-			$ret .= $this->$char($args[$i++],($char == 'a' ? false : true));
-			$pos0 = $pos1 + 2;
-		}
-	}
-
-	/**
 	 * Connection function called by child class. Child class should construct
 	 * the connection string and then pass to this function for connection.
 	 *
@@ -129,7 +105,7 @@ abstract class db_AbstractDatabase implements db_InterfaceDatabase {
 
 	public function query($query, $args = null, $_ = null) {
 		$arg = func_get_args();
-		return $this->queryReal(call_user_func_array(array(&$this, 'format'), $arg));
+		return $this->queryReal(call_user_func_array(array(&$this, 'parse'), $arg));
 	}
 
 	public function queryReal($sql) {
@@ -169,6 +145,32 @@ abstract class db_AbstractDatabase implements db_InterfaceDatabase {
 
 	/* SELECT QUERIES */
 
+	public function select($columns, $tables, $where, $args = null, $_ = null) {
+		
+		$args = func_get_args();
+
+		$colums = array_shift($args);
+		$tables = array_shift($args);
+
+		// If there are still args left we have a where clause and possible where args
+		if(count($args) > 0)
+			$where = array_shift($args);
+
+		if(is_array($colums))
+			$colums = implode(', ', $colums);
+
+		$query = $this->parse(
+			'SELECT %l FROM %@%l',
+			$colums,
+			$tables,
+			(isset($where) ? $this->parse(' WHERE %l', $where) : '')
+		);
+
+		array_unshift($args, $query);
+
+		return call_user_func_array(array(&$this, 'query'), $args);
+	}
+	
 	/**
 	 * Performs a query, returning a single result
 	 *
@@ -207,5 +209,52 @@ abstract class db_AbstractDatabase implements db_InterfaceDatabase {
 
 		return array_key_exists(0, $result) ? $result[0] : null;
 	}
+	
+	
+	public function update ($args) {
+
+		/* parse the query */
+		$args = func_get_args ();
+		$query = call_user_func_array (array ($this, 'parseUpdateQuery'), $args);
+
+		/* perform query */
+		$this->query ('%l', $query);
+		
+		return true;
+	}
+	
+	public function updateOne ($args) {
+		
+		/* call update */
+		$args = func_get_args ();
+		$ret = call_user_func_array (array ($this, 'update'), $args);
+
+		// ensure affected row count is correct
+		if ($this->affected_rows () == 0)
+			throw new sql_Exception ('No rows affected in updateOne()');
+		if ($this->affected_rows () > 1) 
+			throw new sql_Exception ('Multiple rows affected in updateOne()');
+
+		return true;
+	}
+	
+	public function parseUpdateQuery ($args) {
+
+		$args = func_get_args ();
+		$sets = $this->quotef_special ($args);
+		$update = array_shift ($sets);
+		$where = array_shift ($sets);
+		if (count ($sets) == 0) $sets = array ($where);
+	
+		/* return update query string */
+		return $this->format ('UPDATE %l SET %l WHERE %l',	
+														$update, 
+														implode (', ', $sets),
+														$where
+													);
+	}
+	
+	
+	
 }
 ?>

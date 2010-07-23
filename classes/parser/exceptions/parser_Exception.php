@@ -1,0 +1,1 @@
+<?php class parser_Exception extends Exception { } ?>

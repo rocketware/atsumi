@@ -289,7 +289,7 @@ class atsumi_Debug {
 	 * @access public
 	 * @param mixed $database The database object reference to add to the debugger
 	 */
-	public function _addDatabase(db_InterfaceDatabase $database) {
+	public function _addDatabase( /*db_InterfaceDatabase */ $database) {
 		$this->databases[] = $database;
 	}
 

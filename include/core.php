@@ -145,7 +145,7 @@ function mktimez($year, $month, $day, $hour, $minute, $second) {
 
 
 
-
+/*
 
 function quotef_special($args) {
 	$ret = array();
@@ -316,7 +316,7 @@ function js_escape($str) {
 }
 /**
  * Calls sf to construct a string from a format string then prints it.
- */
+
 function pfl($format_etc) {
 	$args = func_get_args();
 	print(sf($args)."\n");
@@ -324,7 +324,7 @@ function pfl($format_etc) {
 
 /**
  * Calls sf to construct a string from a format string then prints it.
- */
+
 function pf($format_etc) {
 	$args = func_get_args();
 	print(sf($args));
@@ -332,10 +332,39 @@ function pf($format_etc) {
 
 /**
  * Calls pf to print the format string then flushed output.
- */
+
 function ff($format_etc) {
 	$args = func_get_args();
 	print(sf($args));
+	flush();
+}
+*/
+
+
+
+/* String manipulation short hand */
+
+function sf ($args) {
+	$args = func_get_args();
+	return call_user_func_array(
+		array('parser_Web','parse'),
+		$args);
+}
+function sfl ($args) {
+	$args = func_get_args();
+	return (call_user_func_array('sf',$args).PHP_EOL);
+}
+function pf ($args) {
+	$args = func_get_args();
+	print (call_user_func_array('sf',$args));
+}
+function pfl ($args) {
+	$args = func_get_args();
+	print (call_user_func_array('sf',$args).PHP_EOL);
+}
+function ff ($args) {
+	$args = func_get_args();
+	print (call_user_func_array('sf',$args));
 	flush();
 }
 

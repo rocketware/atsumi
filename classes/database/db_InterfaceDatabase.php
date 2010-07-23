@@ -198,7 +198,7 @@ interface db_InterfaceDatabase {
 	 * @param $_
 	 * @return The query result
 	 */
-	public function update($table, $where, $args = null, $_ = null, $column = null, $value = null, $_ = null);
+	//public function update($table, $where, $args = null, $_ = null, $column = null, $value = null, $_ = null);
 
 	/**
 	 * Calls update and ensures that the number of affected rows is exactly one
@@ -223,7 +223,7 @@ interface db_InterfaceDatabase {
 	 * @param $_
 	 * @return The query result
 	 */
-	public function updateOne($table, $where, $args = null, $_ = null, $column = null, $value = null, $_ = null);
+	//public function updateOne($table, $where, $args = null, $_ = null, $column = null, $value = null, $_ = null);
 
 	/**
 	 * Performs a delete query.

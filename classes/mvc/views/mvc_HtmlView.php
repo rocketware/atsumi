@@ -20,11 +20,11 @@ abstract class mvc_HtmlView extends mvc_AbstractView {
 	}
 
 	protected function renderDoctype() {
-		pf('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">\n');
+		pfl('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">');
 	}
 
 	protected function renderHeadContent() {
-		pf('<title>%h</title>\n', $this->getTitle());
+		pfl('<title>%h</title>', $this->getTitle());
 		$this->renderHeadMeta();
 		$this->renderHeadCss();
 		$this->renderHeadJs();
@@ -37,22 +37,22 @@ abstract class mvc_HtmlView extends mvc_AbstractView {
 
 	// Private structural methods
 	protected function renderHtml() {
-		pf('<html>\n');
+		pfl('<html>');
 		$this->renderHead();
 		$this->renderBody();
-		pf('</html>\n');
+		pfl('</html>');
 	}
 
 	protected function renderHead() {
-		pf('<head>\n');
+		pfl('<head>');
 		$this->renderHeadContent();
-		pf('</head>\n');
+		pfl('</head>');
 	}
 
 	protected function renderBody() {
-		pf('<body>\n');
+		pfl('<body>');
 		$this->renderBodyContent();
-		pf('</body>\n');
+		pfl('</body>');
 	}
 }
 ?>
