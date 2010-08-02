@@ -25,6 +25,26 @@ class uriparser_Gyokuro implements uriparser_Interface {
 	/* MAGIC METHODS */
 	/* METHODS */
 
+	static function processArg ($arg) {
+
+		// Numeric handling
+		if (is_numeric($arg)) {
+
+			// check if is float
+			if (strpos($arg, '.')) {
+				$arg = floatval($arg);
+			} else {
+				$arg = intval($arg);
+			}
+		}
+
+		// Boolean handling
+		if (strtolower($arg) == 'true') 	$arg = true;
+		if (strtolower($arg) == 'false') 	$arg = false;
+
+		return $arg;
+	}
+
 	/**
 	 * Converts a URI into an array for parsing
 	 * @access protected
@@ -229,8 +249,12 @@ class uriparser_Gyokuro implements uriparser_Interface {
 				if(!array_key_exists('method', $meta['spec'][$specKey]))
 					$meta['spec'][$specKey]['method'][] = array("name" => "page_index", "args" => array());
 
-				$meta['spec'][$specKey]['method'][count($meta['spec'][$specKey]['method'])-1]['args'][] = substr($pathSlice[0],1);
-				$meta['stack'][$stackKey]['args'][] = substr($pathSlice[0],1);
+				// process the arg
+				$arg = self::processArg(substr($pathSlice[0],1));
+
+
+				$meta['spec'][$specKey]['method'][count($meta['spec'][$specKey]['method'])-1]['args'][] = $arg;
+				$meta['stack'][$stackKey]['args'][] = $arg;
 				$pathSlice = array_slice($pathSlice,1);
 			}
 			else {
@@ -257,5 +281,7 @@ class uriparser_Gyokuro implements uriparser_Interface {
 			array("meta" => $meta)
 		);
    	}
+
+
 }
 ?>
