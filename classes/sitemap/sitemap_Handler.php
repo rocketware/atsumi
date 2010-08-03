@@ -11,7 +11,7 @@ class sitemap_Handler {
 	}
 
 	/* adds a url to the sitemap table for inclusion next time the sitemap is generated */
-	static public function writeUrl($db, $loc, $lastMod = null, $changeFreq = null, $priority = null, $tableName = 'sitemap') {
+	static public function writeUrl(&$db, $loc, $lastMod = null, $changeFreq = null, $priority = null, $tableName = 'sitemap') {
 
 		$loc = trim($loc);
 		$checksum = crc32($loc);
@@ -45,17 +45,23 @@ class sitemap_Handler {
 			);
 
 		}
+
+		/* nulling used variables (big sitemaps need every scrap of memory!) */
+		$row = null;
+		$host = null;
+		$checksum = null;
+		$matches = null;
 	}
 
 	/* gets total number of urls for host */
-	static public function getUrlCount($db, $host, $tablename = 'sitemap') {
+	static public function getUrlCount(&$db, $host, $tablename = 'sitemap') {
 
 		return $db->select_1_i('select count(*) from %l where host = %s', $tablename, $host);
 
 	}
 
 	/* writes sitemap files to disk */
-	static public function writeXml($db, $host, $xmlFilePath, $xmlUrlRoot, $maxUrlsPerSitemap = null, $compress = true, $tablename = 'sitemap') {
+	static public function writeXml(&$db, $host, $xmlFilePath, $xmlUrlRoot, $maxUrlsPerSitemap = null, $compress = true, $tablename = 'sitemap') {
 
 		/* clean up old sitemap files */
 		foreach(glob($xmlFilePath."sitemap*.xml*") as $filename)
@@ -140,7 +146,7 @@ class sitemap_Handler {
 	}
 
 	/* writes an indervidual sitemap file */
-	static public function writeSiteMap($db, $host, $filename, $xmlFilePath, $offset, $limit, $compress = true, $tablename = 'sitemap') {
+	static public function writeSiteMap(&$db, $host, $filename, $xmlFilePath, $offset, $limit, $compress = true, $tablename = 'sitemap') {
 
 		/* setup the document */
 		$sitemap = new DOMDocument;
