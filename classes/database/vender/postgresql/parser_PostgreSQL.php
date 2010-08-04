@@ -31,9 +31,17 @@ class parser_PostgreSQL extends parser_Abstract {
 	static function tableName ($in) {
 		return sf('"%s"', $in);	
 	}
-	
+
 	static function text ($in) {
+		if (!is_string($in)) throw new parser_StrictTypeException ('Expected String');
 		return sf("'%s'::TEXT", pg_escape_string($in));	
+	}
+	
+	static function textOrNull ($in) {
+		if (!is_string($in) && !is_null($in)) throw new parser_StrictTypeException ('Expected String or Null');
+		
+		if (is_string($in) && strlen($in)) return self::text($in);
+		elseif (is_null($in)) return 'NULL';
 	}
 	
 	static function sqlArray ($in) {

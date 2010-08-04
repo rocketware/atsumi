@@ -25,13 +25,12 @@ class db_PostgreSql extends db_AbstractDatabase {
 		$port =(isset($config['port']) ? $config['port'] : null);
 		$dbname =(isset($config['dbname']) ? $config['dbname'] : null);
 
-		$conString = sf(
+		$conString = sf (
 			'pgsql:%s%s%s',
 			(!is_null($host) ? sf(' host=%s', $host) : ''),
 			(!is_null($port) ? sf(' port=%s', $port) : ''),
 			(!is_null($dbname) ? sf(' dbname=%s', $dbname) : '')
 		);
-
 		$this->connectReal($conString, $config);
 	}
 

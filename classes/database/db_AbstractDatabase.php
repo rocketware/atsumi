@@ -104,8 +104,7 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 	}
 
 	public function query($query, $args = null, $_ = null) {
-		$arg = func_get_args();
-		return $this->queryReal(call_user_func_array(array(&$this, 'parse'), $arg));
+		return $this->queryReal(call_user_func_array(array(&$this, 'parse'), func_get_args()));
 	}
 
 	public function queryReal($sql) {
@@ -131,12 +130,24 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 			if(!is_array($data))
 				throw new PDOException('Failed to return data array');
 
-			$this->queryTimes[] = array(
-				'sql'			=> $sql,
-				'time'			=>(time() + microtime()) - $startTime,
-				'row_count'		=> count($data)
-			);
-
+			if($this->debug) {
+				if (count($this->queryTimes) > 100) {
+					$this->queryTimes = null;
+					$this->debug = false;
+					atsumi_Debug::record(
+						'Too many queries to debug',
+						'Atsumi has disabled query debugging for this script as too many queries were fired.',
+						atsumi_Debug::AREA_DATABASE,
+						null
+					);
+				} else															
+					$this->queryTimes[] = array(
+						'sql'			=> $sql,
+						'time'			=>(time() + microtime()) - $startTime,
+						'row_count'		=> count($data)
+					);
+			}
+			
 			return $data;
 		} catch(PDOException $e) {
 			throw new db_QueryFailedException($e->getMessage() . "<br />" . $sql);
@@ -210,7 +221,44 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 		return array_key_exists(0, $result) ? $result[0] : null;
 	}
 	
-	
+	public function insert($table, $column, $value = null, $_ = null) {
+		$args = func_get_args();
+
+		$table = array_shift($args);
+
+		// If there are still args left we have variable pairs
+		$names = array();
+		$types = array();
+		$values = array();
+		while(count($args) >= 2) {
+			$column = array_shift($args);
+
+			$column = explode('=', $column, 2);
+
+			$names[]	= trim($column[0]);
+			$types[]	= trim($column[1]);
+			$values[]	= array_shift($args);
+		}
+
+		if(count($args) > 0)
+			throw new db_Exception('Uneven number of column value paires');
+
+		/* parse values */
+		$valueString = implode(', ', $types);
+		array_unshift($values, $valueString);
+		$valueString = call_user_func_array(array($this, 'parse'), $values);
+		
+		
+		$query = $this->parse(
+			'INSERT INTO %@ (%l) VALUES(%l)',
+			$table,
+			implode(', ', $names),
+			$valueString
+		);
+		
+		$this->queryReal ($query);
+	}
+		
 	public function update ($args) {
 
 		/* parse the query */

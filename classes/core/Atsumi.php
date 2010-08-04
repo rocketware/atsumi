@@ -53,7 +53,7 @@ class Atsumi {
 		$this->errorHandler = new atsumi_ErrorHandler();
 
 		// Load some helpful files
-		atsumi_Loader::references(atsumi_Loader::getAtsumiDir(), 'helpers/http');
+		atsumi_Loader::references(atsumi_Loader::getAtsumiDir(), 'parser helpers/http');
 	}
 
 	/* GET METHODS */
