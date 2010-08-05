@@ -15,7 +15,7 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 	protected $affectedRows;
 	protected $debug = true;
 	protected $parser;
-	
+
 	abstract protected function initParser ();
 	/**
 	 * Constructor
@@ -40,7 +40,7 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 	protected function parse ($args) {
 		if (is_null($this->parser))
 			throw new db_Exception ('Parser not loaded.');
-		
+
 		return $this->parser->parseString(func_get_args());
 	}
 
@@ -140,14 +140,14 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 						atsumi_Debug::AREA_DATABASE,
 						null
 					);
-				} else															
+				} else
 					$this->queryTimes[] = array(
 						'sql'			=> $sql,
 						'time'			=>(time() + microtime()) - $startTime,
 						'row_count'		=> count($data)
 					);
 			}
-			
+
 			return $data;
 		} catch(PDOException $e) {
 			throw new db_QueryFailedException($e->getMessage() . "<br />" . $sql);
@@ -157,9 +157,15 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 	/* SELECT QUERIES */
 
 	public function select($columns, $tables, $where, $args = null, $_ = null) {
-		
+
 		$args = func_get_args();
 
+		if (strtolower(substr($args[0],0,7)) == 'select ')
+			return call_user_func_array(array(&$this, 'query'), $args);
+
+
+		dump($args);
+		dump($tables);
 		$colums = array_shift($args);
 		$tables = array_shift($args);
 
@@ -170,18 +176,20 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 		if(is_array($colums))
 			$colums = implode(', ', $colums);
 
+		dump($tables);
 		$query = $this->parse(
-			'SELECT %l FROM %@%l',
+			'SELECT %l FROM %@ %l',
 			$colums,
 			$tables,
 			(isset($where) ? $this->parse(' WHERE %l', $where) : '')
 		);
-
 		array_unshift($args, $query);
 
+		dump($args);
+		exit;
 		return call_user_func_array(array(&$this, 'query'), $args);
 	}
-	
+
 	/**
 	 * Performs a query, returning a single result
 	 *
@@ -220,7 +228,7 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 
 		return array_key_exists(0, $result) ? $result[0] : null;
 	}
-	
+
 	public function insert($table, $column, $value = null, $_ = null) {
 		$args = func_get_args();
 
@@ -247,18 +255,18 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 		$valueString = implode(', ', $types);
 		array_unshift($values, $valueString);
 		$valueString = call_user_func_array(array($this, 'parse'), $values);
-		
-		
+
+
 		$query = $this->parse(
 			'INSERT INTO %@ (%l) VALUES(%l)',
 			$table,
 			implode(', ', $names),
 			$valueString
 		);
-		
+
 		$this->queryReal ($query);
 	}
-		
+
 	public function update ($args) {
 
 		/* parse the query */
@@ -267,12 +275,12 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 
 		/* perform query */
 		$this->query ('%l', $query);
-		
+
 		return true;
 	}
-	
+
 	public function updateOne ($args) {
-		
+
 		/* call update */
 		$args = func_get_args ();
 		$ret = call_user_func_array (array ($this, 'update'), $args);
@@ -280,12 +288,12 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 		// ensure affected row count is correct
 		if ($this->affected_rows () == 0)
 			throw new sql_Exception ('No rows affected in updateOne()');
-		if ($this->affected_rows () > 1) 
+		if ($this->affected_rows () > 1)
 			throw new sql_Exception ('Multiple rows affected in updateOne()');
 
 		return true;
 	}
-	
+
 	public function parseUpdateQuery ($args) {
 
 		$args = func_get_args ();
@@ -293,16 +301,22 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 		$update = array_shift ($sets);
 		$where = array_shift ($sets);
 		if (count ($sets) == 0) $sets = array ($where);
-	
+
 		/* return update query string */
-		return $this->format ('UPDATE %l SET %l WHERE %l',	
-														$update, 
+		return $this->format ('UPDATE %l SET %l WHERE %l',
+														$update,
 														implode (', ', $sets),
 														$where
 													);
 	}
-	
-	
-	
+
+	public function select_1 ($_) {
+		return call_user_func_array (array (&$this, 'selectOne'), func_get_args ());
+	}
+
+	public function update_1 ($_) {
+		return call_user_func_array (array (&$this, 'updateOne'), func_get_args ());
+	}
+
 }
 ?>
