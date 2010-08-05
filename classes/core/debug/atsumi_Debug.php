@@ -145,7 +145,7 @@ class atsumi_Debug {
 		} catch (Exception $e) { }
 	}
 
-	// GET FUNCTIONS
+	/* GET FUNCTIONS */
 
 	/**
 	 * Creates and/or returns a singlton instance of the class
@@ -170,7 +170,7 @@ class atsumi_Debug {
 		return $active;
 	}
 
-	// SET FUNCTIONS
+	/* SET FUNCTIONS */
 
 	/**
 	 * Sets weather or not the debugger is actively recording data
@@ -748,7 +748,7 @@ foreach($this->databases as $key => $database) :
 	}
 
 	public static function endTimer() {
-		self::__callStatic(__FUNCTION__, array());
+		return self::__callStatic(__FUNCTION__, array());
 	}
 
 	public static function record($title, $desc, $data = null, $timer = false, $area = self::AREA_GENERAL) {
