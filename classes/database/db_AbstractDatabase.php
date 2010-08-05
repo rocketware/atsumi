@@ -104,7 +104,8 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 	}
 
 	public function query($query, $args = null, $_ = null) {
-		return $this->queryReal(call_user_func_array(array(&$this, 'parse'), func_get_args()));
+		$args = func_get_args();
+		return $this->queryReal(call_user_func_array(array(&$this, 'parse'), $args));
 	}
 
 	public function queryReal($sql) {
@@ -311,11 +312,13 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 	}
 
 	public function select_1 ($_) {
-		return call_user_func_array (array (&$this, 'selectOne'), func_get_args ());
+		$args = func_get_args ();
+		return call_user_func_array (array (&$this, 'selectOne'), $args);
 	}
 
 	public function update_1 ($_) {
-		return call_user_func_array (array (&$this, 'updateOne'), func_get_args ());
+		$args = func_get_args ();
+		return call_user_func_array (array (&$this, 'updateOne'), $args);
 	}
 
 }
