@@ -46,7 +46,7 @@ abstract class parser_Abstract  {
 	}
 	protected function parseReal ($format, $args) {
 		
-		/* TODO: does it need escapes here? */
+		$format = $this->formatNewLines ($format);
 		
 		$ret = "";
 		$pos0 = 0;
@@ -75,6 +75,36 @@ abstract class parser_Abstract  {
 			$pos0 = $pos1 + 2;
 		}
 	}
+	
+	/* should this use PHP_EOL? */
+	function formatNewLines ($str) {
+		$matches = null;
+		preg_match_all ('/ [^\\\\] | \\\\ . | \\\\ /x', $str, $matches);
+		$ret = '';
+		foreach ($matches [0] as $match) {
+			if ($match == '\\')
+				throw new parser_Exception ('Illegal input (lone backslash at end)');
+			if ($match {0} == '\\') {
+				switch ($match {1}) {
+				case '_':
+					$ret .= '\\';
+					break;
+				case 'n':
+					$ret .= "\n";
+					break;
+				case 'r':
+					$ret .= "\r";
+					break;
+				default:
+					throw new parser_Exception ('Illegal escape character: ' . $match {1}); 
+				}
+			} else {
+				$ret .= $match;
+			}		
+		}
+		return $ret;
+	}
+		
 	
 }
 

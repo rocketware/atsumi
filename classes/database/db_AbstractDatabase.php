@@ -156,38 +156,8 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 	}
 
 	/* SELECT QUERIES */
-
-	public function select($columns, $tables, $where, $args = null, $_ = null) {
-
+	public function select($_) {
 		$args = func_get_args();
-
-		if (strtolower(substr($args[0],0,7)) == 'select ')
-			return call_user_func_array(array(&$this, 'query'), $args);
-
-
-		dump($args);
-		dump($tables);
-		$colums = array_shift($args);
-		$tables = array_shift($args);
-
-		// If there are still args left we have a where clause and possible where args
-		if(count($args) > 0)
-			$where = array_shift($args);
-
-		if(is_array($colums))
-			$colums = implode(', ', $colums);
-
-		dump($tables);
-		$query = $this->parse(
-			'SELECT %l FROM %@ %l',
-			$colums,
-			$tables,
-			(isset($where) ? $this->parse(' WHERE %l', $where) : '')
-		);
-		array_unshift($args, $query);
-
-		dump($args);
-		exit;
 		return call_user_func_array(array(&$this, 'query'), $args);
 	}
 
