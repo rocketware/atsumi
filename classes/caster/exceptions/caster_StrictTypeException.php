@@ -1,0 +1,1 @@
+<?php class caster_StrictTypeException extends caster_Exception { } ?>

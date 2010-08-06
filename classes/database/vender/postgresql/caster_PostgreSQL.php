@@ -1,5 +1,5 @@
 <?php
-class parser_PostgreSQL extends parser_Abstract {
+class caster_PostgreSQL extends caster_Abstract {
 	
 	protected $spec = array(
 		'@' => 'tableName',
@@ -21,13 +21,13 @@ class parser_PostgreSQL extends parser_Abstract {
 		);
 		
 	/* annoyance due to PHP scope issue */
-	static function parse ($args) {
+	static function cast ($args) {
 		$parser =  new self();
-		return  (string) $parser->parseString(func_get_args());
+		return  (string) $parser->castString(func_get_args());
 	}
 		
-	/* casters */
 	
+	/* casters */
 	static function tableName ($in) {
 		return sf('"%s"', $in);	
 	}

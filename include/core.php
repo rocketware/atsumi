@@ -347,7 +347,7 @@ function ff($format_etc) {
 function sf ($args) {
 	$args = func_get_args();
 	return call_user_func_array(
-		array('parser_Web','parse'),
+		array('caster_Web','cast'),
 		$args);
 }
 function sfl ($args) {

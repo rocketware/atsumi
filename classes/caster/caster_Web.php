@@ -1,7 +1,7 @@
 <?php
 
-/* generic parser for an web project */
-class parser_Web extends parser_Abstract {
+/* generic caster for an web project */
+class caster_Web extends caster_Abstract {
 	
 	protected $spec = array (
 		's' => 'string',
@@ -14,9 +14,9 @@ class parser_Web extends parser_Abstract {
 		);
 		
 	/* annoyance due to PHP scope issue */
-	static function parse ($args) {
+	static function cast ($args) {
 		$parser =  new self();
-		return  (string) $parser->parseString(func_get_args());
+		return  (string) $parser->castString(func_get_args());
 	}
 		
 	static function string ($in) {

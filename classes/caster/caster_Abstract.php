@@ -1,13 +1,13 @@
 <?php
 
-abstract class parser_Abstract  {
+abstract class caster_Abstract  {
 	
 	protected $spec = array();
 	
 	
 	protected function numberOfPercents($s) {
 		
-		if(!is_string($s)) throw new parser_Exception('Parameter $s should be of type string');
+		if(!is_string($s)) throw new caster_Exception('Parameter $s should be of type string');
 		$pos = 0;
 		$count = 0;
 		while(true) {
@@ -20,7 +20,7 @@ abstract class parser_Abstract  {
 			$pos += 2;
 		}
 	}
-	public function parseString ($args) {
+	public function castString ($args) {
 				// get args
 		$args = func_get_args();
 
@@ -39,12 +39,12 @@ abstract class parser_Abstract  {
 			$params = array_slice($args, $i, $this->numberOfPercents($format));
 			$i += count($params);
 
-			$ret[] = $this->parseReal($format, $params);
+			$ret[] = $this->castReal($format, $params);
 			
 		}
 		return implode('', $ret);
 	}
-	protected function parseReal ($format, $args) {
+	protected function castReal ($format, $args) {
 		
 		$format = $this->formatNewLines ($format);
 		

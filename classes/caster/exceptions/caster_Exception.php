@@ -1,0 +1,1 @@
+<?php class caster_Exception extends Exception { } ?>
