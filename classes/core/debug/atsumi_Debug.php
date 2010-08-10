@@ -49,6 +49,12 @@ class atsumi_Debug {
 	 */
 	const AREA_LOADER		= '__loader';
 
+	/**
+	 * Predefined debug area for cache data
+	 * @var string
+	 */
+	const AREA_CACHE		= '__cache';
+
 	/* PROPERTIES */
 
 	/**
