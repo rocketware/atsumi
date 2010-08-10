@@ -136,8 +136,9 @@ class atsumi_ErrorHandler extends atsumi_Observable {
 
 		$key = self::generateFloodControlKey($type, $line, $file);
 		try {
-			if($this->cacheHandler->get($key, 'errorHandler'))
-			return true;
+			if($this->cacheHandler->get($key, false, 'errorHandler'))
+					return true;
+			else 	return false;
 		} catch(cache_NotInCacheException $e) {
 			return false;
 		}
@@ -183,7 +184,6 @@ class atsumi_ErrorHandler extends atsumi_Observable {
 	 */
 	public function handleException(Exception $e) {
 		try {
-
 			// fires the exception_fc event if not blocked by flood control
 			if(!$this->blockedByFloodControl(get_class($e), $e->getLine(), $e->getFile()))
 				$this->fireEvent(self::EVENT_EXCEPTION_FC, new atsumi_ErrorEventArgs($e, get_class($this->recoverer)));
@@ -220,7 +220,8 @@ class atsumi_ErrorHandler extends atsumi_Observable {
 		}
 
 		// record exception as listened to
-		$this->recordInFloodControl(get_class($args->exception), $args->exception->getLine(), $args->exception->getFile());
+		if ($eventType == self::EVENT_EXCEPTION_FC)
+			$this->recordInFloodControl(get_class($args->exception), $args->exception->getLine(), $args->exception->getFile());
 	}
 }
 ?>
