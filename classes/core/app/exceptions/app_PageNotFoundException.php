@@ -32,6 +32,7 @@ class app_PageNotFoundException extends atsumi_AbstractException {
 	 * @var string
 	 */
 	protected $method;
+	protected $args = array();
 
 	/* CONSTRUCTOR & DESTRUCTOR */
 
@@ -41,7 +42,8 @@ class app_PageNotFoundException extends atsumi_AbstractException {
 	 * @param string $controller The name of the controller being called
 	 * @param string $method The name of the method being called
 	 */
-	public function __construct($controller, $method = null) {
+	public function __construct($_) {
+
 		parent::__construct('ERROR 404: Page Not Found');
 	}
 
@@ -54,6 +56,27 @@ class app_PageNotFoundException extends atsumi_AbstractException {
 	 * @return string Information about the exception
 	 */
 	public function getInstructions($contentType) {
+
+		// should the below (determining the method) be the responsibility of the parser?
+		$parserData = Atsumi::app__getParserMetaData();
+		$parserData = end($parserData['stack']);
+
+		$this->controller 	= $parserData['controller'];
+		$this->method 		= $parserData['method'];
+
+		if ($this->method == 'methodlessRequest') {
+			$methodArr = explode('/',$parserData['args'][0]);
+
+			// TODO: This should talk back to the URI parser asking it to parse a page method.
+			$this->method = 'page_'.$methodArr[1];
+			$this->args = array_slice($parserData['args'], 1);
+		}
+
+		// create string of args
+		$argString = '';
+		for($i = 0; $i < count($this->args); $i++)
+			$argString .= ($argString==''?'':', ').'$arg'.strval($i+1);
+
 		switch($contentType) {
 			default:
 			case 'text/plain':
@@ -78,7 +101,7 @@ class app_PageNotFoundException extends atsumi_AbstractException {
 <pre class="code">
 class %s extends mvc_AbstractController {
 	// The method to be called
-	public function page_%s {
+	public function %s (%s) {
 		// Don\'t forget to set your view
 		$this->setView(\'name_of_view\');
 	}
@@ -90,7 +113,7 @@ class %s extends mvc_AbstractController {
 Atsumi::references(array(\'myproject\' => \'models views controllers\'));
 </pre>
 
-', $this->method, $this->controller, $this->controller, $this->method);
+', $this->method, $this->controller, $this->controller, $this->method, $argString);
 				break;
 		}
 	}
