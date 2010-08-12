@@ -71,6 +71,15 @@ class atsumi_ErrorParser {
 
 				$out .= sfl("\n".'%s #%s', $e->getFile(), $e->getLine());
 
+				/* Show the request URL if avalable */
+	    		if (isset($_SERVER) && is_array($_SERVER) && array_key_exists('HTTP_HOST', $_SERVER) && array_key_exists('REQUEST_URI', $_SERVER))
+	    			$out .= sfl("\nRequest: http://%s", $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+	
+				/* Show the referer URL if avalable */
+	    		if (isset($_SERVER) && is_array($_SERVER) && array_key_exists('HTTP_REFERER', $_SERVER))
+	    			$out .= sfl("\nReferer: %s", $_SERVER['HTTP_REFERER']);	    			
+	    		
+	    			
 				if(!is_null($recoverer)) {
 					$out .= sfl("\n".'Recoverer: %s()', (is_object($recoverer) ? get_class($recoverer) : $recoverer));
 	 				$out .= sfl('Recoverer action: %s', $recoverer->getActionDetails());
@@ -82,7 +91,7 @@ class atsumi_ErrorParser {
 				}
 
 				$out .= sfl("\n".'-Stack Trace');
-				$out .= sfl(atsumi_ErrorParser::formatTrace($e->getTrace()));
+				$out .= sfl('%s', atsumi_ErrorParser::formatTrace($e->getTrace()));
 				$out .= sfl('###### End of Exception '."\n\n");
 				break;
 			case 'text/html':
@@ -96,6 +105,14 @@ class atsumi_ErrorParser {
 
 				$out .= sfl('<h2>%s #<strong>%s</strong></h2>', preg_replace('|\/([a-zA-Z0-9\-\_\.]+\.php)|',  '/<strong>\\1</strong>', htmlentities($e->getFile())), $e->getLine());
 
+				/* Show the request URL if avalable */
+	    		if (isset($_SERVER) && is_array($_SERVER) && array_key_exists('HTTP_HOST', $_SERVER) && array_key_exists('REQUEST_URI', $_SERVER))
+	    			$out .= sfl("<h4>Request: <strong><a href='http://%s'>http://%s</a></strong></h4>", $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'], $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']);
+	    			
+				/* Show the referer URL if avalable */
+	    		if (isset($_SERVER) && is_array($_SERVER) && array_key_exists('HTTP_REFERER', $_SERVER))
+	    			$out .= sfl("<h4>Referer: <strong><a href='%s'>%s</a></strong></h4>", $_SERVER['HTTP_REFERER'], $_SERVER['HTTP_REFERER']);
+	    			
 				if(!is_null($recoverer)) {
 					$out .= sfl('<h4>Recoverer: <strong>%s()</strong></h4>', (is_object($recoverer) ? get_class($recoverer) : $recoverer));
 	 				$out .= sfl('<h4>Recoverer action: <strong>%s</strong></h4>', $recoverer->getActionDetails());
