@@ -136,8 +136,9 @@ class atsumi_ErrorHandler extends atsumi_Observable {
 
 		$key = self::generateFloodControlKey($type, $line, $file);
 		try {
-			if($this->cacheHandler->get($key, 'errorHandler'))
-			return true;
+			if($this->cacheHandler->get($key, false, 'errorHandler'))
+					return true;
+			else 	return false;
 		} catch(cache_NotInCacheException $e) {
 			return false;
 		}
@@ -182,18 +183,18 @@ class atsumi_ErrorHandler extends atsumi_Observable {
 	 * @param Exception $e The exception that was thrown
 	 */
 	public function handleException(Exception $e) {
+		
 		try {
-
 			// fires the exception_fc event if not blocked by flood control
 			if(!$this->blockedByFloodControl(get_class($e), $e->getLine(), $e->getFile()))
-				$this->fireEvent(self::EVENT_EXCEPTION_FC, new atsumi_ErrorEventArgs($e, get_class($this->recoverer)));
+				$this->fireEvent(self::EVENT_EXCEPTION_FC, new atsumi_ErrorEventArgs($e, &$this->recoverer));
 
 			// fire the exception event regardless of flood control
-			$this->fireEvent(self::EVENT_EXCEPTION, new atsumi_ErrorEventArgs($e, get_class($this->recoverer)));
+			$this->fireEvent(self::EVENT_EXCEPTION, new atsumi_ErrorEventArgs($e, &$this->recoverer));
 
 			$this->recoverer->recover($e);
 		} catch(Exception $e) {
-			exit(__CLASS__.' Error: '.$e->getMessage()."\n".$e->getFile().' #'.$e->getLine());
+			exit(__CLASS__.' Error: '.$e->getMessage()."\n".$e->getFile().' #'.$e->getLine(). PHP_EOL.$e->getTraceAsString());
 		}
 		exit();
 	}
@@ -220,7 +221,8 @@ class atsumi_ErrorHandler extends atsumi_Observable {
 		}
 
 		// record exception as listened to
-		$this->recordInFloodControl(get_class($args->exception), $args->exception->getLine(), $args->exception->getFile());
+		if ($eventType == self::EVENT_EXCEPTION_FC)
+			$this->recordInFloodControl(get_class($args->exception), $args->exception->getLine(), $args->exception->getFile());
 	}
 }
 ?>

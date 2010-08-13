@@ -170,7 +170,7 @@ class atsumi_AppHandler {
 		$scriptArr = explode('/',$_SERVER['SCRIPT_NAME']);
 		$baseUri = str_replace(array($_SERVER['DOCUMENT_ROOT'],  end($scriptArr)), '', $_SERVER['SCRIPT_FILENAME']);
 		$this->setBaseUri($baseUri);
-		
+
 		$this->setUri($uri);
 		$this->parseUri();
 		$this->process();
@@ -222,11 +222,11 @@ class atsumi_AppHandler {
 		$this->controller = new $classname($this->settings, $this->errorHandler);
 
 		if(!method_exists($this->controller, $this->parserData['method']))
-			throw new app_PageNotFoundException($this->controller, $this->parserData['method']);
+			throw new app_PageNotFoundException();
 
 		// Get the debugger and start a timer for processing
 		atsumi_Debug::startTimer();
-		
+
 		// Add the method to the list of processed methods
 		$this->controller->addProcessedMethod($this->parserData['method'], $this->parserData['args']);
 
@@ -272,15 +272,15 @@ class atsumi_AppHandler {
 		$this->controller->preRender();
 		atsumi_Debug::record('Controller PreRender', 'Before rendering was processed the pre-render function was executed', null, true);
 
-		
+
 		// Get the debugger and start a timer for rendering
 		atsumi_Debug::startTimer();
 
 		$this->controller->publishFlashData();
 		$viewData = $this->controller->getViewData();
 		atsumi_Debug::setViewData($viewData);
-		
-		
+
+
 		// Time and execute the view handler
 		atsumi_Debug::startTimer();
 		$viewHandler->render($view, $viewData);

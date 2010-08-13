@@ -54,7 +54,8 @@ class listener_LogToFile implements atsumi_Observer {
 		if(!$handle)
 			throw new errorHandler_ListenerException('Cannot open log file: '.$this->logDir.$filename);
 
-		fwrite($handle, $dataIn);
+		$write = fwrite($handle, $dataIn);
+		if ($write === false) throw new errorHandler_ListenerException('Cannot no write log file: '.$this->logDir.$filename);
 		fclose($handle);
 	}
 

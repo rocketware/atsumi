@@ -10,45 +10,19 @@
  */
 
 /**
- * A wrapper class for Memcache cache Extention
+ * A base abstract class for cache handlers
  * @package		Atsumi.Framework
  * @subpackage	Cache
  * @since		0.90
  */
-class cache_MemcacheHandler extends cache_AbstractHandler {
-	/* CONSTANTS */
+abstract class cache_AbstractHandler implements cache_HandlerInterface {
 
-	/**
-	 * Constant defining a minite storage duration
-	 * @var integer
-	 */
-	const DURATION_MINUTE = 60;
-
-	/* PROPERTIES */
-
-	/**
-	 * The Memcache object instance used to cache data
-	 * @access private
-	 * @var Memcache
-	 */
-	private $memcache = null;
-
-	/* CONSTRUCTOR & DESTRUCTOR */
-
-	/**
-	 * Creates a new cache_ApcHandler instance
-	 * @access public
-	 * @param string $host The host where memcache is listening for connections
-	 * @param integer $port The port where memcache is listening for connections
-	 */
-	public function __construct($host, $port) {
-		$this->memcache = new Memcache;
-
-		if(!$this->memcache->connect($host, $port))
-			throw new cache_CouldNotConnectException('Could not connect to Memcache server');
-	}
-
-	/* GET METHODS */
+	/* methods to be set in the cache handler */
+	abstract protected function _get($key, $default, $namespace);
+	abstract protected function _set($key, $data, $ttl, $namespace);
+	abstract protected function _delete($key, $namespace);
+	abstract protected function _exists($key, $namespace);
+	abstract protected function _flush();
 
 	/**
 	 * Retrieves a value by key from cache store
@@ -58,12 +32,15 @@ class cache_MemcacheHandler extends cache_AbstractHandler {
 	 * @param string $namespace The namespace under which the variable is stored [optional, default: 'default']
 	 * @return mixed The value stored under the key or, $default on failure
 	 */
-	protected function _get($key, $default = null, $namespace = 'default') {
-		$result = $this->memcache->get($key);
-		return(is_array($result) ? $result[0] : $default);
+	final public function get($key, $default = null, $namespace = 'default') {
+		try {
+			return $this->_get($key, $default, $namespace);
+		} catch (Exception $e) {
+			atsumi_Debug::record('Cache Handler failed to get data (key: '.$key.')',
+								$e->getMessage(), false, atsumi_Debug::AREA_CACHE);
+			return false;
+		}
 	}
-
-	/* SET METHODS */
 
 	/**
 	 * Stores a value by key in the cache store
@@ -74,12 +51,15 @@ class cache_MemcacheHandler extends cache_AbstractHandler {
 	 * @param string $namespace The namespace under which the variable is stored [optional, default: 'default']
 	 * @return boolen True on success or, False on failure
 	 */
-	protected function _set($key, $data, $ttl = 0, $namespace = 'default') {
-		return $this->memcache->set($key, array($data), MEMCACHE_COMPRESSED, $ttl);
+	final public function set($key, $data, $ttl = 0, $namespace = 'default') {
+		try {
+			return $this->_set($key, $data, $ttl = 0, $namespace);
+		} catch (Exception $e) {
+			atsumi_Debug::record('Cache Handler failed to set data (key: '.$key.')',
+								$e->getMessage(), false, atsumi_Debug::AREA_CACHE);
+			return false;
+		}
 	}
-
-	/* MAGIC METHODS */
-	/* METHODS */
 
 	/**
 	 * Removes a value by key from the cache store
@@ -88,9 +68,16 @@ class cache_MemcacheHandler extends cache_AbstractHandler {
 	 * @param string $namespace The namespace under which the variable is stored [optional, default: 'default']
 	 * @return boolen True on success or, False on failure
 	 */
-	protected function _delete($key, $namespace = 'default') {
-		return $this->memcache->delete($key);
+	final public function delete($key, $namespace = 'default') {
+		try {
+			return $this->_delete($key, $namespace);
+		} catch (Exception $e) {
+			atsumi_Debug::record('Cache Handler failed to delete data (key: '.$key.')',
+								$e->getMessage(), false, atsumi_Debug::AREA_CACHE);
+			return false;
+		}
 	}
+
 
 	/**
 	 * Checks if a key exists within the cache store
@@ -99,8 +86,14 @@ class cache_MemcacheHandler extends cache_AbstractHandler {
 	 * @param string $namespace The namespace under which the variable is stored [optional, default: 'default']
 	 * @return boolen True on success or, False on failure
 	 */
-	protected function _exists($key, $namespace = 'default') {
-		return is_array($this->memcache->get($key));
+	final public function exists($key, $namespace = 'default') {
+		try {
+			return $this->_exists($key, $namespace);
+		} catch (Exception $e) {
+			atsumi_Debug::record('Cache Handler failed lookup (key: '.$key.')',
+								$e->getMessage(), false, atsumi_Debug::AREA_CACHE);
+			return false;
+		}
 	}
 
 	/**
@@ -108,8 +101,14 @@ class cache_MemcacheHandler extends cache_AbstractHandler {
 	 * @access public
 	 * @return boolen True on success or, False on failure
 	 */
-	protected function _flush() {
-		return $this->memcache->flush();
+	final public function flush() {
+		try {
+			return $this->_flush();
+		} catch (Exception $e) {
+			atsumi_Debug::record('Cache Handler failed to flush',
+								$e->getMessage(), false, atsumi_Debug::AREA_CACHE);
+			return false;
+		}
 	}
 }
 ?>

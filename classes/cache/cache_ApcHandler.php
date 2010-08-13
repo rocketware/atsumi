@@ -1,6 +1,5 @@
 <?php
 /**
- * @version		0.90
  * @package		Atsumi.Framework
  * @copyright	Copyright(C) 2008, James A. Forrester-Fellowes. All rights reserved.
  * @license		GNU/GPL, see license.txt
@@ -16,7 +15,7 @@
  * @subpackage	Cache
  * @since		0.90
  */
-class cache_ApcHandler implements cache_HandlerInterface {
+class cache_ApcHandler extends cache_AbstractHandler {
 	/* CONSTANTS */
 	/* PROPERTIES */
 	/* CONSTRUCTOR & DESTRUCTOR */
@@ -25,7 +24,7 @@ class cache_ApcHandler implements cache_HandlerInterface {
 	 * Creates a new cache_ApcHandler instance
 	 * @access public
 	 */
-	public function __construct() {
+	protected function __construct() {
 		if(!functions_exist('apc_store', 'apc_fetch', 'apc_delete', 'apc_exists', 'apc_clear_cache'))
 			throw new cache_ExtensionMissing('Failed to detect APC cache Extention');
 	}
@@ -40,7 +39,7 @@ class cache_ApcHandler implements cache_HandlerInterface {
 	 * @param string $namespace The namespace under which the variable is stored [optional, default: 'default']
 	 * @return mixed The value stored under the key or, $default on failure
 	 */
-	public function get($key, $default = null, $namespace = 'default') {
+	protected function _get($key, $default = null, $namespace = 'default') {
 		$success = false;
 		$return = apc_fetch($key, $success);
 		return ($success ? $return : $default);
@@ -57,7 +56,7 @@ class cache_ApcHandler implements cache_HandlerInterface {
 	 * @param string $namespace The namespace under which the variable is stored [optional, default: 'default']
 	 * @return boolen True on success or, False on failure
 	 */
-	public function set($key, $data, $ttl = 0, $namespace = 'default') {
+	protected function _set($key, $data, $ttl = 0, $namespace = 'default') {
 		return apc_store($key, $data, $ttl);
 	}
 
@@ -71,7 +70,7 @@ class cache_ApcHandler implements cache_HandlerInterface {
 	 * @param string $namespace The namespace under which the variable is stored [optional, default: 'default']
 	 * @return boolen True on success or, False on failure
 	 */
-	public function delete($key, $namespace = 'default') {
+	protected function _delete($key, $namespace = 'default') {
 		return apc_delete($key);
 	}
 
@@ -82,7 +81,7 @@ class cache_ApcHandler implements cache_HandlerInterface {
 	 * @param string $namespace The namespace under which the variable is stored [optional, default: 'default']
 	 * @return boolen True on success or, False on failure
 	 */
-	public function exists($key, $namespace = 'default') {
+	protected function _exists($key, $namespace = 'default') {
 		return apc_exists($key);
 	}
 
@@ -91,7 +90,7 @@ class cache_ApcHandler implements cache_HandlerInterface {
 	 * @access public
 	 * @return boolen True on success or, False on failure
 	 */
-	public function flush() {
+	protected function _flush() {
 		return apc_clear_cache('user');
 	}
 }

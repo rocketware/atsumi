@@ -17,7 +17,7 @@ class widget_HtmlRowElement extends widget_AbstractElement {
 				));
 	}
 
-	public function setValue ($input, $files) {
+	public function setValue ($input, $files = array()) {
 		$this->value = isset($input[$this->name]) ? $input[$this->name] : null;
 	}
 }
