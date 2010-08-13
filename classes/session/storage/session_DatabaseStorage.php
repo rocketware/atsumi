@@ -46,40 +46,43 @@ class session_DatabaseStorage extends session_AbstractStorage {
 	}
 
 	public function write($id, $sessionData) {
+		try {
+			if($this->database->exists('session', 'checksum = %i AND session_id = %s', crc32($id), $id)) {
 
-		if($this->database->exists('session', 'checksum = %i AND session_id = %s', crc32($id), $id)) {
 
+				atsumi_Debug::record(
+					'Updating Session',
+					sf('The session(%s) is being updated to the DB', $id ),
+					atsumi_Debug::AREA_SESSION,
+					base64_encode($sessionData)
+				);
 
-			atsumi_Debug::record(
-				'Updating Session',
-				sf('The session(%s) is being updated to the DB', $id ),
-				atsumi_Debug::AREA_SESSION,
-				base64_encode($sessionData)
-			);
+				$this->database->update(
+					'session',
+					'checksum = %i AND session_id = %s', crc32($id), $id,
+					'data = %s', base64_encode($sessionData),
+					'last_active	= NOW()'
+				);
+			}
+			else {
+				atsumi_Debug::record(
+					'Inserting Session',
+					sf('The atsumi(%s) is being inserted to the DB: ', $id ),
+					atsumi_Debug::AREA_SESSION,
+					$sessionData
+				);
+				$this->database->insert(
+					'session',
+					'checksum		= %i', crc32($id),
+					'session_id		= %s', $id,
+					'data			= %s', $sessionData,
+					'last_active	= NOW()'
+				);
+			}
+			return true;
 
-			$this->database->update(
-				'session',
-				'checksum = %i AND session_id = %s', crc32($id), $id,
-				'data = %s', base64_encode($sessionData),
-				'last_active	= NOW()'
-			);
-		}
-		else {
-			atsumi_Debug::record(
-				'Inserting Session',
-				sf('The atsumi(%s) is being inserted to the DB: ', $id ),
-				atsumi_Debug::AREA_SESSION,
-				$sessionData
-			);
-			$this->database->insert(
-				'session',
-				'checksum		= %i', crc32($id),
-				'session_id		= %s', $id,
-				'data			= %s', $sessionData,
-				'last_active	= NOW()'
-			);
-		}
-		return true;
+		/* this is a little drastic but will most likley segfault if Exception bubbles up */
+		} catch (Exception $e) { die("Could not write session to database."); }
 	}
 
 	public function destroy($id) {
