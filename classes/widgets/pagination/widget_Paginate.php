@@ -127,7 +127,7 @@ class widget_Paginate {
 
 		// display the leading 1... 
 		if($itemStart > 0)
-			$output .= sprintf(" <div class='pageItem'>%s</div> ... ", 
+			$output .= sprintf(" <div class='pageItem'>%s</div> <div class='pageJump'>...</div> ", 
 								sprintf("<a href='%s'>%s</a>", 
 											$this->generateUrl(1),
 											1
@@ -143,7 +143,7 @@ class widget_Paginate {
 		
 		//display the tailing ... $pageCount
 		if($itemEnd < $this->pageCount-1)
-			$output .= sprintf(" ...  <div class='pageItem'>%s</div> ", 
+			$output .= sprintf(" <div class='pageJump'>...</div>  <div class='pageItem'>%s</div> ", 
 								sprintf("<a href='%s'>%s</a>", 
 											$this->generateUrl($this->pageCount), 
 											$this->pageCount
