@@ -75,7 +75,7 @@ class session_DatabaseStorage extends session_AbstractStorage {
 					'session',
 					'checksum		= %i', crc32($id),
 					'session_id		= %s', $id,
-					'data			= %s', $sessionData,
+					'data			= %s', base64_encode($sessionData),
 					'last_active	= NOW()'
 				);
 			}
