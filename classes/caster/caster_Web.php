@@ -35,7 +35,7 @@ class caster_Web extends caster_Abstract {
 		return str_replace (
 			array('\\', '\'', '"', '/', "\n", "\r"),
 			array('\\\\', '\\\'', '\\"', '\\/', '\\n', '\\r'),
-			$str
+			$in
 		);
 	}
 	static function urlEncode ($in) {
