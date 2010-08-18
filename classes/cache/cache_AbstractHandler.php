@@ -53,7 +53,7 @@ abstract class cache_AbstractHandler implements cache_HandlerInterface {
 	 */
 	final public function set($key, $data, $ttl = 0, $namespace = 'default') {
 		try {
-			return $this->_set($key, $data, $ttl = 0, $namespace);
+			return $this->_set($key, $data, $ttl, $namespace);
 		} catch (Exception $e) {
 			atsumi_Debug::record('Cache Handler failed to set data (key: '.$key.')',
 								$e->getMessage(), false, atsumi_Debug::AREA_CACHE);
