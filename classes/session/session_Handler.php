@@ -181,6 +181,9 @@ class session_Handler {
 			session_name($options['name']);
 		else
 			session_name('atsumi_session');
+			
+		if(isset($options['domain']))
+			ini_set('session.cookie_domain', $options['domain']);
 	}
 
 	protected function destroyCookie() {
