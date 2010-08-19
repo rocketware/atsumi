@@ -160,7 +160,7 @@ class widget_Paginate {
 	/* set the required length of the nav, if this isn't odd it will +1 later (keeps current page in middle) */
 	public function setNavLength($in) {
 		if(!is_integer($in)) throw new Exception("Nav Length must be of type Interger");
-		$this->navLength = $in -1;
+		$this->navLength = $in;
 	}
 
 	/* set the URL that the pagination will use for the links */
@@ -205,33 +205,35 @@ class widget_Paginate {
 
 		// params: Start & End
 		$start = $this->renderPageLink(1);
-		$end = $this->renderPageLink($this->getPageCount());
+		$end = $this->getPageCount() == 1?'':$this->renderPageLink($this->getPageCount());
 
 		// params: Pages links
 		$pageLength = $this->navLength;
+		if ($pageLength&1) { } else $pageLength++;
+		
 		if (array_key_exists('[START]', $options)) $pageLength--;
 		if (array_key_exists('[END]', $options)) $pageLength--;
-		if ($pageLength&1) { } else $pageLength++;
 		$pageLinkStart = $this->currentPage - floor($pageLength/2);
+		
 		if ($pageLinkStart < 1) $pageLinkStart = 1;
-		if (in_array('[START]', $options) && $pageLinkStart == 1) $pageLinkStart = 2;
-
-		$pageLinkEnd = $pageLinkStart + $pageLength;
+		if (array_key_exists('[START]', $options) && $pageLinkStart == 1) $pageLinkStart = 2;
+		
+		$pageLinkEnd = $pageLinkStart + $pageLength - 1;
 		if ($pageLinkEnd > $this->pageCount) $pageLinkEnd = $this->pageCount;
-
-		if (array_key_exists('[END]', $options)) $pageLinkEnd--;
+		
+		// if we have the end param and we're on the last page get set pages -1 
 		if (array_key_exists('[END]', $options) && $pageLinkEnd == $this->pageCount) $pageLinkEnd--;
-
+		
 		// adjust start positino if we're near the end of the pagination
 		if (($pageLinkEnd - $this->currentPage) < floor($pageLength/2))
-		$pageLinkStart  = $pageLinkStart - (floor($pageLength/2) - ($pageLinkEnd - $this->currentPage));
+			$pageLinkStart  = $pageLinkStart - (floor($pageLength/2) - ($pageLinkEnd - $this->currentPage));
 		if ($pageLinkStart < 1) $pageLinkStart = 1;
-		if (in_array('[START]', $options) && $pageLinkStart == 1) $pageLinkStart = 2;
-
-
+		if (array_key_exists('[START]', $options) && $pageLinkStart == 1) $pageLinkStart = 2;
+		
 		$pages = '';
-		for ($i = $pageLinkStart; $i <= $pageLinkEnd; $i++)
-			$pages .= $this->renderPageLink($i);
+		if ($pageLinkEnd > $pageLinkStart)
+			for ($i = $pageLinkStart; $i <= $pageLinkEnd; $i++)
+				$pages .= $this->renderPageLink($i);
 
 		// params: start ellipses
 		if (array_key_exists('[START_ELLIPSES]', $options) && array_key_exists('[START]', $options) &&
