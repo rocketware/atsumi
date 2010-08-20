@@ -26,10 +26,10 @@ class caster_Web extends caster_Abstract {
 		return sprintf('%d', $in);
 	}
 	static function html ($in) {
-		return htmlspecialchars($in, ENT_COMPAT, 'UTF-8');
+		return htmlspecialchars($in, ENT_COMPAT, 'UTF-8', true);
 	}
 	static function htmlLineBreaks ($in) {
-		return nl2br(htmlspecialchars($in, ENT_COMPAT, 'UTF-8'));
+		return nl2br(htmlspecialchars($in, ENT_COMPAT, 'UTF-8', true));
 	}
 	static function javascriptEscape ($in) {
 		return str_replace (
