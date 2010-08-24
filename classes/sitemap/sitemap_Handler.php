@@ -79,7 +79,7 @@ class sitemap_Handler {
 		for($i = 1;$i <= ceil($count/$maxUrlsPerSitemap); $i++) {
 			$filename = sf('sitemap%s.xml%s', $i, $compress?'.gz':'');
 			$siteMapArr[] = $xmlUrlRoot.$filename;
-			self::writeSiteMap($db, $host, $filename, $xmlFilePath,($i-1)*$maxUrlsPerSitemap, $i*$maxUrlsPerSitemap, $compress, $tablename);
+			self::writeSiteMap($db, $host, $filename, $xmlFilePath,($i-1)*$maxUrlsPerSitemap, $maxUrlsPerSitemap, $compress, $tablename);
 		}
 
 		/* write the index file */
@@ -139,7 +139,10 @@ class sitemap_Handler {
 		}
 
 		/* write the file */
-		$fh = fopen($xmlFilePath.'sitemap.xml', 'w') or die("Can't open the sitemap file.");
+		if(!is_dir($xmlFilePath)) {
+			mkdir($xmlFilePath, 0777, true);
+		}
+		$fh = fopen($xmlFilePath.'sitemap.xml', 'w+') or die("Can't open the sitemap file.");
 		fwrite($fh, $sitemapIndex->saveXML());
 		fclose($fh);
 
@@ -179,7 +182,6 @@ class sitemap_Handler {
 
 		/* load the URLs */
 		$urls = $db->select('select * from %l where host = %s order by date_added asc offset %i limit %i', $tablename, $host, $offset, $limit);
-
 		foreach($urls as $urlRow){
 
 				// create child element
@@ -223,7 +225,10 @@ class sitemap_Handler {
 		if($compress) $dataOut = gzencode($dataOut, 9);
 
 		/* write the file */
-		$fh = fopen($xmlFilePath.$filename, 'w') or die("Can't open the sitemap file.");
+		if(!is_dir($xmlFilePath)) {
+			mkdir($xmlFilePath, 0777, true);
+		}
+		$fh = fopen($xmlFilePath.$filename, 'w+') or die("Can't open the sitemap file.");
 		fwrite($fh, $dataOut);
 		fclose($fh);
 
