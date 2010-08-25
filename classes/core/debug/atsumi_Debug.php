@@ -1,6 +1,5 @@
 <?php
 /**
- * @version		0.90
  * @package		Atsumi.Framework
  * @copyright	Copyright(C) 2008, James A. Forrester-Fellowes. All rights reserved.
  * @license		GNU/GPL, see license.txt
@@ -620,6 +619,7 @@ window.onload=function(){
 			.debugConsole.debugClosed .debugOpenContainer { display:none; }
 			.debugConsole.debugClosed .debugClosedContainer { display:block; }
 			.debugClosedContainer { display:none; padding: 0.5em 1em; text-align:right; }
+			#debugConsoleInner { width:100%; }
 			td.debugTabs { border-bottom:2px outset #ccc; height:25px;background-color:#dddddd;}
 			td.debugTabs ul { margin:0; padding:0; }
 			td.debugTabs li { display:inline; float:left; padding:5px 10px; border-right:1px solid #bbb; text-indent:0; font-size:12px; color:#555; cursor: pointer; }
