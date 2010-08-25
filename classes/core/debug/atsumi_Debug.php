@@ -417,102 +417,190 @@ class atsumi_Debug {
 	 */
 	protected function returnJavascript() {
 		return '
-			function Show(id) {
-				HideAll();
-				setRememberCookie(id);
+var DebugPlane = function () {
 
-				var element, button;
-				if((element = document.getElementById(\'DebugConsoleWindow\'+id)))
-					element.style.display = \'block\';
-				if((button = document.getElementById(\'Button\'+id)))
-					button.className += \' Selected\';
+	this.open = true;
+	this.height = 250;
+	this.tab = "console";
+	this.dragging = false;
+	this.mousePos = true;
 
-				return false;
+	this.restoreState();
+	this.initUserInterface();
+	this.refresh();
+
+	document.onmousemove = this.mouseMove;
+	document.onmouseup = this.mouseUp;
+
+}
+
+DebugPlane.prototype.restoreState = function () {
+	if (this.readCookie ("debugHeight") != null)
+		this.height = parseInt(this.readCookie ("debugHeight"));
+
+	if (this.readCookie ("debugTab") != null)
+		this.tab = this.readCookie ("debugTab");
+
+	if (this.readCookie ("debugOpen") != null) {
+		this.open = this.readCookie ("debugOpen");
+		if (this.open == "true") this.open = true;
+		else this.open = false;
+	}
+}
+DebugPlane.prototype.saveState = function () {
+
+	this.createCookie ("debugOpen", 	this.open, 14);
+	this.createCookie ("debugHeight", 	this.height, 14);
+	this.createCookie ("debugTab", 		this.tab, 14);
+
+}
+
+DebugPlane.prototype.createCookie = function (name,value,days) {
+	if (days) {
+		var date = new Date();
+		date.setTime(date.getTime()+(days*24*60*60*1000));
+		var expires = "; expires="+date.toGMTString();
+	}
+	else var expires = "";
+	document.cookie = name+"="+value+expires+"; path=/";
+}
+
+DebugPlane.prototype.readCookie = function (name) {
+	var nameEQ = name + "=";
+	var ca = document.cookie.split(";");
+	for(var i=0;i < ca.length;i++) {
+		var c = ca[i];
+		while (c.charAt(0)==" ") c = c.substring(1,c.length);
+		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+	}
+	return null;
+}
+
+DebugPlane.prototype.mouseMove = function (ev) {
+
+	ev = ev || window.event;
+	debugPlane.mousePos = debugPlane.mouseCoords(ev);
+	document.getElementById("mouseCursorX").innerHTML = debugPlane.mousePos.x;
+	document.getElementById("mouseCursorY").innerHTML = debugPlane.mousePos.y;
+
+	if(debugPlane.dragging) {
+		var clientHight = document.documentElement.clientHeight;
+		var newHeight = (clientHight + window.pageYOffset ) - debugPlane.mousePos.y;
+
+		if(newHeight < 100) newHeight = 100;
+		if(newHeight > (clientHight-100)) newHeight = clientHight -100;
+		debugPlane.refreshHeight();
+		debugPlane.height = newHeight;
+	}
+
+	return false;
+}
+
+DebugPlane.prototype.mouseCoords = function (ev) {
+	if(ev.pageX || ev.pageY){
+		return {x:ev.pageX, y:ev.pageY};
+	}
+	return {
+		x:ev.clientX + document.body.scrollLeft - document.body.clientLeft,
+		y:ev.clientY + document.body.scrollTop  - document.body.clientTop
+	};
+}
+
+DebugPlane.prototype.mouseUp = function (ev) {
+	if (debugPlane.dragging) {
+		debugPlane.dragging = false;
+		debugPlane.saveState();
+		document.getElementById("debugConsoleStatus").innerHTML = "Idle";
+
+	}
+}
+DebugPlane.prototype.refreshHeight = function () {
+		document.getElementById("debugConsole").style.height = String(this.height) + "px";
+		document.getElementById("debugConsoleInner").style.height = String(this.height) + "px";
+		document.getElementById("debugConsoleDisplayInner").style.height = String(this.height - 80)+"px";
+		document.getElementById("debugConsoleHeight").innerHTML = this.height;
+
+}
+DebugPlane.prototype.refresh = function () {
+
+	var plane = document.getElementById("debugConsole");
+	if (this.open) {
+		plane.className = "debugConsole debugOpen";
+		var windowHeight = (typeof window.innerHeight != "undefined" ? window.innerHeight : document.body.offsetHeight);
+		this.refreshHeight();
+		this.refreshTabs();
+	} else {
+		plane.className = "debugConsole debugClosed";
+	}
+}
+
+DebugPlane.prototype.initUserInterface = function () {
+
+	var that = this;
+	var openDebug = document.getElementById("debugOpenButton");
+	openDebug.onclick = function () {
+		that.open = true;
+		that.refresh();
+		debugPlane.saveState();
+	}
+
+	var drag = document.getElementById("debugDragBar");
+	drag.onmousedown = function (ev, object) {
+		that.dragging = true;
+		document.getElementById("debugConsoleStatus").innerHTML = "Dragging";
+		return false;
+	}
+
+	var closeDebug = document.getElementById("tabCloseDebug");
+	closeDebug.onclick = function () {
+		that.open = false;
+		that.refresh();
+		debugPlane.saveState();
+	}
+
+	var children = document.getElementById("debugTabsList").childNodes;
+	var that = this;
+
+	for (var i=0; i < children.length; i++) {
+		if (children[i].nodeType == 1 && children[i].id != "tabCloseDebug")
+			children[i].onclick = function (event) {
+				obj = event.srcElement || event.target;
+				that.selectTab(obj.getAttribute("rel"));
 			}
+	}
+	this.refreshTabs();
+	document.getElementById("debugTabContainer_"+this.tab).style.display 	= "block";
+}
 
-			function ShowAll() {
-				var elements = document.getElementsByClassName(\'DebugConsoleWindow\');
+DebugPlane.prototype.selectTab = function (tabName) {
+	if (tabName == this.tab) return;
 
-				for(var i in elements) {
-					if(elements[i].style)
-						elements[i].style.display = \'block\';
-				}
+	document.getElementById("debugTabContainer_"+this.tab).style.display 	= "none";
+	document.getElementById("debugTabContainer_"+tabName).style.display 	= "block";
+
+	this.tab = tabName;
+	this.refreshTabs();
+	this.saveState();
+}
+
+DebugPlane.prototype.refreshTabs = function () {
+
+	var children = document.getElementById("debugTabsList").childNodes;
+	for (var i=0; i < children.length; i++) {
+		if (children[i].nodeType == 1) {
+			if (children[i].getAttribute("rel") == this.tab) {
+				children[i].className = "debugTabSelected";
+			} else {
+				children[i].className = "";
 			}
+		}
+	}
+}
+var debugPlane;
 
-			function HideAll() {
-				var elements = document.getElementsByClassName(\'DebugConsoleWindow\');
-				var buttons = document.getElementsByClassName(\'DebugConsoleMenuButton\');
-
-				for(var i in buttons) {
-					if(buttons[i])
-						buttons[i].className = \'DebugConsoleMenuButton\';
-				}
-
-				for(var i in elements) {
-					if(elements[i].style)
-						elements[i].style.display = \'none\';
-				}
-			}
-
-			function setRememberCookie(value) {
-				var cookie = \'debugDisplay=\'+value;
-				document.cookie = cookie;
-			}
-
-			// Resize Stuff
-			document.onmousemove = mouseMove;
-			document.onmouseup = mouseUp;
-			var dragging = false;
-			var currentY = 0;
-			var mousePos = 0;
-			var newY = 0;
-
-			function mouseMove(ev) {
-				ev = ev || window.event;
-				mousePos = mouseCoords(ev);
-				document.getElementById(\'MouseCursorX\').innerHTML = mousePos.x;
-				document.getElementById(\'MouseCursorY\').innerHTML = mousePos.y;
-				document.getElementById(\'DebugConsoleHeight\').innerHTML = currentY;
-				document.getElementById(\'DebugConsoleNewHeight\').innerHTML = currentY;
-
-				var debugDisplay = document.getElementById(\'DebugConsole\');
-
-				var clientHight = document.documentElement.clientHeight;
-				if(dragging) {
-					var newHeight =(newY +(currentY - mousePos.y));
-					if(newHeight < 7) newHeight = 7;
-					if(newHeight > clientHight) newHeight = clientHight;
-					document.getElementById(\'DebugConsoleNewHeight\').value = newHeight;
-					debugDisplay.style.height = newHeight + \'px\';
-				}
-
-				if(debugDisplay.offsetHeight > clientHight) {
-					debugDisplay.style.height = clientHight + \'px\';
-				}
-			}
-
-			function mouseUp(ev){
-				dragging = false;
-				currentY = 0;
-			}
-
-			function mouseCoords(ev){
-			if(ev.pageX || ev.pageY){
-				return {x:ev.pageX, y:ev.pageY};
-			}
-			return {
-				x:ev.clientX + document.body.scrollLeft - document.body.clientLeft,
-				y:ev.clientY + document.body.scrollTop  - document.body.clientTop
-				};
-			}
-
-			function startDrag(ev, object) {
-				dragging = true;
-				currentY = mousePos.y;
-				newY = document.getElementById(\'DebugConsole\').offsetHeight;
-				return false;
-			}
-		';
+window.onload=function(){
+	debugPlane = new DebugPlane;
+}';
 	}
 
 	/**
@@ -522,38 +610,46 @@ class atsumi_Debug {
 	 */
 	protected function returnCss() {
 		return '
-			#DebugConsole {background-color: #ededed; color: #black; font-size:15px !important; height: 260px; width: 100%;  cursor: default; overflow: hidden; }
-			#DebugConsole, #DebugConsole table, #DebugConsole ul {font-family: \'trebuchet ms\', trebuchet, verdana, sans-serif;}
-			#DebugConsoleInner {height:100%;width:100%;}
-			#DebugConsoleHightAdjuster {height: 7px; cursor:n-resize; background-color: #ffffff;}
-			#DebugConsoleHightAdjuster td {border-bottom: 1px solid #a3a3a3;}
-			.DebugConsoleToggle {height:4px;border-width:0px 1px;border-color:#5d453d;border-style:solid;margin:1px auto;display:block;padding:0 1px;}
-			#DebugConsole h3 {font-size: 22px !important; font-weight: bold; text-decoration: underline; margin: 0px; padding: 0px;}
-			#DebugConsoleMenu {border-bottom:1px solid #a3a3a3; height:32px;background-color:#dddddd;}
-			#DebugConsoleMenu ul {padding:0;margin:0;}
-			#DebugConsoleMenu .DebugConsoleMenuButton {margin: 6px 6px 0 6px; display: inline; padding: 4px; cursor: pointer; font-size:1em !important; }
-			#DebugConsoleMenu .DebugConsoleMenuButton:HOVER {margin: 5px 5px 0 5px; border-width: 1px 1px 0 1px; border-style: solid; border-color: white; background-color: CadetBlue;}
-			#DebugConsoleMenu .DebugConsoleMenuButton.Selected {margin: 5px 5px 0 5px; border-width: 1px 1px 0 1px; border-style: solid; border-color: black; background-color: CadetBlue;}
-			#DebugConsoleDisplay {height: 100%; vertical-align:top; overflow-y: auto; display: block; text-align:left !important; }
-			.DebugConsoleWindow {display: none;height:100%; text-align:left !important;  }
-			.DebugConsoleWindowInner {padding: 2px 10px; text-align:left !important;  }
-			#DebugConsoleRenderTime {border-top:1px solid #cacaca;height:22px;background-color: #f9f9f9; padding:0 6px; text-align: right;}
-			.logItem {border-width: 1px 1px 1px 10px; border-style: solid; margin: 2px 0px; padding: 2px;}
-			.logTitle {font-size: 16px; font-weight: bold;}
+
+			.debugConsole { background-color: #ededed; color: black;  width: 100% !important;  cursor: default; z-index: 999999 ; }
+			.debugConsole * { font-size:13px; margin:0; padding:0; color:#000; font-family:verdana; }
+			.debugConsole.debugOpen { position: fixed ; height: 250px; bottom: 0px; overflow:hidden; }
+			.debugConsole.debugClosed { height:auto !important; }
+			.debugConsole.debugOpen .debugOpenContainer { display:block; }
+			.debugConsole.debugOpen .debugClosedContainer { display:none; }
+			.debugConsole.debugClosed .debugOpenContainer { display:none; }
+			.debugConsole.debugClosed .debugClosedContainer { display:block; }
+			.debugClosedContainer { display:none; padding: 0.5em 1em; text-align:right; }
+			td.debugTabs { border-bottom:2px outset #ccc; height:25px;background-color:#dddddd;}
+			td.debugTabs ul { margin:0; padding:0; }
+			td.debugTabs li { display:inline; float:left; padding:5px 10px; border-right:1px solid #bbb; text-indent:0; font-size:12px; color:#555; cursor: pointer; }
+			td.debugTabs li:hover { background-color:#eee; color:#333; }
+			td.debugTabs li.debugTabSelected { background-color:#fff; color:#000; }
+			.debugConsoleDisplay { height: 100%; vertical-align:top; display: block; text-align:left !important; background-color:#eee; padding:5px; }
+			div.debugConsoleDisplayInner { overflow-y: auto; height:300px; }
+			#debugDragBar { height: 10px; cursor:n-resize; border-top:1px solid #888 !important; border-bottom:1px solid #888 !important; }
+			.logItem {border-width: 1px 1px 1px 10px; border-style: solid; margin: 0 0 5px 0; padding: 1em; background-color:#f8f8f8; }
+			.debugConsole .var {padding-left: 16px;}
+			.debugConsole .typeNull {}
+			.debugConsole .typeInt {color: brown;}
+			.debugConsole .typeDouble {color: RoyalBlue;}
+			.debugConsole .typeBool {color: RoyalBlue;}
+			.debugConsole .typeString {color: #241aa6;}
+			.debugConsole .typeArray {color: RoyalBlue;}
+			.debugConsole .typeKey {color: #d0832f;}
+			.debugConsole .typeObject {color: LightSeaGreen;}
+			.debugConsole .typeUnknown {color: orange; }
+			.logTitle {font-size: 14px; font-weight: bold;}
 			.logTimestamp {font-size: 10px; font-weight: normal; color: #6677DD;}
-			.logDesc {font-size: 10px; font-style: italic;}
-			.logData {background-color: darkgrey;}
-			.var {padding-left: 16px;}
-			.typeNull {}
-			.typeInt {color: brown;}
-			.typeDouble {color: RoyalBlue;}
-			.typeBool {color: RoyalBlue;}
-			.typeString {color: #241aa6;}
-			.typeArray {color: RoyalBlue;}
-			.typeKey {color: #d0832f;}
-			.typeObject {color: LightSeaGreen;}
-			.typeUnknown {color: orange;
-			.DebugConsoleClear {display:block;clear:both;}
+			.logDesc {font-size: 10px; font-style: italic; color:#777; margin-top:0.5em; }
+			.logData { background-color:#ddd; border:1px solid #ccc; padding:1em; margin-top:1em; }
+			.debugDragToggle {height:5px;  border-left:3px double #555; border-right:3px double #555; width:2px; margin:0 auto 0 auto; font-size:0px; display:block;  }
+			.debugFooter { background-color:#eee; border-top:2px inset #ccc; height:20px; padding:5px; text-align:right; color:#777; font-size: 12px; }
+			.debugFooter span { color:#777; }
+			.debugConsoleClear {display:block;clear:both;}
+			.debugConsoleWindow {display: none;height:100%; text-align:left !important;  }
+			.debugConsoleWindowInner {padding: 2px 10px; text-align:left !important;  }
+
 		';
 	}
 
@@ -572,31 +668,33 @@ class atsumi_Debug {
 ?>
 <style type="text/css"><?=$this->returnCss();?></style>
 <script type="text/javascript"><?=$this->returnJavascript();?></script>
-<div id="DebugConsole">
-	<table id="DebugConsoleInner" cellpadding="0" cellspacing="0">
-		<tr id="DebugConsoleHightAdjuster" onmousedown="return startDrag(this);"><td><span class="DebugConsoleToggle" style="width: 7px"><span class="DebugConsoleToggle" style="width: 1px;"></span></span><!-- Height Ajuster --></td></tr>
+<div id="debugConsole">
+<div class='debugClosedContainer'>
+<div id='debugOpenButton'>Click here to open the atsumi debug plane</div>
+</div>
+<div class='debugOpenContainer'>
+	<table id="debugConsoleInner" cellpadding="0" cellspacing="0">
+		<tr><td id="debugDragBar"><span class="debugDragToggle"></span><!-- Height Ajuster --></td></tr>
 		<tr>
-			<td id="DebugConsoleMenu">
-				<ul>
-					<li id="ButtonConsole" class="DebugConsoleMenuButton<?=($display == 'console' ? ' Selected' : '');?>" onClick="return Show('Console');">Console</li>
-					<li id="ButtonParser" class="DebugConsoleMenuButton<?=($display == 'parser' ? ' Selected' : '');?>" onClick="return Show('Parser');">Parser</li>
-					<li id="ButtonView" class="DebugConsoleMenuButton<?=($display == 'view' ? ' Selected' : '');?>" onClick="return Show('View');">View</li>
-					<li id="ButtonSettings" class="DebugConsoleMenuButton<?=($display == 'settings' ? ' Selected' : '');?>" onClick="return Show('Settings');">Settings</li>
-					<li id="ButtonPost" class="DebugConsoleMenuButton<?=($display == 'post' ? ' Selected' : '');?>" onClick="return Show('Post');">Post</li>
-					<li id="ButtonGet" class="DebugConsoleMenuButton<?=($display == 'get' ? ' Selected' : '');?>" onClick="return Show('Get');">Get</li>
-					<li id="ButtonFile" class="DebugConsoleMenuButton<?=($display == 'file' ? ' Selected' : '');?>" onClick="return Show('File');">File</li>
-					<li id="ButtonSession" class="DebugConsoleMenuButton<?=($display == 'session' ? ' Selected' : '');?>" onClick="return Show('Session');">Session</li>
-					<li id="ButtonCookie" class="DebugConsoleMenuButton<?=($display == 'cookie' ? ' Selected' : '');?>" onClick="return Show('Cookie');">Cookie</li>
-					<li id="ButtonServer" class="DebugConsoleMenuButton<?=($display == 'server' ? ' Selected' : '');?>" onClick="return Show('Server');">Server</li>
-					<li id="ButtonDatabases" class="DebugConsoleMenuButton<?=($display == 'databases' ? ' Selected' : '');?>" onClick="return Show('Databases');">Databases</li>
-					<li id="ButtonAll" class="DebugConsoleMenuButton" onClick="return ShowAll();">Show All</li>
+			<td id="debugTabs" class="debugTabs">
+				<ul id="debugTabsList">
+					<li rel="console">Console</li>
+					<li rel="parser">Parser</li>
+					<li rel="view">View Data</li>
+					<li rel="setting">App Settings</li>
+					<li rel="request">Request</li>
+					<li rel="session">Session</li>
+					<li rel="cookie">Cookie</li>
+					<li rel="database">Databases</li>
+					<li id="tabCloseDebug">Close Debug</li>
 				</ul>
-				<span class="DebugConsoleClear"></span>
+				<span class="debugConsoleClear"></span>
 			</td>
 		</tr>
 		<tr>
-			<td id="DebugConsoleDisplay">
-				<div id="DebugConsoleWindowConsole" class="DebugConsoleWindow"<?=($display == 'console' ? ' style="display: block;"' : '');?>>
+			<td class="debugConsoleDisplay" id="debugConsoleDisplay">
+				<div class="debugConsoleDisplayInner"  id="debugConsoleDisplayInner">
+				<div id="debugTabContainer_console" class="debugConsoleWindow">
 <? foreach($this->consoleData as $data) : ?>
 					<div class="logItem" style="border-color: <?=(isset($this->areas[$data['area']]) ? $this->areas[$data['area']] : 'white');?>">
 						<div class="logTitle"><?=$data['title'];?> <span class="logTimestamp"><?=$data['timestamp'];?></span></div>
@@ -607,71 +705,64 @@ class atsumi_Debug {
 				</div>
 
 				<!-- Parser Data -->
-				<div id="DebugConsoleWindowParser" class="DebugConsoleWindow"<?=($display == 'parser' ? ' style="display: block;"' : '');?>>
-					<div class="DebugConsoleWindowInner">
+				<div id="debugTabContainer_parser" class="debugConsoleWindow">
+					<div class="debugConsoleWindowInner">
 						<?=$this->format($this->parserData);?>
 					</div>
 				</div>
 
 				<!-- View Data -->
-				<div id="DebugConsoleWindowView" class="DebugConsoleWindow"<?=($display == 'view' ? ' style="display: block;"' : '');?>>
-					<div class="DebugConsoleWindowInner">
+				<div id="debugTabContainer_view" class="debugConsoleWindow">
+					<div class="debugConsoleWindowInner">
 						<?=$this->format($this->viewData);?>
 					</div>
 				</div>
 
 				<!-- Settings Data -->
-				<div id="DebugConsoleWindowSettings" class="DebugConsoleWindow"<?=($display == 'settings' ? ' style="display: block;"' : '');?>>
-					<div class="DebugConsoleWindowInner">
+				<div id="debugTabContainer_setting" class="debugConsoleWindow">
+					<div class="debugConsoleWindowInner">
 						<?=$this->format($this->configData);?>
 					</div>
 				</div>
 
 				<!-- Post Data -->
-				<div id="DebugConsoleWindowPost" class="DebugConsoleWindow"<?=($display == 'post' ? ' style="display: block;"' : '');?>>
-					<div class="DebugConsoleWindowInner">
-						<?=(isset($_POST) && count($_POST) ? $this->format($_POST) : 'NULL');?>
-					</div>
-				</div>
+				<div id="debugTabContainer_request" class="debugConsoleWindow">
+					<div class="debugConsoleWindowInner">
+						<div class="logItem" style="border-color: <?=(isset($this->areas[$data['area']]) ? $this->areas[$data['area']] : 'white');?>">
+							<div class="logTitle">POST</div><div class="logData"><?=(isset($_POST) && count($_POST) ? $this->format($_POST) : 'NULL');?></div>
+						</div>
 
-				<!-- Get Data -->
-				<div id="DebugConsoleWindowGet" class="DebugConsoleWindow"<?=($display == 'get' ? ' style="display: block;"' : '');?>>
-					<div class="DebugConsoleWindowInner">
-						<?=(isset($_GET) && count($_GET) ? $this->format($_GET) : 'NULL');?>
-					</div>
-				</div>
+						<div class="logItem" style="border-color: <?=(isset($this->areas[$data['area']]) ? $this->areas[$data['area']] : 'white');?>">
+							<div class="logTitle">GET</div><div class="logData"><?=(isset($_GET) && count($_GET) ? $this->format($_GET) : 'NULL');?></div>
+						</div>
 
-				<!-- File Data -->
-				<div id="DebugConsoleWindowFile" class="DebugConsoleWindow"<?=($display == 'file' ? ' style="display: block;"' : '');?>>
-					<div class="DebugConsoleWindowInner">
-						<?=(isset($_FILE) && count($_FILE) ? $this->format($_FILE) : 'NULL');?>
+						<div class="logItem" style="border-color: <?=(isset($this->areas[$data['area']]) ? $this->areas[$data['area']] : 'white');?>">
+							<div class="logTitle">FILE</div><div class="logData"><?=(isset($_FILE) && count($_FILE) ? $this->format($_FILE) : 'NULL');?></div>
+						</div>
+
+						<div class="logItem" style="border-color: <?=(isset($this->areas[$data['area']]) ? $this->areas[$data['area']] : 'white');?>">
+							<div class="logTitle">SERVER</div><div class="logData"><?=(isset($_SERVER) && count($_SERVER) ? $this->format($_SERVER) : 'NULL');?></div>
+						</div>
 					</div>
 				</div>
 
 				<!-- Session Data -->
-				<div id="DebugConsoleWindowSession" class="DebugConsoleWindow"<?=($display == 'session' ? ' style="display: block;"' : '');?>>
-					<div class="DebugConsoleWindowInner">
+				<div id="debugTabContainer_session" class="debugConsoleWindow">
+					<div class="debugConsoleWindowInner">
 						<?=(isset($_SESSION) && count($_SESSION) ? $this->format($_SESSION) : 'NULL');?>
 					</div>
 				</div>
 
 				<!-- Cookie Data -->
-				<div id="DebugConsoleWindowCookie" class="DebugConsoleWindow"<?=($display == 'cookie' ? ' style="display: block;"' : '');?>>
-					<div class="DebugConsoleWindowInner">
+				<div id="debugTabContainer_cookie" class="debugConsoleWindow">
+					<div class="debugConsoleWindowInner">
 						<?=(isset($_COOKIES) && count($_COOKIES) ? $this->format($_COOKIES) : 'NULL');?>
 					</div>
 				</div>
 
-				<!-- Server Data -->
-				<div id="DebugConsoleWindowServer" class="DebugConsoleWindow"<?=($display == 'server' ? ' style="display: block;"' : '');?>>
-					<div class="DebugConsoleWindowInner">
-						<?=(isset($_SERVER) ? $this->format($_SERVER) : 'NULL');?>
-					</div>
-				</div>
-
 				<!-- Database Data -->
-				<div id="DebugConsoleWindowDatabases" class="DebugConsoleWindow"<?=($display == 'databases' ? ' style="display: block;"' : '');?>>
-					<div class="DebugConsoleWindowInner">
+				<div id="debugTabContainer_database" class="debugConsoleWindow">
+					<div class="debugConsoleWindowInner">
 <?
 foreach($this->databases as $key => $database) :
 	$totalTime = 0;
@@ -684,18 +775,19 @@ foreach($this->databases as $key => $database) :
 <? endforeach; ?>
 					</div>
 				</div>
+			</div>
 			</td>
 		</tr>
 		<tr>
-			<td id="DebugConsoleRenderTime">
-				| Height:<span id="DebugConsoleHeight">260</span>px
-				| NewHeight:<span id="DebugConsoleNewHeight">260</span>px
-				| X:<span id="MouseCursorX">0</span>
-				| Y:<span id="MouseCursorY">0</span>
+			<td class="debugFooter">
+				<span id="debugConsoleStatus">Idle</span> | Height:<span id="debugConsoleHeight">260</span>px
+				| X:<span id="mouseCursorX">0</span>
+				| Y:<span id="mouseCursorY">0</span>
 				| Debug Render Time: <?=$this->endTimer();?>
 			</td>
 		</tr>
 	</table>
+</div>
 </div>
 <?php
 		return ob_get_clean();
