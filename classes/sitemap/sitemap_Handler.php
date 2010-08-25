@@ -20,25 +20,25 @@ class sitemap_Handler {
 		preg_match('@^(?:http://)?([^/]+)@i', $loc, $matches);
 		$host = $matches[1];
 
-		$row = $db->select_1('select * from sitemap where checksum = %i AND loc = %s', $checksum, $loc);
+		$row = $db->select_1('select * from sitemap where checksum = \'%l\'::bigint AND loc = %s', $checksum, $loc);
 
 		/* new location */
 		if(is_null($row)) {
 			$db->insert(
 				'sitemap',
-				'checksum = %i', 		$checksum,
-				'host = %s', 			$host,
-				'loc = %s', 			$loc,
-				'last_mod = %T', 		$lastMod,
-				'change_freq = %S', 	$changeFreq,
-				'priority = %l', 		is_null($priority)?'NULL':$priority
+				'checksum = \'%l\'::bigint',	$checksum,
+				'host = %s', 					$host,
+				'loc = %s', 					$loc,
+				'last_mod = %T', 				$lastMod,
+				'change_freq = %S', 			$changeFreq,
+				'priority = %l', 				is_null($priority)?'NULL':$priority
 			);
 
 		/* update as details have changed */
 		} elseif($row->t_last_mod != $lastMod || $row->s_change_freq != $changeFreq || $row->s_priority != $priority) {
 			$db->update_1(
 				'sitemap',
-				'checksum = %i AND loc = %s', 	$row->i_checksum, $loc,
+				'checksum = \'%l\'::bigint AND loc = %s', $row->i_checksum, $loc,
 				'last_mod = %T', 		$lastMod,
 				'change_freq = %S', 	$changeFreq,
 				'priority = %l', 		is_null($priority)?'NULL':$priority
