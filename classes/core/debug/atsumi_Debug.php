@@ -618,6 +618,7 @@ window.onload=function(){
 			.debugConsole.debugOpen .debugClosedContainer { display:none; }
 			.debugConsole.debugClosed .debugOpenContainer { display:none; }
 			.debugConsole.debugClosed .debugClosedContainer { display:block; }
+			.debugConsole.debugInit .debugOpenContainer, .debugConsole.debugInit .debugClosedContainer { display:none; }
 			.debugClosedContainer { display:none; padding: 0.5em 1em; text-align:right; }
 			#debugConsoleInner { width:100%; }
 			td.debugTabs { border-bottom:2px outset #ccc; height:25px;background-color:#dddddd;}
@@ -668,7 +669,7 @@ window.onload=function(){
 ?>
 <style type="text/css"><?=$this->returnCss();?></style>
 <script type="text/javascript"><?=$this->returnJavascript();?></script>
-<div id="debugConsole">
+<div id="debugConsole" class="debugConsole debugInit">
 <div class='debugClosedContainer'>
 <div id='debugOpenButton'>Click here to open the atsumi debug plane</div>
 </div>
