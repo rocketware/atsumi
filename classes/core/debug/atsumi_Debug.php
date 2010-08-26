@@ -483,7 +483,7 @@ DebugPlane.prototype.mouseMove = function (ev) {
 	document.getElementById("mouseCursorY").innerHTML = debugPlane.mousePos.y;
 
 	if(debugPlane.dragging) {
-		var clientHight = document.documentElement.clientHeight;
+		var clientHight = window.innerHeight;
 		var newHeight = (clientHight + window.pageYOffset ) - debugPlane.mousePos.y;
 
 		if(newHeight < 100) newHeight = 100;
@@ -514,6 +514,9 @@ DebugPlane.prototype.mouseUp = function (ev) {
 	}
 }
 DebugPlane.prototype.refreshHeight = function () {
+
+		var clientHight = window.innerHeight;
+		if(this.height > (clientHight-100)) this.height = clientHight -100;
 		document.getElementById("debugConsole").style.height = String(this.height) + "px";
 		document.getElementById("debugConsoleInner").style.height = String(this.height) + "px";
 		document.getElementById("debugConsoleDisplayInner").style.height = String(this.height - 80)+"px";
@@ -610,7 +613,7 @@ window.onload=function(){
 	protected function returnCss() {
 		return '
 
-			.debugConsole { background-color: #ededed; color: black;  width: 100% !important;  cursor: default; z-index: 999999 ; }
+			.debugConsole { left:0px; background-color: #ededed; color: black;  width: 100% !important;  cursor: default; z-index: 999999 ; }
 			.debugConsole * { font-size:13px; margin:0; padding:0; color:#000; font-family:verdana; }
 			.debugConsole.debugOpen { position: fixed ; height: 250px; bottom: 0px; overflow:hidden; }
 			.debugConsole.debugClosed { height:auto !important; }
