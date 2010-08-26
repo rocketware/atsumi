@@ -205,8 +205,8 @@ class widget_Paginate {
 
 		// params: Start & End
 		$start = $this->renderPageLink(1);
-		$end = $this->getPageCount() == 1?'':$this->renderPageLink($this->getPageCount());
-
+		$end = $this->getPageCount() < 2?'':$this->renderPageLink($this->getPageCount());
+		
 		// params: Pages links
 		$pageLength = $this->navLength;
 		if ($pageLength&1) { } else $pageLength++;
