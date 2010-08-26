@@ -255,22 +255,24 @@ class atsumi_AppHandler {
 	 * @access public
 	 */
 	public function render() {
+
+		// Time and execute the pre render
+		atsumi_Debug::startTimer();
+		$this->controller->preRender();
+		atsumi_Debug::record('Controller PreRender', 'Before rendering was processed the pre-render function was executed', null, true);
+
 		$viewHandler	= $this->controller->getViewHandler();
 		$view			= $this->controller->getView();
 
 		if(!in_array('mvc_ViewHandlerInterface', class_implements($viewHandler)))
 			throw new Exception('View handler must implement mvc_ViewHandlerInterface');
 
+
 		if(is_string($viewHandler))
 			$viewHandler = new $viewHandler;
 
 		if(is_null($view))
 			throw new mvc_NoViewSpecifiedException('A view has not been declared', $this->parserData['method']);
-
-		// Time and execute the pre render
-		atsumi_Debug::startTimer();
-		$this->controller->preRender();
-		atsumi_Debug::record('Controller PreRender', 'Before rendering was processed the pre-render function was executed', null, true);
 
 
 		// Get the debugger and start a timer for rendering
