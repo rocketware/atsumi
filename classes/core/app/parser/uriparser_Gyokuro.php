@@ -53,6 +53,7 @@ class uriparser_Gyokuro implements uriparser_Interface {
 	 */
 	protected function createUriArr($uri) {
 		$uri		= str_replace('__', '/_', $uri);
+		$uri		= str_replace(".", "__", $uri);
 		$uriArr 	= explode('/', $uri);
 		return self::trimUriArr($uriArr);
 	}
