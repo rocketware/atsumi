@@ -54,7 +54,7 @@ class session_Handler {
 		// Add debug information
 		atsumi_Debug::record(
 			'Session Created',
-			sf('The atsumi session constructer compleated in %s', atsumi_Debug::endTimer()),
+			'The atsumi session constructor completed', true,
 			atsumi_Debug::AREA_SESSION
 		);
 	}
@@ -181,7 +181,7 @@ class session_Handler {
 			session_name($options['name']);
 		else
 			session_name('atsumi_session');
-			
+
 		if(isset($options['domain']))
 			ini_set('session.cookie_domain', $options['domain']);
 	}
