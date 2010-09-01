@@ -1,5 +1,7 @@
 <?php
 
+// TODO: Remove if not in use.
+
 /**
  *
  * @package Database

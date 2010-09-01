@@ -33,6 +33,7 @@ class namespace_ClassName {
 	/* SET METHODS */
 	/* MAGIC METHODS */
 	/* METHODS */
+	/* DEPRECATED METHODS */
 	
 	/*
 	 * +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~COMMENT~WIDTH~GUIDE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
