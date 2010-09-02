@@ -616,7 +616,8 @@ window.onload=function(){
 			.debugConsole { left:0px; background-color: #ededed; color: black;  width: 100% !important;  cursor: default; z-index: 999999 ; }
 			.debugConsole * { font-size:13px; margin:0; padding:0; color:#000; font-family:verdana; }
 			.debugConsole.debugOpen { position: fixed ; height: 250px; bottom: 0px; overflow:hidden; }
-			.debugConsole.debugClosed { height:auto !important; }
+			.debugConsole.debugClosed { height:auto !important; border-top:1px outset #777; border-bottom:1px outset #777; }
+			#debugOpenButton { text-shadow:0px 1px 1px #fff; color:#666;  cursor: pointer; }
 			.debugConsole.debugOpen .debugOpenContainer { display:block; }
 			.debugConsole.debugOpen .debugClosedContainer { display:none; }
 			.debugConsole.debugClosed .debugOpenContainer { display:none; }
@@ -674,7 +675,7 @@ window.onload=function(){
 <script type="text/javascript"><?=$this->returnJavascript();?></script>
 <div id="debugConsole" class="debugConsole debugInit">
 <div class='debugClosedContainer'>
-<div id='debugOpenButton'>Click here to open the atsumi debug plane</div>
+<div id='debugOpenButton'>Click here to open the Atsumi debug plane</div>
 </div>
 <div class='debugOpenContainer'>
 	<table id="debugConsoleInner" cellpadding="0" cellspacing="0">
