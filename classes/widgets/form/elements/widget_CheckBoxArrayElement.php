@@ -44,8 +44,8 @@ class widget_CheckBoxArrayElement extends widget_AbstractElement {
 			$out.=(sf("<div class='inputCheckboxContainer'><input type='checkbox' name='%s[%s]' %s id='form_%s[%s]' class='inputCheckbox' /><label for='form_%s[%s]'  class='inputCheckboxLabel'>%s</label>%s</div>",
 						$this->getName(),$value,
 						(in_array($value, $valueArr) && $valueArr[$value]) ? "checked='checked'" : "",
-						$option,$value,
-						$option,$value,
+						$this->getName(),$value,
+						$this->getName(),$value,
 						$option, $this->delimiter
 					));
 		}
