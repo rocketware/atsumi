@@ -18,10 +18,10 @@
 abstract class cache_AbstractHandler implements cache_HandlerInterface {
 
 	/* methods to be set in the cache handler */
-	abstract protected function _get($key, $default, $namespace);
-	abstract protected function _set($key, $data, $ttl, $namespace);
-	abstract protected function _delete($key, $namespace);
-	abstract protected function _exists($key, $namespace);
+	abstract protected function _get($key, $default = null, $namespace = 'default');
+	abstract protected function _set($key, $data, $ttl = 0, $namespace = 'default');
+	abstract protected function _delete($key, $namespace = 'default');
+	abstract protected function _exists($key, $namespace = 'default');
 	abstract protected function _flush();
 
 	/**
