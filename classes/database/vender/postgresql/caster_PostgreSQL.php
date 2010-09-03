@@ -180,7 +180,7 @@ class caster_PostgreSQL extends caster_Abstract {
 	 * @return string Casted string
 	 */
 	static function timestampWithTimezone($in) {
-		return sf("'%s'::TIMESTAMP WITH TIMEZONE", pg_escape_string(gmdate('Y-m-d H:i:s+00', $in)));
+		return sf("'%s'::TIMESTAMP WITH TIME ZONE", pg_escape_string(gmdate('Y-m-d H:i:s+00', $in)));
 	}
 
 	/**
