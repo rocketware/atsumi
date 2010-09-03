@@ -1,5 +1,6 @@
 <?php
 /**
+ * File defines all functionaility of the db_PostgreSql class.
  * @package		Atsumi.Framework
  * @copyright	Copyright(C) 2008, James A. Forrester-Fellowes. All rights reserved.
  * @license		GNU/GPL, see license.txt
