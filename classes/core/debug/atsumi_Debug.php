@@ -418,7 +418,7 @@ class atsumi_Debug {
 		return '
 var DebugPlane = function () {
 
-	this.open = true;
+	this.open = false;
 	this.height = 250;
 	this.tab = "console";
 	this.dragging = false;
