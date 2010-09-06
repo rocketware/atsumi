@@ -190,8 +190,8 @@ class widget_Paginate {
 		return sf("<span class='pageItem%s'>%s</span>",
 					($this->currentPage == $page) ? " currentPage" : '',
 					($this->currentPage == $page) ?
-						$page :
-						sprintf("<a href='%s'>%s</a>", $this->generateUrl($page),($page))
+						number_format($page) :
+						sprintf("<a href='%s'>%s</a>", $this->generateUrl($page),number_format($page))
 				);
 
 	}
@@ -206,32 +206,32 @@ class widget_Paginate {
 		// params: Start & End
 		$start = $this->renderPageLink(1);
 		$end = $this->getPageCount() < 2?'':$this->renderPageLink($this->getPageCount());
-		
+
 		// params: Pages links
 		$pageLength = $this->navLength;
 		if ($pageLength&1) { } else $pageLength++;
-		
+
 		if (array_key_exists('[START]', $options)) $pageLength--;
 		if (array_key_exists('[END]', $options)) $pageLength--;
 		$pageLinkStart = $this->currentPage - floor($pageLength/2);
-		
+
 		if ($pageLinkStart < 1) $pageLinkStart = 1;
 		if (array_key_exists('[START]', $options) && $pageLinkStart == 1) $pageLinkStart = 2;
-		
+
 		$pageLinkEnd = $pageLinkStart + $pageLength - 1;
 		if ($pageLinkEnd > $this->pageCount) $pageLinkEnd = $this->pageCount;
-		
-		// if we have the end param and we're on the last page get set pages -1 
+
+		// if we have the end param and we're on the last page get set pages -1
 		if (array_key_exists('[END]', $options) && $pageLinkEnd == $this->pageCount) $pageLinkEnd--;
-		
+
 		// adjust start positino if we're near the end of the pagination
 		if (($pageLinkEnd - $this->currentPage) < floor($pageLength/2))
 			$pageLinkStart  = $pageLinkStart - (floor($pageLength/2) - ($pageLinkEnd - $this->currentPage));
 		if ($pageLinkStart < 1) $pageLinkStart = 1;
 		if (array_key_exists('[START]', $options) && $pageLinkStart == 1) $pageLinkStart = 2;
-		
+
 		$pages = '';
-		if ($pageLinkEnd > $pageLinkStart)
+		if ($pageLinkStart <= $pageLinkEnd)
 			for ($i = $pageLinkStart; $i <= $pageLinkEnd; $i++)
 				$pages .= $this->renderPageLink($i);
 
