@@ -80,7 +80,7 @@ class caster_PostgreSQL extends caster_Abstract {
 	 * @return string Casted string
 	 */
 	static function text($in) {
-		if(!is_string($in)) throw new parser_StrictTypeException('Expected String');
+		if(!is_string($in)) throw new caster_StrictTypeException('Expected String');
 		return sf("'%s'::TEXT", pg_escape_string($in));
 	}
 
@@ -90,7 +90,7 @@ class caster_PostgreSQL extends caster_Abstract {
 	 * @return string Casted string
 	 */
 	static function textOrNull($in) {
-		if (!is_string($in) && !is_null($in)) throw new parser_StrictTypeException('Expected String or Null');
+		if (!is_string($in) && !is_null($in)) throw new caster_StrictTypeException('Expected String or Null');
 
 		if (is_string($in) && strlen($in)) return self::text($in);
 		elseif (is_null($in)) return 'NULL';
