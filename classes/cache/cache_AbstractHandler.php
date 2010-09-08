@@ -17,6 +17,12 @@
  */
 abstract class cache_AbstractHandler implements cache_HandlerInterface {
 
+	/**
+	 * Weather or not cache system should throw exceptions
+	 * @var bool
+	 */
+	protected $useExceptions = false;
+
 	/* methods to be set in the cache handler */
 	abstract protected function _get($key, $default = null, $namespace = 'default');
 	abstract protected function _set($key, $data, $ttl = 0, $namespace = 'default');
@@ -36,9 +42,12 @@ abstract class cache_AbstractHandler implements cache_HandlerInterface {
 		try {
 			return $this->_get($key, $default, $namespace);
 		} catch (Exception $e) {
-			atsumi_Debug::record('Cache Handler failed to get data (key: '.$key.')',
-								$e->getMessage(), false, atsumi_Debug::AREA_CACHE);
-			return false;
+			if($e instanceof cache_NotFoundException) throw $e;
+
+			atsumi_Debug::record(sf('Cache Handler failed to get data (key: %s)', $key),
+				$e->getMessage(), false, atsumi_Debug::AREA_CACHE
+			);
+			return $default;
 		}
 	}
 
@@ -55,7 +64,7 @@ abstract class cache_AbstractHandler implements cache_HandlerInterface {
 		try {
 			return $this->_set($key, $data, $ttl, $namespace);
 		} catch (Exception $e) {
-			atsumi_Debug::record('Cache Handler failed to set data (key: '.$key.')',
+			atsumi_Debug::record(sf('Cache Handler failed to set data (key: %s)', $key),
 								$e->getMessage(), false, atsumi_Debug::AREA_CACHE);
 			return false;
 		}
@@ -72,7 +81,7 @@ abstract class cache_AbstractHandler implements cache_HandlerInterface {
 		try {
 			return $this->_delete($key, $namespace);
 		} catch (Exception $e) {
-			atsumi_Debug::record('Cache Handler failed to delete data (key: '.$key.')',
+			atsumi_Debug::record(sf('Cache Handler failed to delete data (key: %s)', $key),
 								$e->getMessage(), false, atsumi_Debug::AREA_CACHE);
 			return false;
 		}
@@ -90,7 +99,7 @@ abstract class cache_AbstractHandler implements cache_HandlerInterface {
 		try {
 			return $this->_exists($key, $namespace);
 		} catch (Exception $e) {
-			atsumi_Debug::record('Cache Handler failed lookup (key: '.$key.')',
+			atsumi_Debug::record(sf('Cache Handler failed to lookup (key: %s)', $key),
 								$e->getMessage(), false, atsumi_Debug::AREA_CACHE);
 			return false;
 		}

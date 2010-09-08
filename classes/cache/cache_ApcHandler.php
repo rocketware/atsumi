@@ -24,7 +24,9 @@ class cache_ApcHandler extends cache_AbstractHandler {
 	 * Creates a new cache_ApcHandler instance
 	 * @access public
 	 */
-	protected function __construct() {
+	protected function __construct($useExceptions = false) {
+		$this->useExceptions = $useExceptions;
+
 		if(!functions_exist('apc_store', 'apc_fetch', 'apc_delete', 'apc_exists', 'apc_clear_cache'))
 			throw new cache_ExtensionMissing('Failed to detect APC cache Extention');
 	}
@@ -42,7 +44,15 @@ class cache_ApcHandler extends cache_AbstractHandler {
 	protected function _get($key, $default = null, $namespace = 'default') {
 		$success = false;
 		$return = apc_fetch($key, $success);
-		return ($success ? $return : $default);
+
+		if(!$success) {
+			if($this->useExceptions)
+				throw new cache_NotFoundException(sf('Could not fine \'%s\' variable', $key));
+
+			$return = $default;
+		}
+
+		return $return;
 	}
 
 	/* SET METHODS */

@@ -1,12 +1,13 @@
 <?php
 /**
+ * File defines the properties and methods of the cache_MemcacheHandler class.
  * @package		Atsumi.Framework
  * @copyright	Copyright(C) 2008, James A. Forrester-Fellowes. All rights reserved.
  * @license		GNU/GPL, see license.txt
- * The Atsumi Framework is open-source software. This version may have been modified pursuant to
- * the GNU General Public License, and as distributed it includes or is derivative of works
- * licensed under the GNU General Public License or other free or open source software licenses.
- * See copyright.txt for copyright notices and details.
+ * The Atsumi Framework is open-source software. This version may have been modified pursuant to the
+ * GNU General Public License, and as distributed it includes or is derivative of works licensed
+ * under the GNU General Public License or other free or open source software licenses.
+ * See license.txt for license notices and details.
  */
 
 /**
@@ -41,7 +42,8 @@ class cache_MemcacheHandler extends cache_AbstractHandler {
 	 * @param string $host The host where memcache is listening for connections
 	 * @param integer $port The port where memcache is listening for connections
 	 */
-	public function __construct($host, $port) {
+	public function __construct($host, $port, $useExceptions = false) {
+		$this->useExceptions = $useExceptions;
 		$this->memcache = new Memcache;
 
 		if(!$this->memcache->connect($host, $port))
@@ -59,8 +61,16 @@ class cache_MemcacheHandler extends cache_AbstractHandler {
 	 * @return mixed The value stored under the key or, $default on failure
 	 */
 	protected function _get($key, $default = null, $namespace = 'default') {
-		$result = $this->memcache->get($key);
-		return(is_array($result) ? $result[0] : $default);
+		$return = $this->memcache->get($key);
+
+		if(!is_array($result)) {
+			if($this->useExceptions)
+				throw new cache_NotFoundException(sf('Could not fine \'%s\' variable', $key));
+
+			$return = array($default);
+		}
+
+		return $return[0];
 	}
 
 	/* SET METHODS */
