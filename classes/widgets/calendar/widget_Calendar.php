@@ -6,6 +6,7 @@
 		protected $dates;
 		protected $monthName;
 		protected $firstDayOfMonth;
+		protected $class;
 		
 		static public function getDateRange(ess_Date $firstDate, ess_Date $lastDate) {
 		
@@ -39,10 +40,11 @@
 			}
 		}
 		
-		function __construct($month, $year, $dateArr = array()) {
+		function __construct($month, $year, $dateArr = array(), $class = null) {
 	
-			$this->month = $month;
-			$this->year = $year;
+			$this->month	= $month;
+			$this->year		= $year;
+			$this->class	= $class;
 			
 			$this->monthName 		= date("F", mktime(0, 0, 0, $this->month, 1, $this->year));
 			$this->firstDayOfMonth 	= date("N", mktime(0, 0, 0, $this->month, 1, $this->year));
@@ -76,7 +78,7 @@
 		}
 		public function __toString() {
 			$out = "";
-			$out .= sfl("<div class='widgetCalendarContainer'><table class='widgetCalendar'>");
+			$out .= sfl("<div class='widgetCalendarContainer%s'><table class='widgetCalendar'>", (!is_null($this->class)) ? ' '.$this->class : '');
 				$out .= sfl("<tr>");
 				$out .= sfl("<td colspan=7 class='month'>%s</td>", $this->monthName);
 				$out .= sfl("</tr>");
