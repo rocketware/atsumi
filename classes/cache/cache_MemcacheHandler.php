@@ -62,14 +62,13 @@ class cache_MemcacheHandler extends cache_AbstractHandler {
 	 */
 	protected function _get($key, $default = null, $namespace = 'default') {
 		$return = $this->memcache->get($key);
-
-		if(!is_array($result)) {
+		
+		if(!is_array($return)) {
 			if($this->useExceptions)
 				throw new cache_NotFoundException(sf('Could not fine \'%s\' variable', $key));
 
 			$return = array($default);
 		}
-
 		return $return[0];
 	}
 
