@@ -4,12 +4,12 @@ class widget_AgeRangeElement extends widget_AbstractElement {
 	private $options = array();
 	private $ageMin = 0;
 	private $ageMax = 100;
+	private $separator = 'to';
 
 	public function __construct($args) {
-
 		if(isset($args['ageMin'])) $this->ageMin = $args['ageMin'];
 		if(isset($args['ageMax'])) $this->ageMax = $args['ageMax'];
-
+		if(isset($args['separator'])) $this->separator = $args['separator'];
 	}
 
 	function renderElement() {
@@ -49,8 +49,8 @@ class widget_AgeRangeElement extends widget_AbstractElement {
 						$this->getName(), $this->getName(), $minOptions
 					);
 
-		$out .=	sfl("to <select name='%s[max]' id='form_%s' class='inputAgeRange inputAgeRangeMax' >%s</select>",
-						$this->getName(), $this->getName(), $maxOptions
+		$out .=	sfl("%s <select name='%s[max]' id='form_%s' class='inputAgeRange inputAgeRangeMax' >%s</select>",
+						$this->separator, $this->getName(), $this->getName(), $maxOptions
 					);
 
 		return $out;
