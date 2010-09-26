@@ -139,7 +139,7 @@ class atsumi_ErrorHandler extends atsumi_Observable {
 			if($this->cacheHandler->get($key, false, 'errorHandler'))
 					return true;
 			else 	return false;
-		} catch(cache_NotInCacheException $e) {
+		} catch(cache_NotFoundException $e) {
 			return false;
 		}
 	}
