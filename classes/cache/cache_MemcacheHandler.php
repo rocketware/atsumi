@@ -65,7 +65,7 @@ class cache_MemcacheHandler extends cache_AbstractHandler {
 		
 		if(!is_array($return)) {
 			if($this->useExceptions)
-				throw new cache_NotFoundException(sf('Could not fine \'%s\' variable', $key));
+				throw new cache_NotFoundException(sf('Could not find \'%s\' variable', $key));
 
 			$return = array($default);
 		}
