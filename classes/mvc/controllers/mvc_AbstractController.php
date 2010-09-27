@@ -127,9 +127,12 @@ abstract class mvc_AbstractController {
 
 		$anchor = !is_null($anchor) ? "#".$anchor:"";
 
+		if (!isset($_SERVER['HTTPS']) || strtolower($_SERVER['HTTPS']) != 'on') $protocol = 'http://';
+		else $protocol = 'https://';
+		
 		array_key_exists('REDIRECT_SCRIPT_URI',$_SERVER) ?
 			header('Location: ' . $_SERVER['REDIRECT_SCRIPT_URI']. $anchor)
-		: 	header('Location: ' . 'http://' . $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']. $anchor);
+		: 	header('Location: ' . $protocol . $_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']. $anchor);
 
 		exit;
 	}
@@ -137,14 +140,17 @@ abstract class mvc_AbstractController {
 	// redirect to a new page
 	public function redirect($url, $httpResponseCode = atsumi_Http::REDIRECT_FOUND) {
 
-		if(substr($url, 0, 7) == "http://") {
+		if(substr($url, 0, 7) == "http://" || substr($url, 0, 8) == "https://") {
 			header('Location: ' . $url, true, $httpResponseCode);
 			exit;
 		}
 
+		if (!isset($_SERVER['HTTPS']) || strtolower($_SERVER['HTTPS']) != 'on') $protocol = 'http://';
+		else $protocol = 'https://';
+		
 		$domain = $_SERVER['HTTP_HOST'];
 		unset($_POST);
-		header('Location: ' . 'http://' . $domain.$url, true, $httpResponseCode);
+		header('Location: ' . $protocol . $domain.$url, true, $httpResponseCode);
 		exit;
 	}
 
