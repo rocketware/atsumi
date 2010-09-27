@@ -190,7 +190,7 @@ class atsumi_ErrorHandler extends atsumi_Observable {
 				$this->fireEvent(self::EVENT_EXCEPTION_FC, new atsumi_ErrorEventArgs($e, $this->recoverer));
 
 			// fire the exception event regardless of flood control
-			$this->fireEvent(self::EVENT_EXCEPTION, new atsumi_ErrorEventArgs($e, &$this->recoverer));
+			$this->fireEvent(self::EVENT_EXCEPTION, new atsumi_ErrorEventArgs($e, $this->recoverer));
 
 			$this->recoverer->recover($e);
 		} catch(Exception $e) {
