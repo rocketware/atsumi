@@ -1,15 +1,40 @@
 <?php
+/**
+ * File defines the constants, properties and methods of the session_Handler class.
+ * @package		Atsumi.Framework
+ * @copyright	Copyright(C) 2008, James A. Forrester-Fellowes. All rights reserved.
+ * @license		GNU/GPL, see license.txt
+ * The Atsumi Framework is open-source software. This version may have been modified pursuant to the
+ * GNU General Public License, and as distributed it includes or is derivative of works licensed
+ * under the GNU General Public License or other free or open source software licenses.
+ * See license.txt for license notices and details.
+ */
 
-/*
- * The main session manager
+/**
+ * The main session managment class.
+ * @package		Atsumi.Framework
+ * @subpackage	Cache
+ * @since		0.90
  */
 class session_Handler {
+	/* CONSTANTS */
 
-	/* Defaults */
+	/**
+	 * The default storage medium.
+	 * @var string
+	 */
 	const DEFAULT_STORAGE		= 'session_BasicStorage';
+
+	/**
+	 * The default namespace.
+	 * @var string
+	 */
 	const DEFAULT_NAMESPACE		= 'default';
 
-	/* Common Namespaces */
+	/**
+	 * The session namespace used to store session related data.
+	 * @var string
+	 */
 	const SESSION_NAMESPACE		= 'session';
 
 	/* Possible States */
@@ -18,6 +43,8 @@ class session_Handler {
 	const STATE_RESTARTING		= 3; // The session is being reset
 	const STATE_DESTROYED		= 4; // The session has been killed
 	const STATE_ERROR			= 5; // The session is in error!
+
+	/* PROPERTIES */
 
 	/**
 	 * The current state of the session
@@ -31,30 +58,30 @@ class session_Handler {
 	 */
 	public $storage			= null;
 
+	/* CONSTRUCTOR & DESTRUCTOR */
+
 	/**
 	 * Constructor - Must use getInstance to get a session singalton object
 	 */
 	protected function __construct($options = array()) {
-
-
 		// Start timer for constructor compleate time
 		atsumi_Debug::startTimer();
 
 		$this->configure($options);
 
 		// Fetch the session storage handler
-		$storage =(isset($options['storage']) ? $options['storage'] : self::DEFAULT_STORAGE);
+		$storage = (isset($options['storage']) ? $options['storage'] : self::DEFAULT_STORAGE);
 
 		if(is_subclass_of($storage, 'session_AbstractStorage'))
 			$this->storage = new $storage($options);
 
 		// Start the session
-		$this->start();
+		$this->start($options);
 
 		// Add debug information
 		atsumi_Debug::record(
 			'Session Created',
-			'The atsumi session constructor completed', true,
+			'The atsumi session constructor completed', null, true,
 			atsumi_Debug::AREA_SESSION
 		);
 	}
@@ -68,17 +95,14 @@ class session_Handler {
 		} catch (Exception $e) { }
 	}
 
-	public function getId() {
-		return session_id();
-	}
+	/* GET METHODS */
 
 	/**
 	 * Returns a singleton instance of atsumi session
-	 *
 	 * @param $options Session setup options
 	 * @return object A session_Handler object
 	 */
-	static public function getInstance($options = array()) {
+	public static function getInstance($options = array()) {
 		static $instance;
 
 		if(!is_object($instance))
@@ -87,8 +111,13 @@ class session_Handler {
 		return $instance;
 	}
 
-	/* GET FUNCTIONS */
-
+	/**
+	 * Returns a variable from the current active session.
+	 * @param string $name The name of the variable to return.
+	 * @param mixed $default The variable to return if the value does not exist.
+	 * @param string $namespace The namespace under which the variable is stored.
+	 * @return mixed The variable under that name or the default.
+	 */
 	public function &get($name, $default = null, $namespace = self::DEFAULT_NAMESPACE) {
 		// Add prefix to prevent namespace collisions
 		$namespace = '__'.$namespace;
@@ -99,7 +128,23 @@ class session_Handler {
 		return $default;
 	}
 
-	/* SET FUNCTIONS */
+	/**
+	 * Returns the current session id.
+	 * @return string The session id.
+	 */
+	public function getId() {
+		return session_id();
+	}
+
+	/* SET METHODS */
+
+	/**
+	 * Sets a variable to the current active session and return the old value if set.
+	 * @param string $name The name of the variable to return.
+	 * @param mixed $value The variable to be stored under that name.
+	 * @param string $namespace The namespace under which the variable is stored.
+	 * @return mixed The old value under the name if it exists.
+	 */
 	public function set($name, $value, $namespace = self::DEFAULT_NAMESPACE) {
 		// Add prefix to prevent namespace collisions
 		$namespace = '__'.$namespace;
@@ -114,6 +159,9 @@ class session_Handler {
 		return $old;
 	}
 
+	/* MAGIC METHODS */
+	/* METHODS */
+
 	public function push($name, $value, $namespace = self::DEFAULT_NAMESPACE) {
 		// Add prefix to prevent namespace collisions
 		$namespace = '__'.$namespace;
@@ -125,18 +173,17 @@ class session_Handler {
 
 	}
 
-	/* HAS FUNCTIONS */
-	public function has($name, $namespace = self::DEFAULT_NAMESPACE) {
+	public function exists($name, $namespace = self::DEFAULT_NAMESPACE) {
 		// Add prefix to prevent namespace collisions
 		$namespace = '__'.$namespace;
 		return isset($_SESSION[$namespace][$name]);
 	}
 
-	public function del($name, $namespace = self::DEFAULT_NAMESPACE) {
+	public function delete($name, $namespace = self::DEFAULT_NAMESPACE) {
 		$this->set($name, null, $namespace);
 	}
 
-	protected function start() {
+	protected function start($options = array()) {
 		if(headers_sent() === true)
 			throw new session_HeadersSentException;
 
@@ -145,6 +192,9 @@ class session_Handler {
 
 		session_cache_limiter('none');
 		session_start();
+
+		if(isset($options['persistent']) && $options['persistent'] === true)
+			$this->renewCookie($options['life']);
 
 		$this->state = self::STATE_ACTIVE;
 	}
@@ -177,20 +227,51 @@ class session_Handler {
 		ini_set('session.save_handler', 'files');
 		ini_set('session.use_trans_sid', false);
 
+		if(isset($options['life'])) ini_set('session.cookie_lifetime', $options['life']);
+
+		$this->configCookie($options);
+
 		if(isset($options['name']))
 			session_name($options['name']);
 		else
 			session_name('atsumi_session');
+	}
 
-		if(isset($options['domain']))
-			ini_set('session.cookie_domain', $options['domain']);
+	public function configCookie($options = array()) {
+		$old = session_get_cookie_params();
+		session_set_cookie_params(
+			(isset($options['life'])			? $options['life']				: $old['lifetime']),
+			(isset($options['cookie_path'])		? $options['cookie_path']		: $old['path']),
+			(isset($options['cookie_domain'])	? $options['cookie_domain']		: $old['domain']),
+			(isset($options['cookie_secure'])	? $options['cookie_secure']		: $old['secure']),
+			(isset($options['cookie_httponly'])	? $options['cookie_httponly']	: $old['httponly'])
+		);
 	}
 
 	protected function destroyCookie() {
+		$name = session_name();
+		if(!isset($_COOKIE[$name])) return;
+
 		$params = session_get_cookie_params();
-		setcookie(session_name(), '', time() - 42000,
-			$params["path"], $params["domain"],
-			$params["secure"], $params["httponly"]
+		setcookie($name, '', time() - 42000,
+			$params['path'], $params['domain'],
+			$params['secure'], $params['httponly']
+		);
+	}
+
+	protected function renewCookie($life = 0) {
+		$name = session_name();
+		if(!isset($_COOKIE[$name])) return;
+
+		$params = session_get_cookie_params();
+		setcookie(
+			$name,
+			session_id(),
+			($life > 0 ? (time() + $life) : 0),
+			$params['path'],
+			$params['domain'],
+			$params['secure'],
+			$params['httponly']
 		);
 	}
 
@@ -203,6 +284,16 @@ class session_Handler {
 
 		session_id($id);
 		return $id;
+	}
+
+	/* DEPRECATED METHODS */
+
+	public function has($name, $namespace = self::DEFAULT_NAMESPACE) {
+		$this->exists($name, $namespace);
+	}
+
+	public function del($name, $namespace = self::DEFAULT_NAMESPACE) {
+		$this->delete($name, $namespace);
 	}
 }
 ?>

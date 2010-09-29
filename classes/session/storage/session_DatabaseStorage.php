@@ -11,7 +11,7 @@ class session_DatabaseStorage extends session_AbstractStorage {
 		$this->database = $options['database'];
 
 		ini_set('session.gc_divisor', 1);
-		ini_set('session.gc_maxlifetime', 1440);
+		ini_set('session.gc_maxlifetime', (isset($options['life']) ? $options['life'] : 7200));
 		ini_set('session.gc_probability', 100);
 
 		parent::__construct($options);
@@ -48,8 +48,6 @@ class session_DatabaseStorage extends session_AbstractStorage {
 	public function write($id, $sessionData) {
 		try {
 			if($this->database->exists('session', 'checksum = %i AND session_id = %s', crc32($id), $id)) {
-
-
 				atsumi_Debug::record(
 					'Updating Session',
 					sf('The session(%s) is being updated to the DB', $id ),
@@ -82,7 +80,7 @@ class session_DatabaseStorage extends session_AbstractStorage {
 			return true;
 
 		/* this is a little drastic but will most likley segfault if Exception bubbles up */
-		} catch (Exception $e) { die("Could not write session to database."); }
+		} catch (Exception $e) { die('Could not write session to database.'); }
 	}
 
 	public function destroy($id) {
