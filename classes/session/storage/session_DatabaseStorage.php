@@ -27,8 +27,9 @@ class session_DatabaseStorage extends session_AbstractStorage {
 			atsumi_Debug::record(
 				'Session Failed to load from DB',
 				sf('The session(%s) session could not load', $id),
-				atsumi_Debug::AREA_SESSION,
-				$e
+				$e,
+				false,
+				atsumi_Debug::AREA_SESSION
 			);
 			return serialize(array($e->getMessage()));
 		}
@@ -39,8 +40,9 @@ class session_DatabaseStorage extends session_AbstractStorage {
 		atsumi_Debug::record(
 			'Session loaded from DB',
 			sf('The session loaded from the db.' ),
-			atsumi_Debug::AREA_SESSION,
-			$result
+			$result,
+			false,
+			atsumi_Debug::AREA_SESSION
 		);
 		return base64_decode($result->s_data);
 	}
@@ -51,8 +53,9 @@ class session_DatabaseStorage extends session_AbstractStorage {
 				atsumi_Debug::record(
 					'Updating Session',
 					sf('The session(%s) is being updated to the DB', $id ),
-					atsumi_Debug::AREA_SESSION,
-					base64_encode($sessionData)
+					$sessionData,
+					false,
+					atsumi_Debug::AREA_SESSION
 				);
 
 				$this->database->update(
@@ -66,8 +69,9 @@ class session_DatabaseStorage extends session_AbstractStorage {
 				atsumi_Debug::record(
 					'Inserting Session',
 					sf('The atsumi(%s) is being inserted to the DB: ', $id ),
-					atsumi_Debug::AREA_SESSION,
-					$sessionData
+					$sessionData,
+					false,
+					atsumi_Debug::AREA_SESSION
 				);
 				$this->database->insert(
 					'session',
