@@ -74,7 +74,7 @@ abstract class mvc_Html5View extends mvc_AbstractView {
 	protected function renderHeadJs() {
 		//pfl('<script src="js/modernizr-1.5.min.js"></script>');
 	}
-	protected function renderHeadJs() {
+	protected function renderBodyJs() {
 
 	}
 
