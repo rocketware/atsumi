@@ -39,6 +39,13 @@ class db_MySql extends db_AbstractDatabase {
 		$this->connectReal($conString, $config);
 	}
 
+	/**
+	 * Initalise the vender type caster
+	 */
+	protected function initCaster() {
+		$this->parser = new caster_MySql();
+	}
+
 	/* CHARACTER ESCAPE FUNCTIONS */
 
 	/**

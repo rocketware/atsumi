@@ -1,10 +1,8 @@
 <?php
 
 /**
- * mvc_HtmlView : A html version of the view
- *
- * @since 14 Mar 2008
- * @author jimmyxx <>
+ * Represents a valid Html5 page template that can be extended from to create more compleax pages.
+ * @since Friday 8th, October 2010
  */
 abstract class mvc_Html5View extends mvc_AbstractView {
 
@@ -48,55 +46,85 @@ abstract class mvc_Html5View extends mvc_AbstractView {
 	}
 
 	protected function renderHeadContent() {
-		pfl('<meta charset="%s">', $this->getCharset());
-		pfl('<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">');
-		pfl('<title>%h</title>', $this->getTitle());
+		pf('<meta charset="%s">', $this->getCharset());
+		pf('<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">');
+		pf('<title>%h</title>', $this->getTitle());
 
 		if($this->getDescription() !== '')
-			pfl('<meta name="description" content="%s">', $this->getDescription());
+			pf('<meta name="description" content="%s">', $this->getDescription());
 
 		if($this->getAuthor() !== '')
-			pfl('<meta name="author" content="%s">', $this->getAuthor());
+			pf('<meta name="author" content="%s">', $this->getAuthor());
 
 		$this->renderHeadMeta();
+
+		if($this->getShortcutIcon() !== '')
+			pf('<link rel="shortcut icon" href="%s">', $this->getShortcutIcon());
+
+		if($this->getAppleIcon() !== '')
+			pf('<link rel="apple-touch-icon" href="%s">', $this->getAppleIcon());
+
 		$this->renderHeadLink();
 		$this->renderHeadJs();
 	}
 
-	// Overidable to add content
+	/**
+	 * Render any Meta data
+	 */
 	protected function renderHeadMeta() {
-		//pfl('<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;">');
+		//pf('<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;">');
 	}
+
+	/**
+	 * Render any document links such as Stylesheets
+	 */
 	protected function renderHeadLink() {
-		//pfl('<link rel="stylesheet" href="css/style.css?v=1">');
-		//pfl('<link rel="stylesheet" media="handheld" href="css/handheld.css?v=1">');
+		//pf('<link rel="stylesheet" href="css/style.css?v=1">');
+		//pf('<link rel="stylesheet" media="handheld" href="css/handheld.css?v=1">');
 	}
+
+	/**
+	 * Renders any header JavaScript
+	 *
+	 * NOTE: It is recommended that you load all your JavaScript at the bottom of the page using the
+	 * renderBodyJs file for faster loading. One exception is Modernizr, although not required will
+	 * enable HTML5 elements & feature detection in non-complient browsers.
+	 */
 	protected function renderHeadJs() {
-		//pfl('<script src="js/modernizr-1.5.min.js"></script>');
+		//pf('<script src="js/modernizr-1.5.min.js"></script>');
 	}
+
+	/**
+	 * Renders any Body JavaScript
+	 *
+	 * NOTE: It is recommended you load your JavaScript here for faster page loading.
+	 */
 	protected function renderBodyJs() {
 
 	}
 
 	// Private structural methods
 	protected function renderHtml() {
-		pfl('<html>');
+		pf('<html lang="en" class="no-js">');
 		$this->renderHead();
 		$this->renderBody();
-		pfl('</html>');
+		pf('</html>');
 	}
 
 	protected function renderHead() {
-		pfl('<head lang="en" class="no-js">');
+		pf('<head>');
 		$this->renderHeadContent();
-		pfl('</head>');
+		pf('</head>');
 	}
 
+	/**
+	 * Renders the page body, optionally rendering JQuery include code.
+	 */
 	protected function renderBody() {
-		pfl('<body>');
+		pf('<body>');
 		$this->renderBodyContent();
-		$this->renderBodyJs();
 
+		// If a JQuery file is provided render the JQuery include code.
 		if($this->getJQuery() !== '') {
 			pfl('<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>');
 			pfl(
@@ -105,8 +133,8 @@ abstract class mvc_Html5View extends mvc_AbstractView {
 			);
 		}
 
-
-		pfl('</body>');
+		$this->renderBodyJs();
+		pf('</body>');
 	}
 }
 ?>
