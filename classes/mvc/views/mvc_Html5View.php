@@ -6,7 +6,7 @@
  * @since 14 Mar 2008
  * @author jimmyxx <>
  */
-abstract class mvc_HtmlView extends mvc_AbstractView {
+abstract class mvc_Html5View extends mvc_AbstractView {
 
 	abstract protected function renderBodyContent();
 
