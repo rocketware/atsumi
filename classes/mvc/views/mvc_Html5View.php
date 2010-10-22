@@ -128,7 +128,7 @@ abstract class mvc_Html5View extends mvc_AbstractView {
 		if($this->getJQuery() !== '') {
 			pfl('<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>');
 			pfl(
-				'<script>!window.jQuery && document.write(unescape(\'%3Cscript src="%s"%3E%3C/script%3E\'))</script>',
+				'<script>!window.jQuery && document.write(unescape(\'%%3Cscript src="%s"%%3E%%3C/script%%3E\'))</script>',
 				$this->getJQuery()
 			);
 		}
