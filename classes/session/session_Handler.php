@@ -289,7 +289,7 @@ class session_Handler {
 	/* DEPRECATED METHODS */
 
 	public function has($name, $namespace = self::DEFAULT_NAMESPACE) {
-		$this->exists($name, $namespace);
+		return $this->exists($name, $namespace);
 	}
 
 	public function del($name, $namespace = self::DEFAULT_NAMESPACE) {
