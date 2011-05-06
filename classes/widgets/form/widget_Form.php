@@ -26,9 +26,10 @@ class widget_Form {
 	public function __get($name) {
 		$matches = null;
 		if(preg_match('/^value_(.+)$/', $name, $matches)) {
-			return call_user_func(array($this, 'value'), $matches [1]);
-		}
-		throw new Exception('Undefined method:' . $name);
+			return call_user_func(array($this, 'value'), $matches [1]);			
+		} elseif (preg_match('/^element_(.+)$/', $name, $matches)) {
+			return call_user_func(array($this, 'element'), $matches [1]);
+		} else throw new Exception('Undefined method:' . $name);
 	}
 
 	public function setName($in) {
@@ -96,7 +97,15 @@ class widget_Form {
 		// css style
 		if(array_key_exists('style',$args))
 			$element->setStyle($args['style']);
-
+			
+		// css style
+		if(array_key_exists('cssStyle',$args))
+			$element->setCssStyle($args['cssStyle']);
+			
+		// css style
+		if(array_key_exists('cssClass',$args))
+			$element->setCssClass($args['cssClass']);
+			
 		if(array_key_exists('force_default', $args))
 			$element->setForceDefault($args['force_default']);
 
@@ -120,6 +129,15 @@ class widget_Form {
 			throw new Exception("Element not found: ".$elementName);
 
 		return $this->elementMap[$elementName]->getValue();
+	}
+
+	/* Returns an element */
+	public function element ($elementName) {
+		
+		if(!array_key_exists($elementName, $this->elementMap))
+			throw new Exception("Element not found: ".$elementName);
+
+		return $this->elementMap[$elementName];
 	}
 
 	public function getSubmitted() {

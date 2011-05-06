@@ -12,8 +12,17 @@ abstract class widget_AbstractElement {
 	protected $validators 		= null;	
 	protected $errors			= array();
 	protected $required			= false;
+	
+
+	/**
+	 * @deprecated
+	 */
 	protected $style			= null;
 
+	protected $cssStyle			= null;
+	protected $cssClass			= null;
+	
+	
 //	abstract function outputSpecific();
 	
 
@@ -47,10 +56,12 @@ abstract class widget_AbstractElement {
 	
 	public function render() {
 		$out = $this->preRender();
-		$out .= sfl('<div class="row%s%s row_%s">%s%s%s</div>',
+		$out .= sfl('<div class="row%s%s%s row_%s"%s>%s%s%s</div>',
 						$this->style ? " " . $this->style : "",
+						$this->cssClass ? " " . $this->cssClass : "",
 						($this->submitted && !$this->validates) ? " error" : "",
 						$this->name,
+						$this->cssStyle ? " style='" . $this->cssStyle . "'": "",
 						$this->renderErrors(),
 						($this->label != '' || $this->getRequired() ? $this->renderLabel() : ''),
 						$this->renderElement());
@@ -124,6 +135,7 @@ abstract class widget_AbstractElement {
 	function setSubmitted($in) {
 		$this->submitted = $in;
 	}
+	
 	public function setValidators($in) {
 		$this->validators = $in;
 	}
@@ -132,22 +144,29 @@ abstract class widget_AbstractElement {
 		if(!is_string($in)) throw new Exception("Name must be of type String");
 		$this->name = $in;	
 	}
+	
 	public function setLabel($in) {
 		$this->label = $in;	
 	}
+	
 	public function setError(Exception $e) {
 		$this->errors[] = $e->getMessage();	
-	}
-	public function setStyle($in) {
-		$this->style = $in;	
 	}
 	
 	public function setValue($input, $files = array()) {
 		$this->value = isset($input[$this->name]) ? $input[$this->name] : null;	
 	}
-	
+
 	public function setDefault($in) {
 		$this->defaultValue = $in;	
+	}
+
+	public function setCssClass($in) {
+		$this->cssCLass = $in;	
+	}
+
+	public function setCssStyle($in) {
+		$this->cssStyle = $in;	
 	}
 	public function setForceDefault($in) {
 		if(!is_bool($in)) throw new Exception("Force Default must be of type Bool");
@@ -174,6 +193,13 @@ abstract class widget_AbstractElement {
 	}
 	public function getRequired() {
 		return $this->required;	
+	}
+	
+	/**
+	 * @deprecated
+	 */
+	public function setStyle($in) {
+		$this->style = $in;	
 	}
 		
 }
