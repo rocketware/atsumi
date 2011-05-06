@@ -16,10 +16,10 @@ class widget_AgeRangeElement extends widget_AbstractElement {
 
 
 		$date = $this->getValue();
-
-		$minValue = is_array($date) && array_key_exists(0,$date)?$date[0]:null;
-		$maxValue = is_array($date) && array_key_exists(1,$date)?$date[1]:null;
-
+		
+		$minValue = is_array($date) && array_key_exists('min',$date)?$date['min']:null;
+		$maxValue = is_array($date) && array_key_exists('max',$date)?$date['max']:null;
+		
 
 
 		$minOptions = sfl("<option value='' >Any</option>");
