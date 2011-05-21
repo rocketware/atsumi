@@ -67,13 +67,18 @@ class widget_Paginate {
 		return $this->render();
 	}
 
-	private function generateUrl($page) {
+	public function generateUrl($page) {
 		return str_replace("[PAGE]", $page, $this->url);
 	}
 
 	/* returns total page count */
 	public function getPageCount() {
 		return $this->pageCount;
+	}
+
+	/* returns total page count */
+	public function getTotalResults() {
+		return $this->recordCount;
 	}
 
 	/* returns current page */
