@@ -16,7 +16,7 @@ class mvc_SmartyViewHandler implements mvc_ViewHandlerInterface {
 		if(is_null($this->smarty))
 			throw new mvc_TemplateEngineNotSupplied("Smarty has not been supplied");
 
-		$this->smarty->clear_all_assign();
+		$this->smarty->clearAllAssign();
 		$this->smarty->assign($viewData);
 		$this->smarty->display($viewName);
 

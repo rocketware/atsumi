@@ -264,9 +264,12 @@ class atsumi_Loader {
 	 */
 	public function _loadClass($classname) {
 		$classname = strtolower($classname);
-		if(!array_key_exists($classname, $this->classes)) 
-			throw new loader_ClassNotFoundException('Atsumi failed to find the class required \''.$classname.'\'', $classname);
 		
+		if(!array_key_exists($classname, $this->classes)) 
+			return;
+			
+		//throw new loader_ClassNotFoundException('Atsumi failed to find the class required \''.$classname.'\'', $classname);
+
 		require_once($this->classes[$classname]);
 	}
 
@@ -299,10 +302,8 @@ class atsumi_Loader {
 }
 
 /**
- * Used internally by PHP to help attempt to load missing classes
- * @param $className The class to load
+ * register the autoloader
  */
-function __autoload($classname) {
-	atsumi_Loader::loadClass($classname);
-}
+spl_autoload_register(array('atsumi_Loader', 'loadClass'));
+
 ?>
