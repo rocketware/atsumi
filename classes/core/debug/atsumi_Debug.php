@@ -366,6 +366,7 @@ class atsumi_Debug {
 	 * @return string A html5 valid string representation of the variable
 	 */
 	protected function format($value) {
+		
 		if(is_null($value))
 			return '<span class="typeNull">NULL</span>';
 
@@ -393,6 +394,8 @@ class atsumi_Debug {
 		}
 
 		if(is_object($value)) {
+			return sf('(Class) <span class="typeObject">%s</span>', get_class($value));
+			/*
 			if(method_exists($value,'toString'))
 				return $value->toString();
 
@@ -405,6 +408,7 @@ class atsumi_Debug {
 				$ret .= sf('<div class="var">[<span class="typeKey">%s</span>] => %s</div>', $key, $this->format($item));
 			$ret .= ')';
 			return $ret;
+			*/
 		}
 		return sf('<span class="typeArray">(%s)%s</div>', gettype($value), $value);
 	}
@@ -667,6 +671,7 @@ window.onload=function(){
 
 		if(!$this->active) return;
 
+		
 		$this->startTimer();
 		$display =(isset($_COOKIE['debugDisplay']) ? strtolower($_COOKIE['debugDisplay']) : 'console');
 		ob_start();
