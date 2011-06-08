@@ -12,6 +12,10 @@ abstract class mvc_AbstractController {
 
 	// GET FUNCTIONS
 
+	public function has($key) {
+		return (array_key_exists($key, $this->data));
+	}
+
 	public function get($key) {
 		if(!array_key_exists($key, $this->data))
 			throw new Exception("Item does not exist in view data..");
