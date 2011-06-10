@@ -246,7 +246,7 @@ class atsumi_AppHandler {
 		atsumi_Debug::record('Controller PostProcess', 'After the controllers method was called the post-process function was executed', null, true);
 
 		// Log the whole processing time
-		atsumi_Debug::record('Controller Processing Compleate', 'All processing was compleated successfully', null, true);
+		atsumi_Debug::record('Controller Processing Complete', 'All processing was completed successfully', null, true);
 	}
 
 	/**
@@ -294,7 +294,7 @@ class atsumi_AppHandler {
 		atsumi_Debug::record('Controller PostRender', 'After the rendering was processed the post-render function was executed', null, true);
 
 		// Log the whole processing time
-		atsumi_Debug::record('Rendering Compleate', 'All rendering was compleated successfully', null, true);
+		atsumi_Debug::record('Rendering Complete', 'All rendering was completed successfully', null, true);
 	}
 }
 ?>

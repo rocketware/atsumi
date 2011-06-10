@@ -64,7 +64,7 @@ class session_Handler {
 	 * Constructor - Must use getInstance to get a session singalton object
 	 */
 	protected function __construct($options = array()) {
-		// Start timer for constructor compleate time
+		// Start timer for constructor complete time
 		atsumi_Debug::startTimer();
 
 		$this->configure($options);
