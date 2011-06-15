@@ -2,7 +2,7 @@
 
 class validate_MinAge extends validate_AbstractValidator {
 
-	protected $maxAge;
+	protected $minAge;
 
 	public function __construct($minAge) {
 		$this->minAge = $minAge;
