@@ -208,6 +208,13 @@ class Atsumi {
 		$args = func_get_args();
 		return self::__callStatic(__FUNCTION__, $args);
 	}
+	
+	public static function error__listen(Exception $e) {
+		$args = func_get_args();
+		return self::__callStatic(__FUNCTION__, $args);
+	}
+	
+	
 }
 
 ?>
