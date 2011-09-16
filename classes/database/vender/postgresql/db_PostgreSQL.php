@@ -46,7 +46,7 @@ class db_PostgreSql extends db_AbstractDatabase {
 	 * Initalise the vender type caster
 	 */
 	protected function initCaster() {
-		$this->parser = new caster_PostgreSQL();
+		$this->caster = new caster_PostgreSQL();
 	}
 
 	/**

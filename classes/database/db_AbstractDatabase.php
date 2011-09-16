@@ -157,7 +157,7 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 	 */
 	protected function cast($args) {
 		if (is_null($this->caster))
-			throw new db_Exception('Parser not loaded.');
+			throw new db_Exception('Caster not loaded.');
 
 		return $this->caster->castString(func_get_args());
 	}
