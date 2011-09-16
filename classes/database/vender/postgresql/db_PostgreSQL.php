@@ -42,6 +42,11 @@ class db_PostgreSql extends db_AbstractDatabase {
 		$this->connectReal($conString, $config);
 	}
 
+	protected function createRow ($rowData) {
+		return new db_PostgreSQLRow($rowData);
+	}
+
+
 	/**
 	 * Initalise the vender type caster
 	 */

@@ -170,6 +170,19 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 		$this->pdo = null;
 		$this->connected = false;
 	}
+	
+	
+	public function formatResult ($rows) {
+	
+		$rowArr = array();
+		
+		foreach ($rows as $idx => $row)
+			$rowArr[] = $this->createRow($row);
+	
+		return $rowArr;	
+	}
+	
+	
 
 	/**
 	 * Executes a basic query with casted variables
@@ -179,7 +192,7 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 	 */
 	public function query($query, $args = null, $_ = null) {
 		$args = func_get_args();
-		return $this->queryReal(call_user_func_array(array(&$this, 'cast'), $args));
+		return $this->formatResult($this->queryReal(call_user_func_array(array(&$this, 'cast'), $args)));
 	}
 
 	/**
