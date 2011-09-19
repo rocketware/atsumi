@@ -2,13 +2,13 @@
 
 abstract class dp_AbstractRow {
 	
-	private 	$data;
+	private 	$rowData;
 	protected 	$caster;
 	
 	abstract protected function initCaster ();
 	
 	public function __construct ($rowData) {
-		$this->data = $rowData;
+		$this->rowData = $rowData;
 	}
 	
 	public function cast ($format, $column) {
@@ -16,17 +16,16 @@ abstract class dp_AbstractRow {
 		if (!array_key_exists($column, $this->rowData))
 			throw new db_RowColumnNotFoundException('Column not found: '.$column);
 		
-		$data = $this->date[$column];
+		$data = $this->rowData[$column];
 		
-		$caster = $this->initCaster();
+		$this->initCaster();
 		
-		return $caster->cast('%'.$format, $data);
+		return $this->caster->cast('%'.$format, $data);
 		
 		
 	}
-	public function get ($format, $column) {
-	
-		return $this->data[$column];
+	public function getRaw ($column) {
+		return $data[$column];
 		
 	}
 	
