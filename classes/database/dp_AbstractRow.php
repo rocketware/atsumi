@@ -24,6 +24,11 @@ abstract class dp_AbstractRow {
 		
 		
 	}
+	public function get ($format, $column) {
+	
+		return $this->data[$column];
+		
+	}
 	
 	
 }

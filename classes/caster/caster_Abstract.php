@@ -79,6 +79,23 @@ abstract class caster_Abstract  {
 		}
 		return implode('', $ret);
 	}
+	
+	public function castArray ($params) {
+		$format = array_shift ($params);
+		return $this->castReal ($format, $params);
+	}
+	
+	public function castArraySets ($args) {
+		$ret = array ();
+		for ($i = 0; $i < count ($args); ) {
+			$format = $args [$i++];
+			$params = array_slice ($args, $i, $this->numberOfPercents($format));
+			$i += count ($params);
+			array_unshift ($params, $format);
+			$ret[] =$this->castArray ($params);
+		}
+		return $ret;
+	}
 
 	/**
 	 * Casts args into a given string by the class held caster spec

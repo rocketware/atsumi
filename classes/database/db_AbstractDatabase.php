@@ -220,8 +220,7 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 				throw new PDOException((isset($error[2]) ? $error[2] : 'Database Error: '.$error[0]));
 			}
 
-			$data = $return->fetchAll(PDO::FETCH_OBJ);
-
+			$data = $return->fetchAll(PDO::FETCH_ASSOC);
 			if(!is_array($data))
 				throw new PDOException('Failed to return data array');
 
@@ -363,14 +362,18 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 	}
 
 	public function parseUpdateQuery($args) {
+		
+		if (is_null($this->caster))
+			throw new db_Exception('Caster not loaded.');
+
 		$args = func_get_args ();
-		$sets = $this->quotef_special($args);
+		$sets = $this->caster->castArraySets($args);
 		$update = array_shift ($sets);
 		$where = array_shift ($sets);
 		if (count ($sets) == 0) $sets = array ($where);
-
+		
 		/* return update query string */
-		return $this->format(
+		return $this->caster->castString(
 			'UPDATE %l SET %l WHERE %l', $update, implode(', ', $sets), $where
 		);
 	}
