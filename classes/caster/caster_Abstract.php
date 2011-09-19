@@ -37,7 +37,7 @@ abstract class caster_Abstract  {
 	 * @param string $s The string to parse
 	 */
 	protected function numberOfPercents($s) {
-		if(!is_string($s)) throw new caster_Exception('Parameter $s should be of type string');
+		if(!is_string($s)) throw new caster_Exception('Caster expecting format string, received '.gettype($s).': '.$s);
 		$pos = 0;
 		$count = 0;
 		while(true) {

@@ -66,7 +66,7 @@ class db_PostgreSql extends db_AbstractDatabase {
 	 * Returns true if the database is in transaction
 	 * @return boolean If the database is in transaction
 	 */
-	public function transaction() {
+	public function inTransaction() {
 		return $this->transaction;
 	}
 
