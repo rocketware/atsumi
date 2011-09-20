@@ -29,6 +29,7 @@ class caster_PostgreSqlToPhp extends caster_Abstract {
 		'a' => 'sqlArray',
 		'b' => 'boolean',
 		'd' => 'date',
+		'D' => 'dateOrNull',
 		'i' => 'integer',
 		's' => 'text',
 		'S' => 'textOrNull',
@@ -132,8 +133,13 @@ class caster_PostgreSqlToPhp extends caster_Abstract {
 	}
 
 	static function date($in) {
-		throw new caster_StrictTypeException('TODO: date');
+		return atsumi_Date::fromYmd($in);
+	}	
+	static function dateOrNull($in) {
+		if (is_null($in)) return null;
+		return atsumi_Date::fromYmd($in);
 	}
+	
 	static function timestampWithTimezone($in) {
 		throw new caster_StrictTypeException('TODO: timestamp');
 	}

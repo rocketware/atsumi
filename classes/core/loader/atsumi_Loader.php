@@ -138,9 +138,9 @@ class atsumi_Loader {
 	 * Used to load or include a set of files as specified in the spec
 	 *
 	 * Examples:
-	 * references('atsumi', 'helpers mvc database');
-	 * references('atsumi', array('helpers', 'mvc', 'database'));
-	 * references(array('atsumi' => 'helpers mvc database'));
+	 * references('atsumi', 'utility mvc database');
+	 * references('atsumi', array('utility', 'mvc', 'database'));
+	 * references(array('atsumi' => 'utility mvc database'));
 	 * @access public
 	 * @param $spec mixed See above for examples
 	 */

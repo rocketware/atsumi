@@ -1,4 +1,7 @@
 <?php
+atsumi_Loader::references(array(
+						'atsumi' 			=> 'utility/calendar'
+					));
 
 abstract class dp_AbstractRow {
 	

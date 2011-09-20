@@ -2,7 +2,7 @@
 
 /**
  *
- * @package Helpers
+ * @package Utility
  * @subpackage Http
  */
 class atsumi_Http {
