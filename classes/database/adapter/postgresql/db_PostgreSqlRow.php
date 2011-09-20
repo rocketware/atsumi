@@ -1,6 +1,6 @@
 <?php
 
-class db_PostgreSqlRow extends dp_AbstractRow {
+class db_PostgreSqlRow extends db_AbstractRow {
 	
 	protected function initCaster() {
 		if (is_null($this->caster))

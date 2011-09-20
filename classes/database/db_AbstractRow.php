@@ -1,11 +1,11 @@
 <?php
 atsumi_Loader::references(array(
-						'atsumi' 			=> 'utility/calendar'
-					));
+	'atsumi' => 'utility/calendar'
+));
 
-abstract class dp_AbstractRow {
+abstract class db_AbstractRow {
 	
-	private 	$rowData;
+	private		$rowData;
 	protected 	$caster;
 	
 	abstract protected function initCaster ();
@@ -27,6 +27,13 @@ abstract class dp_AbstractRow {
 	public function getRaw ($column) {
 		return $data[$column];
 	}
+	
+	public function __get($call) {
+		$pos = strpos($call, '_');	
+		return call_user_func_array (array($this, 'cast'), array(substr($call,0,$pos), substr($call,$pos+1)));
+
+	}
+	
 }
 
 ?>
