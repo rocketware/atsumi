@@ -16,7 +16,7 @@
  * @subpackage	Caster
  * @since		1.0
  */
-class caster_PostgreSQL extends caster_Abstract {
+class caster_PostgreSql extends caster_Abstract {
 	/* CONSTANTS */
 	/* PROPERTIES */
 

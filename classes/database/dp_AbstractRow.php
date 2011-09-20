@@ -10,26 +10,20 @@ abstract class dp_AbstractRow {
 	public function __construct ($rowData) {
 		$this->rowData = $rowData;
 	}
-	
 	public function cast ($format, $column) {
 		
 		if (!array_key_exists($column, $this->rowData))
 			throw new db_RowColumnNotFoundException('Column not found: '.$column);
 		
 		$data = $this->rowData[$column];
-		
 		$this->initCaster();
 		
 		return $this->caster->cast('%'.$format, $data);
 		
-		
 	}
 	public function getRaw ($column) {
 		return $data[$column];
-		
 	}
-	
-	
 }
 
 ?>

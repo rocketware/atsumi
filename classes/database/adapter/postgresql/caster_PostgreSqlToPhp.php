@@ -16,7 +16,7 @@
  * @subpackage	Caster
  * @since		1.0
  */
-class caster_PostgreSQLToPhp extends caster_Abstract {
+class caster_PostgreSqlToPhp extends caster_Abstract {
 	/* CONSTANTS */
 	/* PROPERTIES */
 
