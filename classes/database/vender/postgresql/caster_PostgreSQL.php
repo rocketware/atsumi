@@ -41,6 +41,7 @@ class caster_PostgreSQL extends caster_Abstract {
 		't' => 'timestampWithTimezone',
 		'v' => 'fullTextVector',
 		'x' => 'binary',
+		'z' => 'interval',
 	);
 
 	/* CONSTRUCTOR & DESTRUCTOR */
@@ -144,7 +145,7 @@ class caster_PostgreSQL extends caster_Abstract {
 	 * @return string Casted string
 	 */
 	static function boolean($in) {
-		return sf("%s::BOOLEAN", $in?'t':'f');
+		return sf("'%s'::BOOLEAN", $in?'t':'f');
 	}
 
 	/**
@@ -190,6 +191,15 @@ class caster_PostgreSQL extends caster_Abstract {
 	 */
 	static function date($in) {
 		return sf("'%s'::DATE", $in);
+	}
+	
+	/**
+	 * Casts a variable into a PostgreSQL date
+	 * @param string $in String to be casted
+	 * @return string Casted string
+	 */
+	static function interval($in) {
+		return sf("'%s'::INTERVAL", $in);
 	}
 
 	/**

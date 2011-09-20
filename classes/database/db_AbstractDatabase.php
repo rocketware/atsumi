@@ -63,6 +63,10 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 	 */
 	protected $caster;
 
+
+	protected $transaction;
+	
+
 	/* CONSTRUCTOR & DESTRUCTOR */
 
 	/**
@@ -220,6 +224,9 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 			}
 
 			$data = $return->fetchAll(PDO::FETCH_ASSOC);
+			
+			$this->affectedRows = count($data);
+			
 			if(!is_array($data))
 				throw new PDOException('Failed to return data array');
 
@@ -261,7 +268,7 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 		$result = call_user_func_array(array(&$this, 'select'), $args);
 
 		if(count($result) > 1)
-			throw new db_QueryFailedException('selectOne returned more than one result');
+			throw new db_UnexpectedResultException('selectOne returned more than one result');
 
 		return array_key_exists(0, $result) ? $result[0] : null;
 	}
@@ -277,16 +284,16 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 		$query = call_user_func_array (array ($this, 'parseFetchQuery'), $args);
 
 		/* perform query */
-		$this->query('%l', $query);
+		$result = $this->query('%l', $query);
 
-		return true;
+		return $result;
 	}
 	public function fetchOne($cols, $table, $where = null) {
 		$args = func_get_args();
 		$result = call_user_func_array(array(&$this, 'fetch'), $args);
 
 		if(count($result) > 1)
-			throw new db_QueryFailedException('fetchOne returned more than one result');
+			throw new db_UnexpectedResultException('fetchOne returned more than one result');
 		return array_key_exists(0, $result) ? $result[0] : null;
 	}
 	public function parseFetchQuery($cols, $table, $where = null, $offset = null, $limit = null) {
@@ -345,6 +352,24 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 
 		return true;
 	}
+	public function insertOrUpdateOne ($table, $where, $values) {
+		
+		if (is_null($this->caster))
+			throw new db_Exception('Caster not loaded.');
+		
+		$args = func_get_args();
+		$sets = $this->caster->castArraySets($args);
+		$table = $sets [0];
+		$where = $sets [1];
+
+		$exists = $this->exists ($table, '%l', $where);
+		
+		call_user_func_array (array ($this, $exists? 'updateOne' : 'insert'), $args);
+		
+	}
+	public function deleteAndInsert ($args) {
+		throw new Expcetion ('TODO');	
+	}	
 	public function parseInsertQuery($args) {
 		
 		if (is_null($this->caster))
@@ -368,7 +393,6 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 			'INSERT INTO %@ (%l) VALUES(%l)', $table, implode(', ', $column), implode(', ', $data)
 		);
 	}
-	
 
 	/*
 	 * UPDATE
@@ -390,10 +414,10 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 		$ret = call_user_func_array (array ($this, 'update'), $args);
 
 		// ensure affected row count is correct
-		if($this->affected_rows () == 0)
-			throw new sql_Exception ('No rows affected in updateOne()');
-		if($this->affected_rows () > 1)
-			throw new sql_Exception ('Multiple rows affected in updateOne()');
+		if($this->getAffectedRows () == 0)
+			throw new db_UnexpectedResultException ('No rows affected in updateOne()');
+		if($this->getAffectedRows () > 1)
+			throw new db_UnexpectedResultException ('Multiple rows affected in updateOne()');
 
 		return true;
 	}
@@ -414,6 +438,77 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 		);
 	}
 
+	/*
+	 * EXISTS
+	 * */
+	public function exists ($table, $where) {
+		
+		if (is_null($this->caster))
+			throw new db_Exception('Caster not loaded.');
+		
+		$args = func_get_args();
+		$table = array_shift($args);
+		$where = $this->caster->castArraySets($args);
+		
+		$result = $this->query(
+			'SELECT CASE WHEN EXISTS (
+				SELECT *
+					FROM %@
+					WHERE %l
+			) THEN %b ELSE %b END AS exists', 
+			$table, $where[0], true, false
+		);
+		
+		$exists = $result[0];
+		return $exists->cast('b', 'exists');
+	}	
+
+	/*
+	 * COUNT
+	 * */
+	public function count ($table, $where = null) {
+		
+		if (is_null($this->caster))
+			throw new db_Exception('Caster not loaded.');
+		
+		$args = func_get_args();
+		$table = array_shift($args);
+		$where = $this->caster->castArraySets($args);
+		if (!count($where)) $where = array('1=1');
+		
+		$result = $this->query(
+			'SELECT COUNT(*) AS count FROM %@ WHERE %l', 
+			$table, $where[0]
+		);
+		
+		$exists = $result[0];
+		return $exists->cast('i', 'count');
+	}	
+
+
+
+	/*
+	 * DELETE
+	 * */
+	public function delete ($args) {
+		throw new db_Exception ('TODO');	
+	}	
+	public function deleteOne ($args) {
+		throw new db_Exception ('TODO');	
+	}	
+	public function parseDeleteQuery ($args) {
+		throw new db_Exception ('TODO');	
+	}
+	
+	/*
+	 * Table management
+	 * */
+	public function createTable ($args) {
+		throw new db_Exception ('TODO');	
+	}	
+	public function dropTable ($args) {
+		throw new db_Exception ('TODO');	
+	}	
 
 }
 ?>

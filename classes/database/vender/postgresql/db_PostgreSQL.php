@@ -113,7 +113,7 @@ class db_PostgreSql extends db_AbstractDatabase {
 	 */
 	public function transactionAutoRollback() {
 		if($this->transaction)
-			$this->rollbackTransaction();
+			$this->transactionRollback();
 	}
 }
 ?>

@@ -127,8 +127,8 @@ class caster_PostgreSQLToPhp extends caster_Abstract {
 	 * @return string Casted string
 	 */
 	static function integer($in) {
-		if (!is_int($in)) throw new caster_StrictTypeException('Expected Integer, received: '.$in.' ('.gettype($in).')');
-		return $in;
+		if (!is_int(intval($in))) throw new caster_StrictTypeException('Expected Integer, received: '.$in.' ('.gettype($in).')');
+		return intval($in);
 	}
 
 	static function date($in) {
