@@ -31,9 +31,11 @@ class caster_PostgreSqlToPhp extends caster_Abstract {
 		'd' => 'date',
 		'D' => 'dateOrNull',
 		'i' => 'integer',
+		'I' => 'integerOrNull',
 		's' => 'text',
 		'S' => 'textOrNull',
-		't' => 'timestampWithTimezone'
+		't' => 'timestampWithTimezone',
+		'T' => 'timestampWithTimezoneOrNull'
 	);
 
 	/* CONSTRUCTOR & DESTRUCTOR */
@@ -55,7 +57,7 @@ class caster_PostgreSqlToPhp extends caster_Abstract {
 
 		/* 'func_get_args' cannot be called as function arg pre PHP5 */
 		$func_args = func_get_args();
-		return (string)$parser->castString($func_args);
+		return $parser->castObject($func_args);
 	}
 
 
@@ -131,6 +133,11 @@ class caster_PostgreSqlToPhp extends caster_Abstract {
 		if (!is_int(intval($in))) throw new caster_StrictTypeException('Expected Integer, received: '.$in.' ('.gettype($in).')');
 		return intval($in);
 	}
+	static function integerOrNull($in) {
+		if (is_null($in)) return null;
+		if (!is_int(intval($in))) throw new caster_StrictTypeException('Expected Integer or Null, received: '.$in.' ('.gettype($in).')');
+		return intval($in);
+	}
 
 	static function date($in) {
 		return atsumi_Date::fromYmd($in);
@@ -141,7 +148,11 @@ class caster_PostgreSqlToPhp extends caster_Abstract {
 	}
 	
 	static function timestampWithTimezone($in) {
-		throw new caster_StrictTypeException('TODO: timestamp');
+		return new atsumi_DateTime(strtotime($in));
+	}
+	static function timestampWithTimezoneOrNull($in) {
+		if (is_null($in)) return null;
+		return self::timestampWithTimezone($in);
 	}
 
 	/* DEPRECATED METHODS */

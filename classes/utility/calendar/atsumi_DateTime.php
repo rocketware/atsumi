@@ -14,8 +14,12 @@ class atsumi_DateTime {
 	}
 
 	public function __toString() {
-		return $this->timestamp;
+		return (String)$this->timestamp;
 	}	
+	
+	public function format($formatString) {
+		return date($formatString, $this->timestamp);
+	}
 
 }
 ?>

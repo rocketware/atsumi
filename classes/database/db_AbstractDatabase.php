@@ -278,7 +278,7 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 
 	/* FETCH
 	 * abstract select - for simple queries (no joins) */
-	public function fetch ($cols, $table, $where = null, $offset = null, $limit = null) {
+	public function fetch ($cols, $table, $where = null, $orderBy = null, $offset = null, $limit = null) {
 		/* parse the query */
 		$args = func_get_args();
 		$query = call_user_func_array (array ($this, 'parseFetchQuery'), $args);
@@ -296,12 +296,16 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 			throw new db_UnexpectedResultException('fetchOne returned more than one result');
 		return array_key_exists(0, $result) ? $result[0] : null;
 	}
-	public function parseFetchQuery($cols, $table, $where = null, $offset = null, $limit = null) {
+	public function parseFetchQuery($cols, $table, $where = null, $orderBy = null, $offset = null, $limit = null) {
 		
 		if (is_null($this->caster))
 			throw new db_Exception('Caster not loaded.');
 
-		$args = func_get_args ();
+		// strip out the nulls
+		$argsReal = func_get_args ();
+		$args = array();
+		foreach ($argsReal as $arg)
+			$args[] = !is_null($arg)?$arg:'';
 		$cols = array_shift ($args);
 		$table = array_shift ($args);
 		
@@ -316,18 +320,19 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 			$sets = $this->caster->castArraySets($args);
 			$where = array_shift ($sets);
 		}	
+		if (count($args) && $args[0] !== null) {
+			$orderBy = array_shift ($sets);
+		}	
 		// return select query string
 		return $this->caster->castString(
-			'SELECT %l FROM %@%l%l%l', $cols, $table, 
-			is_null($where)?'':$this->caster->castString(' WHERE %l', 	$where),
+			'SELECT %l FROM %@%l%l%l%l', $cols, $table, 
+			empty($where)?'':$this->caster->castString(' WHERE %l', 		$where),
+			empty($orderBy)?'':$this->caster->castString(' ORDER BY %l', 	$orderBy),
 			!is_int($offset)?'':$this->caster->castString(' OFFSET %i', 	$offset),
-			!is_int($limit)?'':$this->caster->castString(' LIMIT %i', 	$limit)
+			!is_int($limit)?'':$this->caster->castString(' LIMIT %i', 		$limit)
 			
 		);
 	}
-
-
-
 
 	
 	/**
@@ -473,8 +478,8 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 		
 		$args = func_get_args();
 		$table = array_shift($args);
-		$where = $this->caster->castArraySets($args);
-		if (!count($where)) $where = array('1=1');
+		
+		$where = (count($args) && !is_null($args[0]))?$this->caster->castArraySets($args):array('1=1');
 		
 		$result = $this->query(
 			'SELECT COUNT(*) AS count FROM %@ WHERE %l', 

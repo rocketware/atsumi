@@ -33,6 +33,7 @@ class caster_PostgreSql extends caster_Abstract {
 		'd' => 'date',
 		'f' => 'float',
 		'i' => 'integer',
+		'I' => 'integerOrNull',
 		'l' => 'literal',
 		'n' => 'numeric',
 		'q' => 'fullTextQuery',
@@ -154,6 +155,15 @@ class caster_PostgreSql extends caster_Abstract {
 	 * @return string Casted string
 	 */
 	static function integer($in) {
+		return sf("%s::INTEGER", $in);
+	}
+	/**
+	 * Casts a variable into a PostgreSQL integer or Null
+	 * @param int $in Int to be casted
+	 * @return string Casted string
+	 */
+	static function integerOrNull($in) {
+		if (is_null($in)) return 'NULL';
 		return sf("%s::INTEGER", $in);
 	}
 

@@ -115,5 +115,11 @@ class db_PostgreSql extends db_AbstractDatabase {
 		if($this->transaction)
 			$this->transactionRollback();
 	}
+	
+	public function nextval ($name) {
+		$row = $this->selectOne ("SELECT nextval (%s) AS id", $name);
+		return $row->cast('i', 'id'); 
+	}
+	
 }
 ?>

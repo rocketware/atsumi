@@ -102,10 +102,28 @@ class atsumi_AppHandler {
 	 * @access public
 	 * @return array|null The parser return data, or null on error
 	 */
+	public function getParserData() {
+		return $this->parserData;
+	}
+	
+	/**
+	 * Returns the parser return data
+	 * @access public
+	 * @return array|null The parser return data, or null on error
+	 */
 	public function getParserMetaData() {
 		return $this->parserMetaData;
 	}
 
+	/**
+	 * get the base path of atsumi relative to the domain for if atsumi is running in a subdirectory
+	 * @access public
+	 * @param string $basePath
+	 */
+	public function getBaseUri() {
+		return $this->baseUri;
+	}
+	
 	// SET FUNCTIONS
 
 	/**

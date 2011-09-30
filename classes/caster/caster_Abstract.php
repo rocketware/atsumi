@@ -79,6 +79,30 @@ abstract class caster_Abstract  {
 		}
 		return implode('', $ret);
 	}
+	/**
+	 * Casts args into a given string/object by the class held caster spec
+	 * @param string $string The string to cast
+	 * @param mixed $args The args to be parsed into the string
+	 * @return string The casted string
+	 */
+	public function castObject($string, $args = null, $_ = null) {
+		// Get args
+		$args = func_get_args();
+		
+		if (count($args[0]) !== 2) throw new caster_Exception('Cast object expects two parameters');
+		
+		$ch = substr($args[0][0], 1);
+		
+		if(array_key_exists($ch, $this->spec) && method_exists($this,$this->spec[$ch])) {
+			$methodName = $this->spec[$ch];
+			return $this->$methodName($args[0][1]);
+		} elseif($ch == '%') {
+			return '%';
+		} else {
+			throw new caster_Exception("Caster received unexpected format character: %".$ch);
+		}
+
+	}
 	
 	public function castArray ($params) {
 		$format = array_shift ($params);
@@ -128,7 +152,7 @@ abstract class caster_Abstract  {
 			} elseif($ch == '%') {
 				$ret .= '%';
 			} else {
-				throw new caster_Exception("Invalid format string");
+				throw new caster_Exception("Caster received unexpected format character: %".$ch);
 			}
 			$pos0 = $pos1 + 2;
 		}
