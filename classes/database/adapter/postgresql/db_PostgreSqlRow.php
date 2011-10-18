@@ -10,4 +10,3 @@ class db_PostgreSqlRow extends db_AbstractRow {
 }
 
 ?>
-

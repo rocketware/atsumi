@@ -43,6 +43,7 @@ class caster_PostgreSql extends caster_Abstract {
 		'v' => 'fullTextVector',
 		'x' => 'binary',
 		'z' => 'interval',
+		'Z' => 'intervalOrNull'
 	);
 
 	/* CONSTRUCTOR & DESTRUCTOR */
@@ -209,6 +210,10 @@ class caster_PostgreSql extends caster_Abstract {
 	 * @return string Casted string
 	 */
 	static function interval($in) {
+		return sf("'%s'::INTERVAL", $in);
+	}
+	static function intervalOrNull($in) {
+		if (is_null($in)) return 'NULL';
 		return sf("'%s'::INTERVAL", $in);
 	}
 
