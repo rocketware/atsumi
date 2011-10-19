@@ -32,6 +32,8 @@ class caster_PostgreSqlToPhp extends caster_Abstract {
 		'D' => 'dateOrNull',
 		'i' => 'integer',
 		'I' => 'integerOrNull',
+		'f' => 'float',
+		'F' => 'floatOrNull',
 		's' => 'text',
 		'S' => 'textOrNull',
 		't' => 'timestampWithTimezone',
@@ -137,6 +139,18 @@ class caster_PostgreSqlToPhp extends caster_Abstract {
 		if (is_null($in)) return null;
 		if (!is_int(intval($in))) throw new caster_StrictTypeException('Expected Integer or Null, received: '.$in.' ('.gettype($in).')');
 		return intval($in);
+	}
+	
+	static function float($in) {
+		if (!is_numeric($in)) throw new caster_StrictTypeException('Expected Float, received: '.$in.' ('.gettype($in).')');
+		setType($in, 'float');
+		return $in;
+	}
+	static function floatOrNull($in) {
+		if (is_null($in)) return null;
+		if (!is_numeric($in)) throw new caster_StrictTypeException('Expected Float or Null, received: '.$in.' ('.gettype($in).')');
+		setType($in, 'float');
+		return $in;
 	}
 
 	static function date($in) {
