@@ -237,7 +237,8 @@ class atsumi_AppHandler {
 
 		// Time and execute the controllers method
 		atsumi_Debug::startTimer();
-		call_user_func_array(array($this->controller, $this->parserData['method']), $this->parserData['args']);
+		
+		$this->controller->processRequest($this->parserData['method'], $this->parserData['args']);
 		atsumi_Debug::record('Controller Method', 'The controllers requested method was executed', null, true);
 
 		// Time and execute the post process
