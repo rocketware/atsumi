@@ -178,8 +178,18 @@ class Atsumi {
 		$args = func_get_args();
 		return self::__callStatic(__FUNCTION__, $args);
 	}
-
+ 
+	public static function app__getParserData() {
+		$args = func_get_args();
+		return self::__callStatic(__FUNCTION__, $args);
+	}
+	
 	public static function app__getParserMetaData() {
+		$args = func_get_args();
+		return self::__callStatic(__FUNCTION__, $args);
+	}
+	
+	public static function app__getBaseUri() {
 		$args = func_get_args();
 		return self::__callStatic(__FUNCTION__, $args);
 	}

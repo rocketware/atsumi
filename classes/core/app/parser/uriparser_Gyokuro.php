@@ -123,7 +123,7 @@ class uriparser_Gyokuro implements uriparser_Interface {
 		$components = self::searchSpec($specification, $controller);
 
 		// TODO: add args parser!!
-		$path = count($components) ? implode('/',$components).'/'. $method.'/':'';
+		$path = count($components) ? implode('/',$components).'/'. ($method ==''?'':$method.'/'):'';
 		return $path;
 	}
 
