@@ -156,7 +156,7 @@ class caster_PostgreSql extends caster_Abstract {
 	 * @return string Casted string
 	 */
 	static function integer($in) {
-		return sf("%s::INTEGER", $in);
+		return sf("%s::INTEGER", intval($in));
 	}
 	/**
 	 * Casts a variable into a PostgreSQL integer or Null
@@ -165,7 +165,7 @@ class caster_PostgreSql extends caster_Abstract {
 	 */
 	static function integerOrNull($in) {
 		if (is_null($in)) return 'NULL';
-		return sf("%s::INTEGER", $in);
+		return sf("%s::INTEGER", intval($in));
 	}
 
 	/**
