@@ -12,7 +12,7 @@ abstract class widget_AbstractElement {
 	protected $validators 		= null;	
 	protected $errors			= array();
 	protected $required			= false;
-	protected $tabindex			= "";
+	protected $tabindex			= false;
 	
 	protected $cssStyle			= null;
 	protected $cssClass			= null;
