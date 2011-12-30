@@ -18,8 +18,9 @@ class widget_TextAreaElement extends widget_AbstractElement {
 	}
 
 	function renderElement() {
-		return(	sf("<textarea name='%s' id='form_%s'%s%s class='inputTextarea'>%s</textarea>",
+		return(	sf("<textarea name='%s' %s id='form_%s'%s%s class='inputTextarea'>%s</textarea>",
 						$this->getName(),
+						($this->tabindex) ? sf('tabindex="%s"', $this->tabindex) : '',
 						$this->getName(),
 						$this->disabled?" disabled='true'":"",
 							!is_null($this->rows)?sf(' rows="%s"',$this->rows):'',

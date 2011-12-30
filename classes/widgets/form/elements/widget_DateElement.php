@@ -51,20 +51,23 @@ class widget_DateElement extends widget_AbstractElement {
 
 
 
-		$out =	sfl("<select name='%s[day]' id='form_%s_day' class='inputDate inputDateDay'>%s</select>",
+		$out =	sfl("<select name='%s[day]' %s id='form_%s_day' class='inputDate inputDateDay'>%s</select>",
 						$this->getName(),
+						($this->tabindex) ? sf('tabindex="%s"', $this->tabindex) : '',
 						$this->getName(),
 						$dayOptions
 					);
 
-		$out .=	sfl("<select name='%s[month]' id='form_%s_month' class='inputDate inputDateMonth'>%s</select>",
+		$out .=	sfl("<select name='%s[month]' %s id='form_%s_month' class='inputDate inputDateMonth'>%s</select>",
 						$this->getName(),
+						($this->tabindex) ? sf('tabindex="%s"', $this->tabindex) : '',
 						$this->getName(),
 						$monthOptions
 					);
 
-		$out .=	sfl("<select name='%s[year]' id='form_%s_year' class='inputDate inputDateYear'>%s</select>",
+		$out .=	sfl("<select name='%s[year]' %s id='form_%s_year' class='inputDate inputDateYear'>%s</select>",
 						$this->getName(),
+						($this->tabindex) ? sf('tabindex="%s"', $this->tabindex) : '',
 						$this->getName(),
 						$yearOptions
 					);
