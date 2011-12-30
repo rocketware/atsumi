@@ -12,15 +12,15 @@ abstract class widget_AbstractElement {
 	protected $validators 		= null;	
 	protected $errors			= array();
 	protected $required			= false;
+	protected $tabindex			= "";
 	
+	protected $cssStyle			= null;
+	protected $cssClass			= null;
 
 	/**
 	 * @deprecated
 	 */
 	protected $style			= null;
-
-	protected $cssStyle			= null;
-	protected $cssClass			= null;
 	
 	
 //	abstract function outputSpecific();
@@ -56,15 +56,20 @@ abstract class widget_AbstractElement {
 	
 	public function render() {
 		$out = $this->preRender();
-		$out .= sfl('<div class="row%s%s%s row_%s"%s>%s%s%s</div>',
-						$this->style ? " " . $this->style : "",
-						$this->cssClass ? " " . $this->cssClass : "",
-						($this->submitted && !$this->validates) ? " error" : "",
-						$this->name,
-						$this->cssStyle ? " style='" . $this->cssStyle . "'": "",
-						$this->renderErrors(),
-						($this->label != '' || $this->getRequired() ? $this->renderLabel() : ''),
-						$this->renderElement());
+		$out .= sfl('<div class="row%s%s%s row_%s"%s>',
+				$this->style ? " " . $this->style : "",
+				$this->cssClass ? " " . $this->cssClass : "",
+				($this->submitted && !$this->validates) ? " error" : "",
+				$this->name,
+				$this->cssStyle ? " style='" . $this->cssStyle . "'": ""
+			);
+		try {
+			$out .= sf('%s%s%s', $this->renderErrors(), ($this->label != '' || $this->getRequired() ? $this->renderLabel() : ''), $this->renderElement());
+		} catch (Exception $e) {
+			$out .= $e->getMessage();
+		}
+		$out .= '</div>';
+		
 		$out .= $this->postRender();
 		return $out;
 		
@@ -165,8 +170,8 @@ abstract class widget_AbstractElement {
 		$this->cssCLass = $in;	
 	}
 
-	public function setCssStyle($in) {
-		$this->cssStyle = $in;	
+	public function setTabindex($in) {
+		$this->tabindex = (int) $in;	
 	}
 	public function setForceDefault($in) {
 		if(!is_bool($in)) throw new Exception("Force Default must be of type Bool");

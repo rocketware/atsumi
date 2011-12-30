@@ -55,8 +55,9 @@ class widget_FileElement extends widget_AbstractElement {
 							$this->getName()
 				));
 		else
-		return(sf("<input type='file' name='%s'  id='form_%s' class='inputFile' />",
+		return(sf("<input type='file' name='%s' %s id='form_%s' class='inputFile' />",
 							$this->getName(),
+							($this->tabindex) ? sf('tabindex="%s"', $this->tabindex) : '',
 							$this->getName()
 				));
 	}

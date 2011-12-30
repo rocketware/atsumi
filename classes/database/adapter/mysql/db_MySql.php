@@ -11,7 +11,7 @@
  */
 
 /**
- * MySql specific database interaction class
+ * MySql adaptor class
  * @package		Database
  * @subpackage	Vender.MySql
  * @author		Chris Chrisostomou
