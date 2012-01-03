@@ -44,8 +44,9 @@ class widget_SelectElement extends widget_AbstractElement {
 				);
 		}
 
-		return(	sfl("<select name='%s' id='form_%s'  class='inputSelect'>%s</select>",
+		return(	sfl("<select name='%s' %s id='form_%s' class='inputSelect'>%s</select>",
 						$this->getName(),
+						($this->tabindex) ? sf('tabindex="%s"', $this->tabindex) : '',
 						$this->getName(),
 						$opionHtml
 

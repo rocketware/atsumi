@@ -101,6 +101,10 @@ class widget_Form {
 		// css style
 		if(array_key_exists('cssStyle',$args))
 			$element->setCssStyle($args['cssStyle']);
+		
+		// tabindexes
+		if(array_key_exists('tabindex',$args))
+			$element->setTabindex($args['tabindex']);
 			
 		// css style
 		if(array_key_exists('cssClass',$args))

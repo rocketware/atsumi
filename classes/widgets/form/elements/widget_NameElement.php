@@ -42,16 +42,16 @@ class widget_NameElement extends widget_AbstractElement {
 			}
 
 
-			$out =	sfl("<select name='%s[title]' id='form_%s' class='inputName inputNameTitle' >%s</select>",
-							$this->getName(), $this->getName(), $titleOptions
+			$out =	sfl("<select name='%s[title]' %s id='form_%s' class='inputName inputNameTitle' >%s</select>",
+							$this->getName(), ($this->tabindex) ? sf('tabindex="%s"', $this->tabindex) : '', $this->getName(), $titleOptions
 						);
 
-			$out .=	sfl("<input type='text' name='%s[firstName]' value='%s' id='form_%s' class='inputName inputNameFirst' class='text' />",
-							$this->getName(), parent::makeInputSafe($name['firstName']), $this->getName()
+			$out .=	sfl("<input type='text' name='%s[firstName]' value='%s' %s id='form_%s' class='inputName inputNameFirst' class='text' />",
+							$this->getName(), parent::makeInputSafe($name['firstName']), ($this->tabindex) ? sf('tabindex="%s"', $this->tabindex) : '', $this->getName()
 						);
 
-			$out .=	sfl("<input type='text' name='%s[lastName]' value='%s' id='form_%s' class='inputName inputNameLast' class='text' />",
-							$this->getName(), parent::makeInputSafe($name['lastName']), $this->getName()
+			$out .=	sfl("<input type='text' name='%s[lastName]' value='%s' %s id='form_%s' class='inputName inputNameLast' class='text' />",
+							$this->getName(), parent::makeInputSafe($name['lastName']), ($this->tabindex) ? sf('tabindex="%s"', $this->tabindex) : '', $this->getName()
 						);
 
 			return $out;
