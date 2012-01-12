@@ -14,7 +14,10 @@ class widget_TextElement extends widget_AbstractElement {
 	public function __construct($args) {
 		if (array_key_exists('placeholder', $args) && strlen($args['placeholder']))
 			$this->placeholder = $args['placeholder'];
-			
+		
+		if (array_key_exists('type', $args) && strlen($args['type']))
+			$this->htmlType = $args['type'];
+		
 		if (array_key_exists('onChange', $args) && strlen($args['onChange']))
 			$this->onChange = $args['onChange'];
 			
@@ -44,6 +47,7 @@ class widget_TextElement extends widget_AbstractElement {
 			!is_null($this->onBlur) && strlen($this->onBlur)?sf(' onBlur="%s"', $this->onBlur):''
 		));
 	}
+
 }
 
 ?>
