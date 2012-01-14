@@ -14,7 +14,10 @@ class widget_TextElement extends widget_AbstractElement {
 	public function __construct($args) {
 		if (array_key_exists('placeholder', $args) && strlen($args['placeholder']))
 			$this->placeholder = $args['placeholder'];
-			
+		
+		if (array_key_exists('type', $args) && strlen($args['type']))
+			$this->htmlType = $args['type'];
+		
 		if (array_key_exists('onChange', $args) && strlen($args['onChange']))
 			$this->onChange = $args['onChange'];
 			
@@ -30,19 +33,21 @@ class widget_TextElement extends widget_AbstractElement {
 	}
 
 	function renderElement() {
-		return(sf('<input type="%s" name="%s" value="%s" id="form_%s" class="%s"%s%s%s%s%s />',
-							$this->htmlType,
-							$this->getName(),
-							parent::makeInputSafe($this->getValue()),
-							$this->getName(),
-							$this->cssClassName,
-							strlen($this->placeholder)?sf(' placeholder="%s"', $this->placeholder):'',
-							!is_null($this->onChange) && strlen($this->onChange)?sf(' onChange="%s"', $this->onChange):'',
-							!is_null($this->onKeydown) && strlen($this->onKeydown)?sf(' onKeydown="%s"', $this->onKeydown):'',
-							!is_null($this->onFocus) && strlen($this->onFocus)?sf(' onFocus="%s"', $this->onFocus):'',
-							!is_null($this->onBlur) && strlen($this->onBlur)?sf(' onBlur="%s"', $this->onBlur):''
-				));
+		return(sf('<input type="%s" name="%s" value="%s" %s id="form_%s" class="%s" %s%s%s%s%s />',
+			$this->htmlType,
+			$this->getName(),
+			parent::makeInputSafe($this->getValue()),
+			($this->tabindex) ? sf('tabindex="%s"', $this->tabindex) : '',
+			$this->getName(),
+			$this->cssClassName,
+			strlen($this->placeholder)?sf(' placeholder="%s"', $this->placeholder):'',
+			!is_null($this->onChange) && strlen($this->onChange)?sf(' onChange="%s"', $this->onChange):'',
+			!is_null($this->onKeydown) && strlen($this->onKeydown)?sf(' onKeydown="%s"', $this->onKeydown):'',
+			!is_null($this->onFocus) && strlen($this->onFocus)?sf(' onFocus="%s"', $this->onFocus):'',
+			!is_null($this->onBlur) && strlen($this->onBlur)?sf(' onBlur="%s"', $this->onBlur):''
+		));
 	}
+
 }
 
 ?>

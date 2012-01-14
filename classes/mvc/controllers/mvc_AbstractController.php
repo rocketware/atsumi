@@ -195,5 +195,9 @@ abstract class mvc_AbstractController {
 
 		return call_user_func_array(array($controller, $methodName), $methodData['args']);
 	}
+
+	public function processRequest ($method, $args) {
+		return call_user_func_array(array($this, $method), $args);
+	}
 }
 ?>

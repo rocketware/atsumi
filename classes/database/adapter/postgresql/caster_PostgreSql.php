@@ -16,7 +16,7 @@
  * @subpackage	Caster
  * @since		1.0
  */
-class caster_PostgreSQL extends caster_Abstract {
+class caster_PostgreSql extends caster_Abstract {
 	/* CONSTANTS */
 	/* PROPERTIES */
 
@@ -33,6 +33,7 @@ class caster_PostgreSQL extends caster_Abstract {
 		'd' => 'date',
 		'f' => 'float',
 		'i' => 'integer',
+		'I' => 'integerOrNull',
 		'l' => 'literal',
 		'n' => 'numeric',
 		'q' => 'fullTextQuery',
@@ -41,6 +42,8 @@ class caster_PostgreSQL extends caster_Abstract {
 		't' => 'timestampWithTimezone',
 		'v' => 'fullTextVector',
 		'x' => 'binary',
+		'z' => 'interval',
+		'Z' => 'intervalOrNull'
 	);
 
 	/* CONSTRUCTOR & DESTRUCTOR */
@@ -144,7 +147,7 @@ class caster_PostgreSQL extends caster_Abstract {
 	 * @return string Casted string
 	 */
 	static function boolean($in) {
-		return sf("%s::BOOLEAN", $in?'t':'f');
+		return sf("'%s'::BOOLEAN", $in?'t':'f');
 	}
 
 	/**
@@ -153,7 +156,16 @@ class caster_PostgreSQL extends caster_Abstract {
 	 * @return string Casted string
 	 */
 	static function integer($in) {
-		return sf("%s::INTEGER", $in);
+		return sf("%s::INTEGER", intval($in));
+	}
+	/**
+	 * Casts a variable into a PostgreSQL integer or Null
+	 * @param int $in Int to be casted
+	 * @return string Casted string
+	 */
+	static function integerOrNull($in) {
+		if (is_null($in)) return 'NULL';
+		return sf("%s::INTEGER", intval($in));
 	}
 
 	/**
@@ -190,6 +202,19 @@ class caster_PostgreSQL extends caster_Abstract {
 	 */
 	static function date($in) {
 		return sf("'%s'::DATE", $in);
+	}
+	
+	/**
+	 * Casts a variable into a PostgreSQL date
+	 * @param string $in String to be casted
+	 * @return string Casted string
+	 */
+	static function interval($in) {
+		return sf("'%s'::INTERVAL", $in);
+	}
+	static function intervalOrNull($in) {
+		if (is_null($in)) return 'NULL';
+		return sf("'%s'::INTERVAL", $in);
 	}
 
 	/**

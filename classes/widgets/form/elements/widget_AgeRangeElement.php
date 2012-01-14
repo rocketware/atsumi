@@ -45,12 +45,12 @@ class widget_AgeRangeElement extends widget_AbstractElement {
 
 		}
 
-		$out =	sfl("<select name='%s[min]' id='form_%s' class='inputAgeRange inputAgeRangeMin' >%s</select>",
-						$this->getName(), $this->getName(), $minOptions
+		$out =	sfl("<select name='%s[min]' id='form_%s' %s class='inputAgeRange inputAgeRangeMin' >%s</select>",
+						$this->getName(), $this->getName(), ($this->tabindex) ? sf('tabindex="%s"', $this->tabindex) : '', $minOptions
 					);
 
-		$out .=	sfl("<span class='inputAgeRangeSeparator'>%s</span> <select name='%s[max]' id='form_%s' class='inputAgeRange inputAgeRangeMax' >%s</select>",
-						$this->separator, $this->getName(), $this->getName(), $maxOptions
+		$out .=	sfl("<span class='inputAgeRangeSeparator'>%s</span> <select name='%s[max]' id='form_%s' %s class='inputAgeRange inputAgeRangeMax' >%s</select>",
+						$this->separator, $this->getName(), $this->getName(), ($this->tabindex) ? sf('tabindex="%s"', $this->tabindex) : '', $maxOptions
 					);
 
 		return $out;

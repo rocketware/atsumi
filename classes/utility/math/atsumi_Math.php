@@ -2,7 +2,7 @@
 
 /**
  *
- * @package Helpers
+ * @package Utility
  * @subpackage Math
  */
 class atsumi_Math {

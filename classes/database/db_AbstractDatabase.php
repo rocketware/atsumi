@@ -63,6 +63,10 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 	 */
 	protected $caster;
 
+
+	protected $transaction;
+	
+
 	/* CONSTRUCTOR & DESTRUCTOR */
 
 	/**
@@ -157,7 +161,7 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 	 */
 	protected function cast($args) {
 		if (is_null($this->caster))
-			throw new db_Exception('Parser not loaded.');
+			throw new db_Exception('Caster not loaded.');
 
 		return $this->caster->castString(func_get_args());
 	}
@@ -170,6 +174,18 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 		$this->pdo = null;
 		$this->connected = false;
 	}
+	
+	
+	public function formatResult ($rows) {
+	
+		$rowArr = array();
+		foreach ($rows as $idx => $row)
+			$rowArr[] = $this->createRow($row);
+	
+		return $rowArr;	
+	}
+	
+	
 
 	/**
 	 * Executes a basic query with casted variables
@@ -179,7 +195,7 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 	 */
 	public function query($query, $args = null, $_ = null) {
 		$args = func_get_args();
-		return $this->queryReal(call_user_func_array(array(&$this, 'cast'), $args));
+		return $this->formatResult($this->queryReal(call_user_func_array(array(&$this, 'cast'), $args)));
 	}
 
 	/**
@@ -207,8 +223,10 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 				throw new PDOException((isset($error[2]) ? $error[2] : 'Database Error: '.$error[0]));
 			}
 
-			$data = $return->fetchAll(PDO::FETCH_OBJ);
-
+			$data = $return->fetchAll(PDO::FETCH_ASSOC);
+			
+			$this->affectedRows = count($data);
+			
 			if(!is_array($data))
 				throw new PDOException('Failed to return data array');
 
@@ -232,51 +250,93 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 
 			return $data;
 		} catch(PDOException $e) {
-			throw new db_QueryFailedException($e->getMessage() . "<br />" . $sql);
+			throw new db_QueryFailedException($e->getMessage() . "<h4>SQL:</h4>" . $sql);
 		}
 	}
 
-	public function select($_) {
+
+
+	/* 
+	 * SELECT 
+	 * */
+	public function select($args) {
 		$args = func_get_args();
 		return call_user_func_array(array(&$this, 'query'), $args);
 	}
-
-	/**
-	 * Performs a query, returning a single result
-	 * @param $colums string The colum or colums to select
-	 * @param $tables string The table or tables to query from
-	 * @param $where string The clause to query by
-	 * @param $args mixed Any args that should be used in the clause
-	 * @param $_ Arg repeater (Repeat the last arg as many times as needed)
-	 * @return The query results
-	 */
-	public function selectOne($colums, $tables, $where, $args = null, $_ = null) {
+	public function selectOne($args) {
 		$args = func_get_args();
 		$result = call_user_func_array(array(&$this, 'select'), $args);
 
 		if(count($result) > 1)
-			throw new db_QueryFailedException('selectOne returned more than one result');
+			throw new db_UnexpectedResultException('selectOne returned more than one result');
 
 		return array_key_exists(0, $result) ? $result[0] : null;
 	}
 
-	/**
-	 * Performs a query, returning all colums of one result in an array
-	 * @param $tables string The table or tables to query from
-	 * @param $where string The clause to query by
-	 * @param $args mixed Any args that should be used in the clause
-	 * @param $_ Arg repeater (Repeat the last arg as many times as needed)
-	 * @return The query results
-	 */
-	public function fetchOne($tables, $where, $args = null, $_ = null) {
-		$args = func_get_args();
-		array_unshift($args, '*');
 
-		return call_user_func_array(array(&$this, 'selectOne'), $args);
+
+
+	/* FETCH
+	 * abstract select - for simple queries (no joins) */
+	public function fetch ($cols, $table, $where = null, $orderBy = null, $offset = null, $limit = null) {
+		/* parse the query */
+		$args = func_get_args();
+		$query = call_user_func_array (array ($this, 'parseFetchQuery'), $args);
+
+		/* perform query */
+		$result = $this->query('%l', $query);
+
+		return $result;
+	}
+	public function fetchOne($cols, $table, $where = null) {
+		$args = func_get_args();
+		$result = call_user_func_array(array(&$this, 'fetch'), $args);
+
+		if(count($result) > 1)
+			throw new db_UnexpectedResultException('fetchOne returned more than one result');
+		return array_key_exists(0, $result) ? $result[0] : null;
+	}
+	public function parseFetchQuery($cols, $table, $where = null, $orderBy = null, $offset = null, $limit = null) {
+		
+		if (is_null($this->caster))
+			throw new db_Exception('Caster not loaded.');
+
+		// strip out the nulls
+		$argsReal = func_get_args ();
+		$args = array();
+		foreach ($argsReal as $arg)
+			$args[] = !is_null($arg)?$arg:'';
+		$cols = array_shift ($args);
+		$table = array_shift ($args);
+		
+		// handle offset limit
+		$offset = null;
+		$limit 	= null;
+		
+		if (is_int(end($args))) $limit 	= array_pop($args);
+		if (is_int(end($args))) $offset = array_pop($args);
+		
+		if (count($args) && $args[0] !== null) {
+			$sets = $this->caster->castArraySets($args);
+			$where = array_shift ($sets);
+		}	
+		if (count($args) && $args[0] !== null) {
+			$orderBy = array_shift ($sets);
+		}	
+		// return select query string
+		return $this->caster->castString(
+			'SELECT %l FROM %@%l%l%l%l', $cols, $table, 
+			empty($where)?'':$this->caster->castString(' WHERE %l', 		$where),
+			empty($orderBy)?'':$this->caster->castString(' ORDER BY %l', 	$orderBy),
+			!is_int($offset)?'':$this->caster->castString(' OFFSET %i', 	$offset),
+			!is_int($limit)?'':$this->caster->castString(' LIMIT %i', 		$limit)
+			
+		);
 	}
 
+	
 	/**
-	 * Performs a insert query
+	 * INSERT
 	 *
 	 * Example:
 	 *  $db->insert('tableA', 'column1 = %s', 'a string', 'column2 = %i', 12345);
@@ -288,42 +348,61 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 	 * @throws db_Exception If the number of values does not match the number of columns
 	 */
 	public function insert($table, $column, $value = null, $_ = null) {
+		/* parse the query */
 		$args = func_get_args();
+		$query = call_user_func_array (array ($this, 'parseInsertQuery'), $args);
 
+		/* perform query */
+		$this->query('%l', $query);
+
+		return true;
+	}
+	public function insertOrUpdateOne ($table, $where, $values) {
+		
+		if (is_null($this->caster))
+			throw new db_Exception('Caster not loaded.');
+		
+		$args = func_get_args();
+		$sets = $this->caster->castArraySets($args);
+		$table = $sets [0];
+		$where = $sets [1];
+
+		$exists = $this->exists ($table, '%l', $where);
+		
+		call_user_func_array (array ($this, $exists? 'updateOne' : 'insert'), $args);
+		
+	}
+	public function deleteAndInsert ($args) {
+		throw new Expcetion ('TODO');	
+	}	
+	public function parseInsertQuery($args) {
+		
+		if (is_null($this->caster))
+			throw new db_Exception('Caster not loaded.');
+		
+		$args = func_get_args();
 		$table = array_shift($args);
+		
+		
+		$rows = $this->caster->castArraySets($args);
+		$column = array();
+		$data 	= array();
 
-		// If there are still args left we have variable pairs
-		$names = array();
-		$types = array();
-		$values = array();
-		while(count($args) >= 2) {
-			$column = array_shift($args);
-
-			$column = explode('=', $column, 2);
-
-			$names[]	= trim($column[0]);
-			$types[]	= trim($column[1]);
-			$values[]	= array_shift($args);
+		foreach($rows as $row) {
+			$rowParts 	= explode('=', $row);
+			$column[] 	= trim($rowParts[0]);
+			$data[] 	= trim($rowParts[1]);
 		}
 
-		if(count($args) > 0)
-			throw new db_Exception('Uneven number of column value paires');
-
-		/* parse values */
-		$valueString = implode(', ', $types);
-		array_unshift($values, $valueString);
-		$valueString = call_user_func_array(array($this, 'parse'), $values);
-
-
-		$query = $this->parse(
-			'INSERT INTO %@ (%l) VALUES(%l)', $table, implode(', ', $names), $valueString
+		return $this->caster->castString(
+			'INSERT INTO %@ (%l) VALUES(%l)', $table, implode(', ', $column), implode(', ', $data)
 		);
-
-		$this->queryReal($query);
 	}
 
-	// TODO: public function insert($table, $column, $value = null, $_ = null)
-
+	/*
+	 * UPDATE
+	 * 
+	 * */
 	public function update($args) {
 		/* parse the query */
 		$args = func_get_args();
@@ -334,54 +413,107 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 
 		return true;
 	}
-
 	public function updateOne($args) {
 		/* call update */
 		$args = func_get_args ();
 		$ret = call_user_func_array (array ($this, 'update'), $args);
 
 		// ensure affected row count is correct
-		if($this->affected_rows () == 0)
-			throw new sql_Exception ('No rows affected in updateOne()');
-		if($this->affected_rows () > 1)
-			throw new sql_Exception ('Multiple rows affected in updateOne()');
+		if($this->getAffectedRows () == 0)
+			throw new db_UnexpectedResultException ('No rows affected in updateOne()');
+		if($this->getAffectedRows () > 1)
+			throw new db_UnexpectedResultException ('Multiple rows affected in updateOne()');
 
 		return true;
 	}
-
 	public function parseUpdateQuery($args) {
+		
+		if (is_null($this->caster))
+			throw new db_Exception('Caster not loaded.');
+
 		$args = func_get_args ();
-		$sets = $this->quotef_special($args);
+		$sets = $this->caster->castArraySets($args);
 		$update = array_shift ($sets);
 		$where = array_shift ($sets);
 		if (count ($sets) == 0) $sets = array ($where);
-
+		
 		/* return update query string */
-		return $this->format(
-			'UPDATE %l SET %l WHERE %l', $update, implode(', ', $sets), $where
+		return $this->caster->castString(
+			'UPDATE %@ SET %l WHERE %l', $update, implode(', ', $sets), $where
 		);
 	}
 
-	/* DEPRECATED METHODS */
+	/*
+	 * EXISTS
+	 * */
+	public function exists ($table, $where) {
+		
+		if (is_null($this->caster))
+			throw new db_Exception('Caster not loaded.');
+		
+		$args = func_get_args();
+		$table = array_shift($args);
+		$where = $this->caster->castArraySets($args);
+		
+		$result = $this->query(
+			'SELECT CASE WHEN EXISTS (
+				SELECT *
+					FROM %@
+					WHERE %l
+			) THEN %b ELSE %b END AS exists', 
+			$table, $where[0], true, false
+		);
+		
+		$exists = $result[0];
+		return $exists->cast('b', 'exists');
+	}	
 
-	/**
-	 * Selects a single record from the database
-	 * @deprecated Back compatability functions. DO NOT USE!
-	 * @param unknown_type $_
-	 */
-	public function select_1($_) {
-		$args = func_get_args ();
-		return call_user_func_array (array (&$this, 'selectOne'), $args);
-	}
+	/*
+	 * COUNT
+	 * */
+	public function count ($table, $where = null) {
+		
+		if (is_null($this->caster))
+			throw new db_Exception('Caster not loaded.');
+		
+		$args = func_get_args();
+		$table = array_shift($args);
+		
+		$where = (count($args) && !is_null($args[0]))?$this->caster->castArraySets($args):array('1=1');
+		
+		$result = $this->query(
+			'SELECT COUNT(*) AS count FROM %@ WHERE %l', 
+			$table, $where[0]
+		);
+		
+		$exists = $result[0];
+		return $exists->cast('i', 'count');
+	}	
 
-	/**
-	 * Updates a single record in the database.
-	 * @deprecated Back compatability functions. DO NOT USE!
-	 * @param unknown_type $_
-	 */
-	public function update_1($_) {
-		$args = func_get_args ();
-		return call_user_func_array (array (&$this, 'updateOne'), $args);
+
+
+	/*
+	 * DELETE
+	 * */
+	public function delete ($args) {
+		throw new db_Exception ('TODO');	
+	}	
+	public function deleteOne ($args) {
+		throw new db_Exception ('TODO');	
+	}	
+	public function parseDeleteQuery ($args) {
+		throw new db_Exception ('TODO');	
 	}
+	
+	/*
+	 * Table management
+	 * */
+	public function createTable ($args) {
+		throw new db_Exception ('TODO');	
+	}	
+	public function dropTable ($args) {
+		throw new db_Exception ('TODO');	
+	}	
+
 }
 ?>
