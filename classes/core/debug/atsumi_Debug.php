@@ -172,7 +172,7 @@ class atsumi_Debug {
 	 * @return boolean
 	 */
 	public function _getActive() {
-		return $active;
+		return $this->active;
 	}
 
 	/* SET FUNCTIONS */
@@ -366,7 +366,7 @@ class atsumi_Debug {
 	 * @return string A html5 valid string representation of the variable
 	 */
 	protected function format($value) {
-		
+
 		if(is_null($value))
 			return '<span class="typeNull">NULL</span>';
 
@@ -671,7 +671,7 @@ window.onload=function(){
 
 		if(!$this->active) return;
 
-		
+
 		$this->startTimer();
 		$display =(isset($_COOKIE['debugDisplay']) ? strtolower($_COOKIE['debugDisplay']) : 'console');
 		ob_start();
