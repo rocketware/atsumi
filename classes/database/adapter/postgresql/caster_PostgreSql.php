@@ -27,6 +27,7 @@ class caster_PostgreSql extends caster_Abstract {
 	protected $spec = array(
 		'@' => 'tableName',
 		'a' => 'sqlArray',
+		'A' => 'sqlArrayOrNull',
 		'b' => 'boolean',
 		'c' => 'character',
 		'C' => 'characterVarying',
@@ -112,6 +113,10 @@ class caster_PostgreSql extends caster_Abstract {
 		}
 
 		return "ARRAY[".$sqlArr."]";
+	}
+	static function sqlArrayOrNull($in) {
+		if (is_null($in)) return 'NULL';
+		return self::sqlArray($in);
 	}
 
 	/**
@@ -203,7 +208,7 @@ class caster_PostgreSql extends caster_Abstract {
 	static function date($in) {
 		return sf("'%s'::DATE", $in);
 	}
-	
+
 	/**
 	 * Casts a variable into a PostgreSQL date
 	 * @param string $in String to be casted
