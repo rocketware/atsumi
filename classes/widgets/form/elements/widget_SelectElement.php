@@ -10,21 +10,21 @@ class widget_SelectElement extends widget_AbstractElement {
 			$this->blankMessage = $args['blank'];
 	}
 	function renderElement() {
-		$opionHtml = "";
+		$optionHtml = "";
 		$elementValue = $this->getValue();
 
 		if(!$this->defaultValue && $this->blankMessage)
-			$opionHtml .= sfl("<option value='' >%s</option>", $this->blankMessage);
+			$optionHtml .= sfl("<option value='' >%s</option>", $this->blankMessage);
 		elseif($this->defaultValue) {
 			// TODO: put this in a func...
 			foreach($this->defaultValue as $value => $option) {
 				if(strval($elementValue) == strval($value))
-					$opionHtml .= sfl("<option value='%s' selected='selected'>%s</option>",
+					$optionHtml .= sfl("<option value='%s' selected='selected'>%s</option>",
 										$value,
 										$option
 					);
 				else
-					$opionHtml .= sfl("<option value='%s'>%s</option>",
+					$optionHtml .= sfl("<option value='%s'>%s</option>",
 										$value,
 										$option
 					);
@@ -33,12 +33,12 @@ class widget_SelectElement extends widget_AbstractElement {
 		}
 		foreach($this->options as $value => $option) {
 			if(strval($elementValue) == strval($value))
-				$opionHtml .= sfl("<option value='%s' selected='selected'>%s</option>",
+				$optionHtml .= sfl("<option value='%s' selected='selected'>%s</option>",
 									$value,
 									$option
 				);
 			else
-				$opionHtml .= sfl("<option value='%s'>%s</option>",
+				$optionHtml .= sfl("<option value='%s'>%s</option>",
 									$value,
 									$option
 				);
@@ -48,7 +48,7 @@ class widget_SelectElement extends widget_AbstractElement {
 						$this->getName(),
 						($this->tabindex) ? sf('tabindex="%s"', $this->tabindex) : '',
 						$this->getName(),
-						$opionHtml
+						$optionHtml
 
 					)
 				);
