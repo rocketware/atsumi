@@ -35,6 +35,7 @@ abstract class atsumi_AbstractAppSettings {
 	protected $cache = array();
 
 	/* CONSTRUCTOR & DESTRUCTOR */
+	public function __construct() { }
 	/* GET METHODS */
 
 	/**

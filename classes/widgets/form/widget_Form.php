@@ -128,6 +128,24 @@ class widget_Form {
 		$this->elementMap[$element->getName()] = &$element;
 	}
 
+	public function remove($elementName) {
+		if(!isset($this->elementMap[$elementName])) {
+			throw new Exception('Cannot remove non-existant element');
+		}
+		for($i = 0; $i < count($this->elements); $i++) {
+			$done = false;
+			if($this->elementMap[$elementName] == $this->elements[$i]) {
+				unset($this->elementMap[$elementName]);
+				unset($this->elements[$i]);
+				$done = true;
+			}
+			if($done) {
+				$this->elements = array_values($this->elements);
+				break;
+			}
+		}
+	}
+
 	public function value($elementName) {
 		if(!array_key_exists($elementName, $this->elementMap))
 			throw new Exception("Element not found: ".$elementName);
