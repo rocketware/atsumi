@@ -496,13 +496,32 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 	 * DELETE
 	 * */
 	public function delete ($args) {
-		throw new db_Exception ('TODO');	
+		/* parse the query */
+		$args = func_get_args();
+		$query = call_user_func_array (array ($this, 'parseDeleteQuery'), $args);
+
+		/* perform query */
+		$this->query('%l', $query);
+
+		return true;
 	}	
 	public function deleteOne ($args) {
 		throw new db_Exception ('TODO');	
 	}	
 	public function parseDeleteQuery ($args) {
-		throw new db_Exception ('TODO');	
+		if (is_null($this->caster))
+			throw new db_Exception('Caster not loaded.');
+
+		$args = func_get_args ();
+		$sets = $this->caster->castArraySets($args);
+		$deleteFrom = array_shift ($sets);
+		$where = array_shift ($sets);
+		
+		/* return update query string */
+		return $this->caster->castString(
+			'DELETE FROM %@ WHERE %l', $deleteFrom, $where
+		);
+
 	}
 	
 	/*

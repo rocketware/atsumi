@@ -116,7 +116,7 @@ class widget_Paginate {
 				throw new Exception ('Unknown pagination template');
 
 			case self::TEMPLATE_CLASSIC:
-				$this->format 			= '<div class="pagination">page: [START][START_ELLIPSES][PAGES][END_ELLIPSES][END]</div>';
+				$this->format 			= '<div class="pagination">Page: [START][START_ELLIPSES][PAGES][END_ELLIPSES][END]</div>';
 				$this->formatNext 		= array('', '');
 				$this->formatPrevious 	= array('', '');
 				break;
