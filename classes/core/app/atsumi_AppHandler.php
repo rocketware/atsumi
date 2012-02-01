@@ -45,6 +45,13 @@ class atsumi_AppHandler {
 	private $uri;
 
 	/**
+	 * The command to be parsed and processed
+	 * @access private
+	 * @var string
+	 */
+	private $command;
+
+	/**
 	 * Holds the base path of atsumi relative to the domain
 	 * @access private
 	 * @var string
@@ -57,6 +64,13 @@ class atsumi_AppHandler {
 	 * @var string|object
 	 */
 	private $uriParser = 'uriparser_Gyokuro';
+
+	/**
+	 * The command parser classname or instance to use
+	 * @access private
+	 * @var string|object
+	 */
+	private $claParser = 'claparser_Standard';
 
 	/**
 	 * The controller instance generated based on the parser data
@@ -127,6 +141,16 @@ class atsumi_AppHandler {
 	// SET FUNCTIONS
 
 	/**
+	 * Sets the command to be parsed and processed
+	 * @access public
+	 * @param string $path
+	 */
+	public function setCommand($command) {
+		$this->command = $command;
+	}
+
+
+	/**
 	 * Sets the uri to be parsed and processed
 	 * @access public
 	 * @param string $path
@@ -184,13 +208,18 @@ class atsumi_AppHandler {
 	 * @param string $uri The uri to processed
 	 */
 	public function go($uri) {
-
-		$scriptArr = explode('/',$_SERVER['SCRIPT_NAME']);
-		$baseUri = str_replace(array($_SERVER['DOCUMENT_ROOT'],  end($scriptArr)), '', $_SERVER['SCRIPT_FILENAME']);
-		$this->setBaseUri($baseUri);
-
-		$this->setUri($uri);
-		$this->parseUri();
+		if($this->settings->get_cli === true) {
+			$this->setBaseUri('.');
+			$this->setCommand($uri);
+			$this->parseCommand();
+		} else {
+			$scriptArr = explode('/',$_SERVER['SCRIPT_NAME']);
+			$baseUri = str_replace(array($_SERVER['DOCUMENT_ROOT'],  end($scriptArr)), '', $_SERVER['SCRIPT_FILENAME']);
+			$this->setBaseUri($baseUri);
+	
+			$this->setUri($uri);
+			$this->parseUri();
+		}
 		$this->process();
 	}
 
@@ -223,6 +252,29 @@ class atsumi_AppHandler {
 			array_merge(array('path' => $this->uri), $this->parserData), true);
 	}
 
+	public function parseCommand() {
+		atsumi_Debug::startTimer();
+		if(!in_array('claparser_Interface', class_implements($this->claParser))) {
+			throw new Exception('Command Line Argument parser must implement claparser_Interface');
+		}
+		if(is_string($this->claParser)) {
+			$this->claParser = new $this->claParser();
+		}
+		$parseData = $this->claParser->parseCommand($this->command, $this->settings->init_specification);
+
+		$this->parserData = array(
+			'controller'	=>	$parseData['controller'],
+			'method'	=> 	$parseData['method'],
+			'args'		=> 	$parseData['args']
+		);
+
+		atsumi_Debug::setParserData($parseData);
+		atsumi_Debug::record('Command Parsing',
+			'Command was parsed to determine the controller, method and args.',
+			array_merge(array('path' => $this->command), $this->parserData), true);
+	
+	}
+
 	/**
 	 * Processes the controller and method choosen by the parser
 	 * Note: parseUri method must be execute before this method
@@ -232,7 +284,6 @@ class atsumi_AppHandler {
 		// Could possibly be a fragment of the spec
 		if(!is_string($this->parserData['controller']))
 			throw new Exception('Path parsing error, please report to developement team');
-
 		if(!class_exists($this->parserData['controller']))
 			throw new Exception('Could not find required controller: '.$this->parserData['controller']);
 

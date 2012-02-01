@@ -132,14 +132,6 @@ class caster_MySqlToPhp extends caster_Abstract {
 		return atsumi_Date::fromYmd($in);
 	}
 	
-	static function date($in) {
-		return atsumi_Date::fromYmd($in);
-	}
-	
-	static function date($in) {
-		return atsumi_Date::fromYmd($in);
-	}
-	
 	static function time($in) {
 		if (is_null($in)) return null;
 		//TODO: time stuff
