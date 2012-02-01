@@ -208,7 +208,7 @@ class atsumi_AppHandler {
 	 * @param string $uri The uri to processed
 	 */
 	public function go($uri) {
-		if($this->settings->get_cli === true) {
+		if(isset($this->settings->get_cli) && $this->settings->get_cli === true) {
 			$this->setBaseUri('.');
 			$this->setCommand($uri);
 			$this->parseCommand();
