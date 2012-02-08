@@ -173,7 +173,11 @@ abstract class widget_AbstractElement {
 	}
 
 	public function setCssClass($in) {
-		$this->cssCLass = $in;
+		$this->cssClass = $in;
+	}
+
+	public function setCssStyle($in) {
+		$this->cssStyle = $in;
 	}
 
 	public function setTabindex($in) {
