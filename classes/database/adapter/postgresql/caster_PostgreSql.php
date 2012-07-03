@@ -109,7 +109,7 @@ class caster_PostgreSql extends caster_Abstract {
 		$sqlArr = "";
 		foreach($in as $item) {
 			$sqlArr .= ($sqlArr == "") ? "" : ", ";
-			$sqlArr .= is_int($item) ? $item : "'".$item."'";
+			$sqlArr .= is_int($item) ? $item : "'".pg_escape_string($item)."'";
 		}
 
 		return "ARRAY[".$sqlArr."]";

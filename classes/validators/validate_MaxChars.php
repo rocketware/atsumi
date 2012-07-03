@@ -18,7 +18,7 @@
  		if(is_array($data))$data = $data[0];
 
  		$data = str_replace("\n", " ", str_replace("\r", "", $data));
- 		if(empty($data) || strlen($data) <= $this->maxChars)
+ 		if(empty($data) || mb_strlen($data) <= $this->maxChars)
  			return true;
  		else
  			throw new Exception(sf("You must enter less than %s characters",
