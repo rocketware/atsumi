@@ -96,9 +96,38 @@ class caster_PostgreSqlToPhp extends caster_Abstract {
 		if (is_null($in)) return array();
 
 		$in = str_replace(array("{","}"),"", $in);
-		$arr = explode(",",$in);
 
+		$arrayOut = array();
+		$processing= $in;
 
+		while(strlen($processing) > 0) {
+
+			if (substr($processing, 0, 1) == ',') {
+				$processing = substr($processing, 1);
+			}
+
+			preg_match('/^\"([^"]*)\"/', $processing, $match);
+			if (count($match)) {
+
+				if (strlen($processing) === strlen($match[0]))
+						$processing = '';
+				else	$processing = substr($processing, strlen($match[0]));
+
+				$arrayOut[] = $match[1];
+				continue;
+			}
+
+			preg_match('/^([^,]*)/', $processing, $match);
+			if (count($match)) {
+
+				if (strlen($processing) === strlen($match[0]))
+						$processing = '';
+				else	$processing = substr($processing, strlen($match[0]));
+
+				$arrayOut[] = $match[1];
+				continue;
+			}
+		}
 		// int
 	/*	if ($type == "integer") {
 			$newArr = array();
@@ -106,7 +135,7 @@ class caster_PostgreSqlToPhp extends caster_Abstract {
 			$newArr[] = intval($val);
 			$arr = $newArr;
 		} */
-		return $arr;
+		return $arrayOut;
 	}
 
 	static function sqlArrayOrNull($in) {

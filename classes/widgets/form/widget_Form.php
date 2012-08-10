@@ -17,6 +17,7 @@ class widget_Form {
 	private $submitted		= false;
 	private $ancorJump		= false;		// will the form jump to the ancor?
 	private $actionPath		= '';
+	private $cssClasses		= array();
 
 	public function __construct($formName = null, $autoLoadFormData = true) {
 		if(!is_null($formName)) $this->setName($formName);
@@ -48,6 +49,10 @@ class widget_Form {
 
 	public function getTitle() {
 		return $this->title;
+	}
+
+	public function addCssClass ($className) {
+		 $this->cssClasses[] = $className;
 	}
 
 	public function setFormDataFromMethod() {
@@ -236,14 +241,15 @@ class widget_Form {
 
 	public function getFormTop() {
 
-		$html = sf('<a name="form_%s"></a><form name="%s" id="%s" method="%s" action="%s" enctype="%s" class="form">',
-							$this->name,
-							$this->name,
-							$this->name,
-							$this->method,
-							$this->ancorJump ? sf('%s#form_%s', $this->actionPath, $this->name) : $this->actionPath,
-							$this->encoding
-					);
+		$html = sf('<a name="form_%s"></a><form name="%s" id="%s" method="%s" action="%s" enctype="%s" class="form%s">',
+			$this->name,
+			$this->name,
+			$this->name,
+			$this->method,
+			$this->ancorJump ? sf('%s#form_%s', $this->actionPath, $this->name) : $this->actionPath,
+			$this->encoding,
+			count($this->cssClasses)?' '.implode(' ', $this->cssClasses):''
+		);
 
 		// add a hidden field to verify if this form has been posted
 		$html .= sfl("<input type='hidden' name='submitted__%s' value='true' />", $this->name);
