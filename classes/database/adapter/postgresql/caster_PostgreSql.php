@@ -33,6 +33,7 @@ class caster_PostgreSql extends caster_Abstract {
 		'C' => 'characterVarying',
 		'd' => 'date',
 		'f' => 'float',
+		'g' => 'geometry',
 		'i' => 'integer',
 		'I' => 'integerOrNull',
 		'l' => 'literal',
@@ -153,6 +154,16 @@ class caster_PostgreSql extends caster_Abstract {
 	 */
 	static function boolean($in) {
 		return sf("'%s'::BOOLEAN", $in?'t':'f');
+	}
+
+	/**
+	 * Casts a variable into a PostgreSQL geometry
+	 * @param string $in String to be casted
+	 * @return string Casted string
+	 */
+	static function geometry($in) {
+		if(!is_string($in)) throw new caster_StrictTypeException('Geom Expected String');
+		return sf("'%s'::GEOMETRY", pg_escape_string($in));
 	}
 
 	/**
