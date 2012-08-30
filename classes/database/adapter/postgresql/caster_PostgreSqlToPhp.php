@@ -30,6 +30,8 @@ class caster_PostgreSqlToPhp extends caster_Abstract {
 		'b' => 'boolean',
 		'd' => 'date',
 		'D' => 'dateOrNull',
+		'g' => 'geometry',
+		'G' => 'geometryOrNull',
 		'i' => 'integer',
 		'I' => 'integerOrNull',
 		'f' => 'float',
@@ -196,6 +198,14 @@ class caster_PostgreSqlToPhp extends caster_Abstract {
 	static function timestampWithTimezoneOrNull($in) {
 		if (is_null($in)) return null;
 		return self::timestampWithTimezone($in);
+	}
+
+	static function geometry($in) {
+		return atsumi_Interval::fromPostgresql(strval($in));
+	}
+	static function geometryOrNull($in) {
+		if (is_null($in)) return null;
+		return self::geometry($in);
 	}
 
 	/* DEPRECATED METHODS */
