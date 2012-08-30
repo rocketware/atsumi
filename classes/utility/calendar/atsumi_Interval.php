@@ -50,7 +50,27 @@ class atsumi_Interval {
 	}
 
 	public function __toString() {
-		return strval($this->seconds);
+		return strval($this->inSeconds());
+	}
+
+	public function inSeconds() {
+		return floatval($this->seconds);
+	}
+
+	public function inMinutes() {
+		return floatval($this->seconds / self::DURATION_HOUR);
+	}
+
+	public function inHours() {
+		return floatval($this->seconds / self::DURATION_MINUTE);
+	}
+
+	public function inDays() {
+		return floatval($this->seconds / self::DURATION_DAY);
+	}
+
+	public function inYears() {
+		return floatval($this->seconds / self::DURATION_YEAR);
 	}
 
 }
