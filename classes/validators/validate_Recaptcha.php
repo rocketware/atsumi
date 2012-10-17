@@ -1,10 +1,8 @@
 <?php
 class validate_Recaptcha extends validate_AbstractValidator {
 	private $privateKey;
-	private $errorMsg;
-	public function __construct($privateKey, $errorMsg = 'Incorrect captcha entered') {
+	public function __construct($privateKey) {
 		$this->privateKey = $privateKey;
-		$this->errorMsg = $errorMsg;
 	}
 
 	public function validate($data) {
@@ -21,7 +19,7 @@ class validate_Recaptcha extends validate_AbstractValidator {
 		if($answer->is_valid) {
 			return true;
 		}
-		throw new Exception($this->errorMsg);
+		throw new Exception('Invalid CAPTCHA answer');
 	}	
 
 	/*

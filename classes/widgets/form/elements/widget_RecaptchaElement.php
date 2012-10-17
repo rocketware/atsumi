@@ -10,9 +10,6 @@ class widget_RecaptchaElement extends widget_AbstractElement {
 		}
 		$this->publicKey = $args['apiKey'];
 	}
-	function getRequired () {
-		return true;
-	}
 	function renderElement() {
 		$output = sf('
 			<script type="text/javascript"src="http://www.google.com/recaptcha/api/challenge?k=%s"></script>
