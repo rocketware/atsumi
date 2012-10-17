@@ -127,7 +127,7 @@ class atsumi_ErrorParser {
 
 				if (isset($e->details) && !is_null($e->details)) {
 					$out .= sfl('<br /><h3>Additional Detail</h3>');
-					$out .= sfl('<div class="atsumiDetailsContainer">%s</div>', pretty($e->details));
+					$out .= sfl('<div class="atsumiDetailsContainer"><pre>%s</pre></div>', pretty($e->details));
 				}
 
 				if($e instanceof atsumi_AbstractException) {
