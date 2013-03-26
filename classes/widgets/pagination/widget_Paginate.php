@@ -33,7 +33,7 @@ class widget_Paginate {
 	private $pageCount;
 	private $resultsPerPage = 10;
 	private $currentPage 	= 0;
-	private $navLength 		= 7;
+	private $navLength 		= 4;
 	private $url;
 
 	/* formatting options */
@@ -109,8 +109,8 @@ class widget_Paginate {
 	}
 	
 
-	/* set the format template (default is classic) */
-	public function setFormatTemplate ($template = 1) {
+	/* set the format template (default is simple) */
+	public function setFormatTemplate ($template = 3) {
 
 		switch ($template) {
 			default:
@@ -130,7 +130,7 @@ class widget_Paginate {
 					
 			case self::TEMPLATE_SIMPLE:
 				$this->format 			= '<div class="pagination"><span class="priority-low">Page:</span> [START][START_ELLIPSES][PAGES][END_ELLIPSES][NEXT]</div>';
-				$this->formatNext 		= array('<span class="pageArrow"><a href="[HREF]" class="button">Next</a></span>', '<span class="pageArrowDisabled">Next</span>');
+				$this->formatNext 		= array('<span class="pageArrow"><a href="[HREF]" class="button">Next</a></span>', '');
 				break;
 
 		}
@@ -270,7 +270,7 @@ class widget_Paginate {
 			else $endEllipses = '';
 
 		// params: next link
-		if ($this->currentPage == $this->pageCount) $next = $this->formatNext[1];
+		if ($this->currentPage >= $this->pageCount) $next = $this->formatNext[1];
 		else $next = str_replace('[HREF]',  $this->generateUrl($this->currentPage+1), $this->formatNext[0]);
 
 		// params: previous link
