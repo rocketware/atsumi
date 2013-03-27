@@ -263,11 +263,13 @@ class widget_Form {
 		return $html;
 	}
 
-	public function getFormBottom() {
+	public function getFormBottom($options = array()) {
 
 		// add the submit to the bottom of the form for now(will convert to element in next version)
-		$html  = sfl('	<div class="submit rowSubmit">');
-		$html .= sfl('		<input type="submit" class="button-submit" id="submit_%s" value="%s" />', $this->name, $this->getSubmit());
+		$html  = sfl('	<div class="submit rowSubmit%s">', array_key_exists('rowClasses',$options)?' '.$options['rowClasses']:'');
+		$html .= sfl('		<button type="submit" class="button button-submit%s" id="submit_%s">%s</button>', 
+			array_key_exists('buttonClasses',$options)?' '.$options['buttonClasses']:'',
+			$this->name, $this->getSubmit());
 		$html .= sfl('	</div>');
 		$html .= sfl('</form>');
 
