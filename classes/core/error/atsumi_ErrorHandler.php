@@ -230,5 +230,8 @@ class atsumi_ErrorHandler extends atsumi_Observable {
 	public function listen ($e) {
 		$this->handleException($e, false);
 	}
+	public function recover ($e) {
+		$this->recoverer->recover($e);
+	}
 }
 ?>
