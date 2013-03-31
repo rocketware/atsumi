@@ -10,31 +10,48 @@ class mvc_PhpTemplateViewHandler implements mvc_ViewHandlerInterface {
 	
 	// view/page data
 	private $viewData				= array();
+	
+	private $surpressErrors			= true;
 
 	
-	public function __construct($mainTemplate = false, $templateFileMap = array()) {
+	public function __construct($mainTemplate = false, $templateFileMap = array(), $surpressErrors = true) {
 
 		$this->templateFileMap 	= $templateFileMap;
 		$this->mainTemplate		= $mainTemplate;
-
+		$this->surpressErrors	= $surpressErrors;
 	}
 
 	
 	/*
 	 * Static: Processes a specific template file
 	 */
-	static public function processTemplateFile ($templateFile, $data) {
+	static public function processTemplateFile ($templateFile, $data, $supressErrors = false) {
 		if (empty($templateFile)) return;
 		
 		extract($data, EXTR_SKIP);
 		ob_start();
 		try {
-			@include($templateFile);
+			
+			if ($supressErrors)
+				@include($templateFile);
+			else 
+				include($templateFile);
+			
 		} catch (Exception $e) { 
+
+			Atsumi::error__listen($e);
+			
+			if (!$supressErrors)
+				throw $e;
+			else 
+				Atsumi::error__recover($e);
+
+			
+			/*
 			throw new mvc_ViewNotFoundException (
-				"Can't find referenced template: ".$pageTemplate, 
-				$pageTemplate
-			); 
+				"Can't find referenced template: ".$templateFile, 
+				$templateFile
+			); */
 		}
 		return ob_get_clean();
 	}
@@ -42,8 +59,8 @@ class mvc_PhpTemplateViewHandler implements mvc_ViewHandlerInterface {
 	/*
 	 * static: Prints a specific template file
 	*/
-	static public function renderTemplateFile ($templateFile, $data) {
-		print self::processTemplate($templateFile, $data);
+	static public function renderTemplateFile ($templateFile, $data, $supressErrors = false) {
+		print self::processTemplate($templateFile, $data, $supressErrors);
 	}
 	
 
@@ -59,7 +76,7 @@ class mvc_PhpTemplateViewHandler implements mvc_ViewHandlerInterface {
 		if ($incViewData) 
 			$data = array_merge($data, $this->viewData);
 
-		return self::processTemplateFile($template, $data);
+		return self::processTemplateFile($template, $data, $this->surpressErrors);
 	}
 	
 	
