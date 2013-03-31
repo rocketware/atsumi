@@ -76,6 +76,9 @@ class widget_Paginate {
 	public function getPageCount() {
 		return $this->pageCount;
 	}
+	public function getPage() {
+		return $this->currentPage;
+	}
 
 	/* returns total page count */
 	public function getTotalResults() {
