@@ -389,7 +389,7 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 		$data 	= array();
 
 		foreach($rows as $row) {
-			$rowParts 	= explode('=', $row);
+			$rowParts 	= preg_split('/=/', $row, 2);
 			$column[] 	= trim($rowParts[0]);
 			$data[] 	= trim($rowParts[1]);
 		}
