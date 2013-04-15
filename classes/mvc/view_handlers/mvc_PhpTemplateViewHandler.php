@@ -13,7 +13,7 @@ class mvc_PhpTemplateViewHandler implements mvc_ViewHandlerInterface {
 	
 	private $surpressErrors			= true;
 
-	
+
 	public function __construct($mainTemplate = false, $templateFileMap = array(), $surpressErrors = true) {
 
 		$this->templateFileMap 	= $templateFileMap;
@@ -21,7 +21,6 @@ class mvc_PhpTemplateViewHandler implements mvc_ViewHandlerInterface {
 		$this->surpressErrors	= $surpressErrors;
 	}
 
-	
 	/*
 	 * Static: Processes a specific template file
 	 */
@@ -89,10 +88,16 @@ class mvc_PhpTemplateViewHandler implements mvc_ViewHandlerInterface {
 	}
 	
 
-	
-	public function render($viewTemplate, $viewData) {
+	/*
+	 * returns processed template
+	 * optionally uses main template
+	*/
+	public function process ($viewTemplate, $viewData, $mainTemplateOverride  = null) {
 		
 		$this->viewData = $viewData;
+		$mainTemplate = is_null($mainTemplateOverride)?
+			$this->mainTemplate:
+			$mainTemplateOverride;
 		
 		// process the view tempalte
 		$pageContent = $this->processTemplate(
@@ -102,15 +107,31 @@ class mvc_PhpTemplateViewHandler implements mvc_ViewHandlerInterface {
 		);
 
 		// if there is a main template - process & render it
-		if ($this->mainTemplate) 
-			$this->renderTemplate(
-				$this->mainTemplate, 
+		if ($mainTemplate) 
+			return $this->processTemplate(
+				$mainTemplate, 
 				array("pageContent"=>$pageContent), 
 				true
 			);
 
 		// if not - render view template
-		else print $pageContent;
+		else return $pageContent;
+	}
+
+	/*
+	 * prints a processed
+	 * optionally uses main template
+	*/
+	public function render ($viewTemplate, $viewData, $mainTemplateOverride  = null) {
+		print $this->process($viewTemplate, $viewData, $mainTemplateOverride);
+	}
+	
+
+	/*
+	 * set the main template
+	*/
+	public function setMainTemplate ($in) {
+		$this->mainTemplate = $in;
 	}
 }
 
