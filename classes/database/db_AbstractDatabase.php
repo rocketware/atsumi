@@ -195,7 +195,7 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 	 */
 	public function query($query, $args = null, $_ = null) {
 		$args = func_get_args();
-		return $this->formatResult($this->queryReal(call_user_func_array(array(&$this, 'cast'), $args)));
+		return $this->formatResult($this->queryReal(call_user_func_array(array($this, 'cast'), $args)));
 	}
 
 	/**
@@ -261,11 +261,11 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 	 * */
 	public function select($args) {
 		$args = func_get_args();
-		return call_user_func_array(array(&$this, 'query'), $args);
+		return call_user_func_array(array($this, 'query'), $args);
 	}
 	public function selectOne($args) {
 		$args = func_get_args();
-		$result = call_user_func_array(array(&$this, 'select'), $args);
+		$result = call_user_func_array(array($this, 'select'), $args);
 
 		if(count($result) > 1)
 			throw new db_UnexpectedResultException('selectOne returned more than one result');
@@ -290,7 +290,7 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 	}
 	public function fetchOne($cols, $table, $where = null) {
 		$args = func_get_args();
-		$result = call_user_func_array(array(&$this, 'fetch'), $args);
+		$result = call_user_func_array(array($this, 'fetch'), $args);
 
 		if(count($result) > 1)
 			throw new db_UnexpectedResultException('fetchOne returned more than one result');
@@ -389,7 +389,7 @@ abstract class db_AbstractDatabase /* implements db_InterfaceDatabase */ {
 		$data 	= array();
 
 		foreach($rows as $row) {
-			$rowParts 	= explode('=', $row);
+			$rowParts 	= preg_split('/=/', $row, 2);
 			$column[] 	= trim($rowParts[0]);
 			$data[] 	= trim($rowParts[1]);
 		}

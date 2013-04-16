@@ -16,7 +16,8 @@ abstract class widget_AbstractElement {
 
 	protected $cssStyle			= null;
 	protected $cssClass			= null;
-
+	
+	
 	/**
 	 * @deprecated
 	 */
@@ -54,7 +55,8 @@ abstract class widget_AbstractElement {
 		return $in;
 	}
 
-	public function render() {
+	public function render($options = array()) {
+					
 		$out = $this->preRender();
 		$out .= sfl('<div class="row%s%s%s row_%s"%s>',
 				$this->style ? " " . $this->style : "",
@@ -64,7 +66,12 @@ abstract class widget_AbstractElement {
 				$this->cssStyle ? " style='" . $this->cssStyle . "'": ""
 			);
 		try {
-			$out .= sf('%s%s%s', $this->renderErrors(), ($this->label != '' || $this->getRequired() ? $this->renderLabel() : ''), $this->renderElement());
+			$out .= sf('%s%s<div class="element">%s</div>', 
+				$this->renderErrors(), 
+				(($this->label != '' || $this->getRequired()) && 
+				(!array_key_exists('label', $options) || $options['label'] !== false) ? 
+					$this->renderLabel() : ''), 
+				$this->renderElement());
 		} catch (Exception $e) {
 
 			// if in debug mode display exception details

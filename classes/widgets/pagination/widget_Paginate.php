@@ -26,13 +26,14 @@ class widget_Paginate {
 	/* format presets/templates */
 	const TEMPLATE_CLASSIC 	= 1;
 	const TEMPLATE_ARROWS 	= 2;
+	const TEMPLATE_SIMPLE 	= 3;
 
 	/* member variables used for pagination calculations */
 	private $recordCount;
 	private $pageCount;
 	private $resultsPerPage = 10;
 	private $currentPage 	= 0;
-	private $navLength 		= 7;
+	private $navLength 		= 4;
 	private $url;
 
 	/* formatting options */
@@ -75,6 +76,9 @@ class widget_Paginate {
 	public function getPageCount() {
 		return $this->pageCount;
 	}
+	public function getPage() {
+		return $this->currentPage;
+	}
 
 	/* returns total page count */
 	public function getTotalResults() {
@@ -108,8 +112,8 @@ class widget_Paginate {
 	}
 	
 
-	/* set the format template (default is classic) */
-	public function setFormatTemplate ($template = 1) {
+	/* set the format template (default is simple) */
+	public function setFormatTemplate ($template = 3) {
 
 		switch ($template) {
 			default:
@@ -121,10 +125,15 @@ class widget_Paginate {
 				$this->formatPrevious 	= array('', '');
 				break;
 
-			case self::TEMPLATE_ARROWS:
-				$this->format 			= '<div class="pagination">[PREVIOUS][START][START_ELLIPSES][PAGES][END_ELLIPSES][END][NEXT]</div>';
-				$this->formatNext 		= array('<span class="pageArrow"><a href="[HREF]">&raquo;</a></span>', '<span class="pageArrowDisabled">&raquo;</span>');
-				$this->formatPrevious 	= array('<span class="pageArrow"><a href="[HREF]">&laquo;</a></span>', '<span class="pageArrowDisabled">&laquo;</span>');
+				case self::TEMPLATE_ARROWS:
+					$this->format 			= '<div class="pagination">[PREVIOUS][START][START_ELLIPSES][PAGES][END_ELLIPSES][END][NEXT]</div>';
+					$this->formatNext 		= array('<span class="pageArrow"><a href="[HREF]">&raquo;</a></span>', '<span class="pageArrowDisabled">&raquo;</span>');
+					$this->formatPrevious 	= array('<span class="pageArrow"><a href="[HREF]">&laquo;</a></span>', '<span class="pageArrowDisabled">&laquo;</span>');
+					break;
+					
+			case self::TEMPLATE_SIMPLE:
+				$this->format 			= '<div class="pagination"><span class="priority-low">Page:</span> [START][START_ELLIPSES][PAGES][END_ELLIPSES][NEXT]</div>';
+				$this->formatNext 		= array('<span class="pageArrow"><a href="[HREF]" class="button">Next</a></span>', '');
 				break;
 
 		}
@@ -198,11 +207,11 @@ class widget_Paginate {
 	/* returns a html page link for inclusion in the pagination output */
 	public function renderPageLink ($page) {
 
-		return sf("<span class='pageItem%s'>%s</span>",
+		return sf("<span class='pageItem%s'><a href='%s' class='button%s'>%s</a></span>",
 					($this->currentPage == $page) ? " currentPage" : '',
-					($this->currentPage == $page) ?
-						number_format($page) :
-						sprintf("<a href='%s'>%s</a>", $this->generateUrl($page),number_format($page))
+					$this->generateUrl($page),
+					($this->currentPage == $page) ? " on":'',
+					number_format($page)
 				);
 
 	}
@@ -218,9 +227,15 @@ class widget_Paginate {
 		$start = $this->renderPageLink(1);
 		$end = $this->getPageCount() < 2?'':$this->renderPageLink($this->getPageCount());
 
+		
 		// params: Pages links
 		$pageLength = $this->navLength;
-		if ($pageLength&1) { } else $pageLength++;
+		if ($pageLength&1 ||  
+			(array_key_exists('[START]', $options) && !array_key_exists('[END]', $options)) || 
+			(!array_key_exists('[START]', $options) && array_key_exists('[END]', $options))
+		) { } 
+		
+		else $pageLength++;
 
 		if (array_key_exists('[START]', $options)) $pageLength--;
 		if (array_key_exists('[END]', $options)) $pageLength--;
@@ -241,23 +256,24 @@ class widget_Paginate {
 		if ($pageLinkStart < 1) $pageLinkStart = 1;
 		if (array_key_exists('[START]', $options) && $pageLinkStart == 1) $pageLinkStart = 2;
 
+		
 		$pages = '';
 		if ($pageLinkStart <= $pageLinkEnd)
 			for ($i = $pageLinkStart; $i <= $pageLinkEnd; $i++)
 				$pages .= $this->renderPageLink($i);
 
 		// params: start ellipses
-		if (array_key_exists('[START_ELLIPSES]', $options) && array_key_exists('[START]', $options) &&
+		if (array_key_exists('[START_ELLIPSES]', $options) &&
 			$pageLinkStart > 2) $startEllipses = '<span class="pageEllipses">...</span>';
 			else $startEllipses = '';
 
 		// params: end ellipses
-		if (array_key_exists('[END_ELLIPSES]', $options) && array_key_exists('[END]', $options) &&
+		if (array_key_exists('[END_ELLIPSES]', $options) &&
 			$pageLinkEnd < ($this->pageCount-1)) $endEllipses = '<span class="pageEllipses">...</span>';
 			else $endEllipses = '';
 
 		// params: next link
-		if ($this->currentPage == $this->pageCount) $next = $this->formatNext[1];
+		if ($this->currentPage >= $this->pageCount) $next = $this->formatNext[1];
 		else $next = str_replace('[HREF]',  $this->generateUrl($this->currentPage+1), $this->formatNext[0]);
 
 		// params: previous link
