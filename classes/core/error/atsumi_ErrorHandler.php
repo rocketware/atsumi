@@ -187,10 +187,10 @@ class atsumi_ErrorHandler extends atsumi_Observable {
 		try {
 			// fires the exception_fc event if not blocked by flood control
 			if(!$this->blockedByFloodControl(get_class($e), $e->getLine(), $e->getFile()))
-				$this->fireEvent(self::EVENT_EXCEPTION_FC, new atsumi_ErrorEventArgs($e, &$this->recoverer));
+				$this->fireEvent(self::EVENT_EXCEPTION_FC, new atsumi_ErrorEventArgs($e, $this->recoverer));
 
 			// fire the exception event regardless of flood control
-			$this->fireEvent(self::EVENT_EXCEPTION, new atsumi_ErrorEventArgs($e, &$this->recoverer));
+			$this->fireEvent(self::EVENT_EXCEPTION, new atsumi_ErrorEventArgs($e, $this->recoverer));
 			
 			if ($recover)
 				$this->recoverer->recover($e);
@@ -229,6 +229,9 @@ class atsumi_ErrorHandler extends atsumi_Observable {
 	}
 	public function listen ($e) {
 		$this->handleException($e, false);
+	}
+	public function recover ($e) {
+		$this->recoverer->recover($e);
 	}
 }
 ?>
