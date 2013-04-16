@@ -85,10 +85,17 @@ class atsumi_ErrorParser {
 	 				$out .= sfl('Recoverer action: %s', $recoverer->getActionDetails());
 				}
 
+				if (isset($e->details) && !is_null($e->details)) {
+					$out .= sfl("\n".'-Additional Detail');
+					$out .= sfl('%s', pretty($e->details));
+				}
+
+
 				if($e instanceof atsumi_AbstractException) {
 					$out .= sfl("\n".'-How to resolve this issue');
 					$out .= sfl($e->getInstructions('text/plain'));
 				}
+
 
 				$out .= sfl("\n".'-Stack Trace');
 				$out .= sfl('%s', atsumi_ErrorParser::formatTrace($e->getTrace()));
@@ -116,6 +123,11 @@ class atsumi_ErrorParser {
 				if(!is_null($recoverer)) {
 					$out .= sfl('<h4>Recoverer: <strong>%s()</strong></h4>', (is_object($recoverer) ? get_class($recoverer) : $recoverer));
 	 				$out .= sfl('<h4>Recoverer action: <strong>%s</strong></h4>', $recoverer->getActionDetails());
+				}
+
+				if (isset($e->details) && !is_null($e->details)) {
+					$out .= sfl('<br /><h3>Additional Detail</h3>');
+					$out .= sfl('<div class="atsumiDetailsContainer"><pre>%s</pre></div>', pretty($e->details));
 				}
 
 				if($e instanceof atsumi_AbstractException) {

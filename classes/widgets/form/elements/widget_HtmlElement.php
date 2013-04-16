@@ -12,7 +12,7 @@ class widget_HtmlElement extends widget_AbstractElement {
 
 	function renderElement() {
 	}	
-	public function render() {
+	public function render($options = array()) {
 		$out = $this->preRender();
 		$out .= sf("%s", $this->html);
 		$out .= $this->postRender();
