@@ -130,7 +130,7 @@ class widget_Form {
 
 		// save the new element to the form...
 		$this->elements[] = $element;
-		$this->elementMap[$element->getName()] = &$element;
+		$this->elementMap[$element->getName()] = $element;
 	}
 
 	public function remove($elementName) {

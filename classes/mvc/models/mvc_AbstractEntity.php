@@ -207,7 +207,7 @@ class mvc_AbstractEntity extends atsumi_DebugModel {
 	 * prevents changes made being writen to the database
 	 */
 	public function clearChanges() {
-		foreach($this->vars as &$value) {
+		foreach($this->vars as $value) {
 			$value['changed'] = false;
 		}
 	}
