@@ -281,11 +281,12 @@ class atsumi_AppHandler {
 	 * @access public
 	 */
 	public function process() {
+
 		// Could possibly be a fragment of the spec
 		if(!is_string($this->parserData['controller']))
-			throw new Exception('Path parsing error, please report to developement team');
+			throw new app_PageNotFoundException('Path parsing error, please report to developement team');
 		if(!class_exists($this->parserData['controller']))
-			throw new Exception('Could not find required controller: '.$this->parserData['controller']);
+			throw new app_PageNotFoundException('Could not find required controller: '.$this->parserData['controller']);
 
 		$classname = $this->parserData['controller'];
 		$this->controller = new $classname($this->settings, $this->errorHandler);
