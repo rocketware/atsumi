@@ -4,7 +4,23 @@ class validate_Recaptcha extends validate_AbstractValidator {
 	public function __construct($privateKey) {
 		$this->privateKey = $privateKey;
 	}
-
+	public function getUserIp () {
+	
+		// cloudflare
+		if (array_key_exists('HTTP_CF_CONNECTING_IP', $_SERVER))
+			return $_SERVER['HTTP_CF_CONNECTING_IP'];
+		
+		// proxy
+		elseif  (array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER))
+			return $_SERVER['HTTP_X_FORWARDED_FOR'];
+		
+		// direct IP
+		elseif  (array_key_exists('REMOTE_ADDR', $_SERVER))
+			return $_SERVER['REMOTE_ADDR'];
+		
+		else return false;
+		
+	}
 	public function validate($data) {
 		// We don't care about the data variable, check for...
 		if(!isset($_POST['recaptcha_challenge_field']) || !isset($_POST['recaptcha_response_field'])) {
@@ -12,7 +28,7 @@ class validate_Recaptcha extends validate_AbstractValidator {
 		}
 
 		$answer = $this->recaptcha_check_answer($this->privateKey,
-							$_SERVER["REMOTE_ADDR"],
+							$this->getUserIp(),
 							$_POST["recaptcha_challenge_field"], 
 							$_POST["recaptcha_response_field"]
 						);
