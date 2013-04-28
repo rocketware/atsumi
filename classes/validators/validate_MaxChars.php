@@ -22,7 +22,7 @@
  		if(is_array($data))$data = $data[0];
 
  		$data = str_replace("\n", " ", str_replace("\r", "", $data));
- 		if(empty($data) || mb_strlen($data, $encoding) <= $this->maxChars)
+ 		if(empty($data) || mb_strlen($data, $this->encoding) <= $this->maxChars)
  			return true;
  		else
  			throw new Exception(sf("You must enter less than %s characters",
