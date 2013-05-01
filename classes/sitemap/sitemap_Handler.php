@@ -63,6 +63,10 @@ class sitemap_Handler {
 	/* writes sitemap files to disk */
 	static public function writeXml(&$db, $host, $xmlFilePath, $xmlUrlRoot, $maxUrlsPerSitemap = null, $compress = true, $tablename = 'sitemap') {
 
+		if (!is_dir($xmlFilePath) &&  !mkdir($xmlFilePath, 0777, true)) {
+			throw new sitemap_WriteException("Failed to create neccessary folders to save XML site map: ".$xmlFilePath);
+		}
+		
 		/* clean up old sitemap files */
 		foreach(glob($xmlFilePath."sitemap*.xml*") as $filename)
 			unlink($filename);
