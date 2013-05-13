@@ -38,6 +38,7 @@ class caster_PostgreSql extends caster_Abstract {
 		'I' => 'integerOrNull',
 		'l' => 'literal',
 		'n' => 'numeric',
+		'N' => 'numericOrNull',
 		'q' => 'fullTextQuery',
 		's' => 'text',
 		'S' => 'textOrNull',
@@ -190,6 +191,15 @@ class caster_PostgreSql extends caster_Abstract {
 	 * @return string Casted string
 	 */
 	static function numeric($in) {
+		return sf("%s::NUMERIC", $in);
+	}
+	/**
+	 * Casts a variable into a PostgreSQL numeric or Null
+	 * @param int $in Mixed to be casted
+	 * @return string Casted string
+	 */
+	static function numericOrNull($in) {
+		if (is_null($in)) return 'NULL';
 		return sf("%s::NUMERIC", $in);
 	}
 

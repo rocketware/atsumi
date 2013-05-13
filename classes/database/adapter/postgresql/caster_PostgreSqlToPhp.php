@@ -34,6 +34,8 @@ class caster_PostgreSqlToPhp extends caster_Abstract {
 		'G' => 'geometryOrNull',
 		'i' => 'integer',
 		'I' => 'integerOrNull',
+		'n' => 'numeric',
+		'N' => 'numericOrNull',
 		'f' => 'float',
 		'F' => 'floatOrNull',
 		's' => 'text',
@@ -155,6 +157,9 @@ class caster_PostgreSqlToPhp extends caster_Abstract {
 	 * @return string Casted string
 	 */
 	static function boolean($in) {
+
+		if (is_string($in) && $in == 'f') $in = false;
+		if (is_string($in) && $in == 't') $in = true;
 		if (!is_bool($in)) throw new caster_StrictTypeException('Expected Boolean, received: '.$in.' ('.gettype($in).')');
 		return $in;
 	}
@@ -173,7 +178,8 @@ class caster_PostgreSqlToPhp extends caster_Abstract {
 	 * @return string Casted string
 	 */
 	static function integer($in) {
-		if (!is_int(intval($in))) throw new caster_StrictTypeException('Expected Integer, received: '.$in.' ('.gettype($in).')');
+		if (is_string($in)) $in = intval($in);
+		if (!is_int($in)) throw new caster_StrictTypeException('Expected Integer, received: '.$in.' ('.gettype($in).')');
 		return intval($in);
 	}
 	static function integerOrNull($in) {
@@ -181,6 +187,17 @@ class caster_PostgreSqlToPhp extends caster_Abstract {
 		if (!is_int(intval($in))) throw new caster_StrictTypeException('Expected Integer or Null, received: '.$in.' ('.gettype($in).')');
 		return intval($in);
 	}
+
+	static function numeric($in) {
+		if (!is_numeric($in)) throw new caster_StrictTypeException('Expected Numeric, received: '.$in.' ('.gettype($in).')');
+		return $in;
+	}
+	static function numericOrNull($in) {
+		if (is_null($in)) return null;
+		if (!is_numeric($in)) throw new caster_StrictTypeException('Expected Numeric, received: '.$in.' ('.gettype($in).')');
+		return $in;
+	}
+	
 
 	static function float($in) {
 		if (!is_numeric($in)) throw new caster_StrictTypeException('Expected Float, received: '.$in.' ('.gettype($in).')');
