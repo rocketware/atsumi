@@ -329,6 +329,7 @@ class atsumi_AppHandler {
 
 		// Time and execute the pre render
 		atsumi_Debug::startTimer();
+		$this->controller->publishFlashData();
 		$this->controller->preRender();
 		atsumi_Debug::record('Controller PreRender', 'Before rendering was processed the pre-render function was executed', null, true);
 
@@ -349,7 +350,6 @@ class atsumi_AppHandler {
 		// Get the debugger and start a timer for rendering
 		atsumi_Debug::startTimer();
 
-		$this->controller->publishFlashData();
 		$viewData = $this->controller->getViewData();
 		atsumi_Debug::setViewData($viewData);
 
