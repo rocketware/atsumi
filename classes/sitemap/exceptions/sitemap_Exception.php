@@ -1,0 +1,1 @@
+<?php class sitemap_Exception extends Exception {} ?>

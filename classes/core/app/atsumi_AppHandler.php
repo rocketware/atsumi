@@ -281,11 +281,12 @@ class atsumi_AppHandler {
 	 * @access public
 	 */
 	public function process() {
+
 		// Could possibly be a fragment of the spec
 		if(!is_string($this->parserData['controller']))
-			throw new Exception('Path parsing error, please report to developement team');
+			throw new app_PageNotFoundException('Path parsing error, please report to developement team');
 		if(!class_exists($this->parserData['controller']))
-			throw new Exception('Could not find required controller: '.$this->parserData['controller']);
+			throw new app_PageNotFoundException('Could not find required controller: '.$this->parserData['controller']);
 
 		$classname = $this->parserData['controller'];
 		$this->controller = new $classname($this->settings, $this->errorHandler);
@@ -328,6 +329,7 @@ class atsumi_AppHandler {
 
 		// Time and execute the pre render
 		atsumi_Debug::startTimer();
+		$this->controller->publishFlashData();
 		$this->controller->preRender();
 		atsumi_Debug::record('Controller PreRender', 'Before rendering was processed the pre-render function was executed', null, true);
 
@@ -348,7 +350,6 @@ class atsumi_AppHandler {
 		// Get the debugger and start a timer for rendering
 		atsumi_Debug::startTimer();
 
-		$this->controller->publishFlashData();
 		$viewData = $this->controller->getViewData();
 		atsumi_Debug::setViewData($viewData);
 

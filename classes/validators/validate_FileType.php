@@ -108,7 +108,7 @@
  			$incorrectExtensionArr = $this->getExtensionFromMime($data['type']);
  		}
 
- 		throw new Exception(sf('File should be a valid %s%s', $this->extensionText, count($incorrectExtensionArr)?sf('(not a %s)', implode('/', $incorrectExtensionArr)):''));
+ 		throw new ValidationIncorrectFileTypeException(sf('File should be a valid %s%s', $this->extensionText, count($incorrectExtensionArr)?sf(' (not a %s)', implode('/', $incorrectExtensionArr)):''));
 
  	}
 
