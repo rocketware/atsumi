@@ -29,7 +29,8 @@ class uriparser_Gyokuro implements uriparser_Interface {
 
 		// Numeric handling. 1e2 is not handled as numeric as can cause issues
 		// with slices of hashes being unintentionally parsed a numeric
-		if (is_numeric($arg) && !strpos(strtolower($arg), 'e')) {
+		// does't process as numeric if leads with a 0
+		if (is_numeric($arg) && !strpos(strtolower($arg), 'e') && !(strlen($arg) > 1 && substr($arg, 0,1) === '0')) {
 
 			// check if is float
 			if (strpos($arg, '.')) {

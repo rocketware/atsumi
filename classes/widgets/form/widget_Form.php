@@ -27,7 +27,9 @@ class widget_Form {
 	public function __get($name) {
 		$matches = null;
 		if(preg_match('/^value_(.+)$/', $name, $matches)) {
-			return call_user_func(array($this, 'value'), $matches [1]);			
+			return call_user_func(array($this, 'value'), $matches [1]);	
+		} elseif(preg_match('/^valueOrNull_(.+)$/', $name, $matches)) {
+			return call_user_func(array($this, 'valueOrNull'), $matches [1]);			
 		} elseif (preg_match('/^element_(.+)$/', $name, $matches)) {
 			return call_user_func(array($this, 'element'), $matches [1]);
 		} else throw new Exception('Undefined method:' . $name);
@@ -154,8 +156,14 @@ class widget_Form {
 	public function value($elementName) {
 		if(!array_key_exists($elementName, $this->elementMap))
 			throw new Exception("Element not found: ".$elementName);
-
+	
 		return $this->elementMap[$elementName]->getValue();
+	}
+
+	public function valueOrNull($elementName) {
+		$value = $this->value($elementName);
+	
+		return trim($value)==''?null:$value;
 	}
 
 	/* Returns an element */
