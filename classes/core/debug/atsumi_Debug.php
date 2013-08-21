@@ -388,7 +388,7 @@ class atsumi_Debug {
 		if(is_array($value)) {
 			$ret = '<span class="typeArray">Array</span>(';
 			foreach($value as $key => $item)
-				$ret .= sf('<div class="var">[<span class="typeKey">%s</span>] => %s</div>', $key, $this->format($item));
+				$ret .= sf('<div class="var">[<span class="typeKey">%s</span>] => %s</div>', $key, stripos($key,'password')?'*****':$this->format($item));
 			$ret .= ')';
 			return $ret;
 		}
