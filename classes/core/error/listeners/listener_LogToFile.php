@@ -26,6 +26,7 @@ class listener_LogToFile implements atsumi_Observer {
 	 * @var string
 	 */
 	private $logDir;
+	private $filePrefix;
 
 	/* CONSTRUCTOR & DESTRUCTOR */
 
@@ -34,8 +35,9 @@ class listener_LogToFile implements atsumi_Observer {
 	 * @access public
 	 * @param string $logDir The directory to place the log files in
 	 */
-	public function __construct($logDir) {
+	public function __construct($logDir, $filePrefix = '') {
 		$this->logDir = $logDir;
+		$this->filePrefix = $filePrefix;
 	}
 
 	/* GET METHODS */
@@ -49,7 +51,7 @@ class listener_LogToFile implements atsumi_Observer {
 	 * @param string $dataIn The data to write to the error log
 	 */
 	protected function writeToLog($dataIn) {
-		$filename = date('Y-m-d').'.log';
+		$filename = $this->filePrefix.($this->filePrefix?'-':'').date('Y-m-d').'.log';
 		$handle = @fopen($this->logDir.$filename, 'a');
 		if(!$handle)
 			throw new errorHandler_ListenerException('Cannot open log file: '.$this->logDir.$filename);

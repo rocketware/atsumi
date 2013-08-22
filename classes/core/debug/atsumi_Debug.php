@@ -388,7 +388,7 @@ class atsumi_Debug {
 		if(is_array($value)) {
 			$ret = '<span class="typeArray">Array</span>(';
 			foreach($value as $key => $item)
-				$ret .= sf('<div class="var">[<span class="typeKey">%s</span>] => %s</div>', $key, $this->format($item));
+				$ret .= sf('<div class="var">[<span class="typeKey">%s</span>] => %s</div>', $key, stripos($key,'password')?'*****':$this->format($item));
 			$ret .= ')';
 			return $ret;
 		}
@@ -650,8 +650,8 @@ window.onload=function(){
 			.debugConsole .typeUnknown {color: orange; }
 			.logTitle {font-size: 14px; font-weight: bold;}
 			.logTimestamp {font-size: 10px; font-weight: normal; color: #6677DD;}
-			.logDesc {font-size: 10px; font-style: italic; color:#777; margin-top:0.5em; }
-			.logData { background-color:#ddd; border:1px solid #ccc; padding:1em; margin-top:1em; }
+			.logDesc {font-size: 10px; font-style: italic; color:#777; margin-top:0.5em; white-space:pre-line; }
+			.logData { background-color:#ddd; border:1px solid #ccc; padding:1em; margin-top:1em; white-space:pre-line; }
 			.debugDragToggle {height:5px;  border-left:3px double #555; border-right:3px double #555; width:2px; margin:0 auto 0 auto; font-size:0px; display:block;  }
 			.debugFooter { background-color:#eee; border-top:2px inset #ccc; height:20px; padding:5px; text-align:right; color:#777; font-size: 12px; }
 			.debugFooter span { color:#777; }
