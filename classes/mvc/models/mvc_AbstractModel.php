@@ -2,7 +2,7 @@
 abstract class mvc_AbstractModel {
 	
 	/* generic */
-	private $data = array();
+	protected $data = array();
 	
 	
 	
@@ -35,9 +35,20 @@ abstract class mvc_AbstractModel {
 			$args[] = $value;
 		}
 	
+		if (!count($args))
+			throw new Exception ('Model has nothing to write...');
+		
 		array_unshift($args, static::DB_TABLE_NAME);
 	
 		$result = call_user_func_array(array($db, $method), $args);
+				
+		if (is_null($o->get('id', false))) {
+			$id = $db->query('select lastval');
+			dump($id);
+			exit;
+			$o->set('id', $id->i_lastval);
+		}
+		
 	}
 	
 	/* generic */
@@ -75,8 +86,12 @@ abstract class mvc_AbstractModel {
 	/* generic */
 	function populateFromSqlRow ($r) {
  		$rowData = $r->getData();	
-		foreach ($rowData as $k => $v)
+		foreach ($rowData as $k => $v) {
+			if (!array_key_exists($k, $this->structure))
+				throw new Exception (sf('Unexpected row column "%s", add this to the models \'structure\' member variable.', $k));
+			
 			$this->data[$k] = caster_PostgreSqlToPhp::cast(sf('%%%s', $this->structure[$k]['type']), $v);
+		}
 	}
 	
 
@@ -90,6 +105,12 @@ abstract class mvc_AbstractModel {
 		$this->data[$k] = $v;
 	}
 
+	function increment ($k, $v) {
+		if (!$this->has($k)) throw new Exception('unknown key: '.$k);	
+		if (!is_numeric($this->data[$k])) throw new Exception('Key: '.$k.' is not numeric, can not increment');	
+		$this->data[$k] += $v;
+	}
+	
 	/* generic */
 	function get($key, $strict = true) { 
 		if (!array_key_exists($key, $this->data))
