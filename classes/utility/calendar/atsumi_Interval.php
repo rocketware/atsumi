@@ -23,17 +23,21 @@ class atsumi_Interval {
 
 		$intervalMatches = null;
 		// regex to extrat itnerval compoenents - handle invald format
-		if (! preg_match ('/(?:(\d+)\sdays\s)?(?:(\d+):)?(?:(\d+):)?(\d+\.\d+)$/x', $pgInterval, $intervalMatches))
-			throw new Exception ('Invalid interval format');
+		if (preg_match ('/(?:(\d+)\sdays\s)?(?:(\d+):)?(?:(\d+):)?(\d+\.\d+)$/x', $pgInterval, $intervalMatches) ||
+			preg_match ('/([0-9]{2}):([0-9]{2}):([0-9]{2})$/x', $pgInterval, $intervalMatches)) {
+			
+			// organise regex matches
+			$intervalMatches = array_reverse($intervalMatches);
+			array_pop($intervalMatches);
+	
+			// return instance of self
+			$reflect  = new ReflectionClass('atsumi_Interval');
+			$intervalInstance = $reflect->newInstanceArgs($intervalMatches);
+			return $intervalInstance; 
+			
 		
-		// organise regex matches
-		$intervalMatches = array_reverse($intervalMatches);
-		array_pop($intervalMatches);
-
-		// return instance of self
-		$reflect  = new ReflectionClass('atsumi_Interval');
-		$intervalInstance = $reflect->newInstanceArgs($intervalMatches);
-		return $intervalInstance; 
+		} else
+			throw new Exception ('Invalid interval format');
 
 	}
 
