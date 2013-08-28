@@ -43,9 +43,7 @@ abstract class mvc_AbstractModel {
 		$result = call_user_func_array(array($db, $method), $args);
 				
 		if (is_null($o->get('id', false))) {
-			$id = $db->query('select lastval');
-			dump($id);
-			exit;
+			$id = $db->selectOne('select lastval()');
 			$o->set('id', $id->i_lastval);
 		}
 		
