@@ -32,6 +32,11 @@ abstract class caster_Abstract  {
 	/* MAGIC METHODS */
 	/* METHODS */
 
+	static public function getSpec() {
+		$caster = new static;
+		return $caster->spec;
+	}
+	
 	/**
 	 * Checks the given string for the number of caster characters.
 	 * @param string $s The string to parse
