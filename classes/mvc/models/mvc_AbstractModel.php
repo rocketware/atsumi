@@ -84,11 +84,30 @@ abstract class mvc_AbstractModel {
 	/* generic */
 	function populateFromSqlRow ($r) {
  		$rowData = $r->getData();	
+ 		
+ 		// itterate through the db columns and populate the object
 		foreach ($rowData as $k => $v) {
+			
+			// check we're expecting the currently column
 			if (!array_key_exists($k, $this->structure))
 				throw new Exception (sf('Unexpected row column "%s", add this to the models \'structure\' member variable.', $k));
 			
-			$this->data[$k] = caster_PostgreSqlToPhp::cast(sf('%%%s', $this->structure[$k]['type']), $v);
+			try {
+				
+				$this->data[$k] = caster_PostgreSqlToPhp::cast(sf('%%%s', $this->structure[$k]['type']), $v);
+			
+			// if casting error throw a useful exception
+			} catch (Exception $e) {
+				$spec = caster_PostgreSqlToPhp::getSpec();
+				throw new caster_Exception (
+					sf("%s: '%s' could not be cast as '%s' (%%%s)",
+						$k,
+						is_null($v)?'NULL':$v,
+						$spec[$this->structure[$k]['type']],
+						$this->structure[$k]['type']
+					)
+				);
+			}
 		}
 	}
 	
