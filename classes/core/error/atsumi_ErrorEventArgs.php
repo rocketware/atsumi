@@ -37,7 +37,7 @@ class atsumi_ErrorEventArgs extends atsumi_EventArgs {
 	 * @param Exception $e The exception that was thrown
 	 * @param string $recover The recover that was used
 	 */
-	public function __construct(Exception $e, $recoverer = '') {
+	public function __construct(Exception $e, $recoverer = null) {
 		$this->exception 	= $e;
 		$this->recoverer 	= $recoverer;
 	}

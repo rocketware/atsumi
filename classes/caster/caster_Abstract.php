@@ -93,7 +93,6 @@ abstract class caster_Abstract  {
 	public function castObject($string, $args = null, $_ = null) {
 		// Get args
 		$args = func_get_args();
-		
 		if (count($args[0]) !== 2) throw new caster_Exception('Cast object expects two parameters');
 		
 		$ch = substr($args[0][0], 1);

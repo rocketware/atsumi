@@ -45,6 +45,7 @@ class listener_AddToSession implements atsumi_Observer {
 	private $namespace;
 
 	private $method;
+	private $onlyWhenRecovering;
 
 	/* CONSTRUCTOR & DESTRUCTOR */
 
@@ -55,12 +56,13 @@ class listener_AddToSession implements atsumi_Observer {
 	 * @param mixed $data The data to add when the error occurs
 	 * @param string $namespace The namespace to add under if atsumi session is being used [optional, default: session_Handler::DEFAULT_NAMESPACE]
 	 */
-	public function __construct($key, $data, $namespace = session_Handler::DEFAULT_NAMESPACE, $method= self::METHOD_SET) {
+	public function __construct($key, $data, $namespace = session_Handler::DEFAULT_NAMESPACE, $method= self::METHOD_SET, $onlyWhenRecovering = false) {
 
 		$this->data 				= $data;
 		$this->key 					= $key;
 		$this->namespace 			= $namespace;
 		$this->method 				= $method;
+		$this->onlyWhenRecovering	= $onlyWhenRecovering;
 	}
 
 	/* GET METHODS */
@@ -96,6 +98,7 @@ class listener_AddToSession implements atsumi_Observer {
 	 * @param atsumi_EventArgs $args Any args related to the event
 	 */
 	public function notify(atsumi_Observable $sender, atsumi_EventArgs $args) {
+		if ($this->onlyWhenRecovering && !$args->recoverer) return;
 		$this->mergeDataToSession(atsumi_ErrorParser::parse($args->exception, atsumi_ErrorParser::PLAINTEXT, $args->recoverer));
 	}
 }

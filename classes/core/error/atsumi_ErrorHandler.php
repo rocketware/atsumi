@@ -187,10 +187,16 @@ class atsumi_ErrorHandler extends atsumi_Observable {
 		try {
 			// fires the exception_fc event if not blocked by flood control
 			if(!$this->blockedByFloodControl(get_class($e), $e->getLine(), $e->getFile()))
-				$this->fireEvent(self::EVENT_EXCEPTION_FC, new atsumi_ErrorEventArgs($e, $this->recoverer));
+				$this->fireEvent(
+					self::EVENT_EXCEPTION_FC, 
+					new atsumi_ErrorEventArgs($e, $recover?$this->recoverer:null)
+				);
 
 			// fire the exception event regardless of flood control
-			$this->fireEvent(self::EVENT_EXCEPTION, new atsumi_ErrorEventArgs($e, $this->recoverer));
+			$this->fireEvent(
+				self::EVENT_EXCEPTION, 
+				new atsumi_ErrorEventArgs($e, $recover?$this->recoverer:null)
+			);
 			
 			if ($recover)
 				$this->recoverer->recover($e);
@@ -219,13 +225,24 @@ class atsumi_ErrorHandler extends atsumi_Observable {
 				// remove failed listener
 				$this->removeObserver($listener);
 				// handle the exception
-				$this->handleException(new errorHandler_Exception(sf("Listener '%s' failed: ", get_class($listener), $listenerException->getMessage())));
+				$this->handleException(
+					new errorHandler_Exception(
+						sf("Listener '%s' failed: ", 
+							get_class($listener), 
+							$listenerException->getMessage()
+						)
+					)
+				);
 			}
 		}
 
 		// record exception as listened to
 		if ($eventType == self::EVENT_EXCEPTION_FC)
-			$this->recordInFloodControl(get_class($args->exception), $args->exception->getLine(), $args->exception->getFile());
+			$this->recordInFloodControl(
+				get_class($args->exception), 
+				$args->exception->getLine(), 
+				$args->exception->getFile()
+			);
 	}
 	public function listen ($e) {
 		$this->handleException($e, false);
