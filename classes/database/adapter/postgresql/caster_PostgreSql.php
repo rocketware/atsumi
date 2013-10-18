@@ -32,6 +32,8 @@ class caster_PostgreSql extends caster_Abstract {
 		'c' => 'character',
 		'C' => 'characterVarying',
 		'd' => 'date',
+		'e'	=> 'bigInteger',
+		'E'	=> 'bigIntegerOrNull',
 		'f' => 'float',
 		'g' => 'geometry',
 		'i' => 'integer',
@@ -185,6 +187,24 @@ class caster_PostgreSql extends caster_Abstract {
 		return sf("%s::INTEGER", intval($in));
 	}
 
+	/**
+	 * Casts a variable into a PostgreSQL bigint
+	 * @param int $in Int to be casted
+	 * @return string Casted string
+	 */
+	static function bigInteger($in) {
+		return sf("%s::BIGINT", intval($in));
+	}
+	/**
+	 * Casts a variable into a PostgreSQL big int or Null
+	 * @param int $in Int to be casted
+	 * @return string Casted string
+	 */
+	static function bigIntegerOrNull($in) {
+		if (is_null($in)) return 'NULL';
+		return sf("%s::BIGINT", intval($in));
+	}
+	
 	/**
 	 * Casts a variable into a PostgreSQL numeric
 	 * @param mixed $in Mixed to be casted

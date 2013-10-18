@@ -30,6 +30,8 @@ class caster_PostgreSqlToPhp extends caster_Abstract {
 		'b' => 'boolean',
 		'd' => 'date',
 		'D' => 'dateOrNull',
+		'e' => 'integer',
+		'E' => 'integerOrNull',
 		'g' => 'geometry',
 		'G' => 'geometryOrNull',
 		'i' => 'integer',
