@@ -28,6 +28,7 @@ class caster_PostgreSqlToPhp extends caster_Abstract {
 		'A' => 'sqlArrayOrNull',
 		'a' => 'sqlArray',
 		'b' => 'boolean',
+		'B' => 'booleanOrNull',
 		'd' => 'date',
 		'D' => 'dateOrNull',
 		'e' => 'integer',
@@ -164,6 +165,10 @@ class caster_PostgreSqlToPhp extends caster_Abstract {
 		if (is_string($in) && $in == 't') $in = true;
 		if (!is_bool($in)) throw new caster_StrictTypeException('Expected Boolean, received: '.$in.' ('.gettype($in).')');
 		return $in;
+	}
+	static function booleanOrNull($in) {
+		if (is_null($in)) return null;
+		return self::boolean($in);
 	}
 
 	static function interval($in) {
