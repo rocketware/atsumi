@@ -99,6 +99,14 @@ abstract class mvc_AbstractModel {
 			// if casting error throw a useful exception
 			} catch (Exception $e) {
 				$spec = caster_PostgreSqlToPhp::getSpec();
+
+				if (!array_key_exists($this->structure[$k]['type'], $spec))
+					throw new caster_Exception (
+						sf("Caster doesn't support format: %%%s",
+							$this->structure[$k]['type']
+						)
+					);
+
 				throw new caster_Exception (
 					sf("%s: '%s' could not be cast as '%s' (%%%s)",
 						$k,
