@@ -17,10 +17,15 @@ class atsumi_DateTime {
 
 	public function __toString() {
 		return (String)$this->timestamp;
-	}	
-	
-	public function format($formatString) {
+	}
+
+	public function format($formatString = null) {
+		if (is_null($formatString)) $formatString = self::FORMAT_FRIENDLY;
 		return date($formatString, $this->timestamp);
+	}
+	static public function formatFromTimestamp ($timestamp, $formatString = null) {
+		$d = new self($timestamp);
+		return $d->format($formatString);
 	}
 
 }
