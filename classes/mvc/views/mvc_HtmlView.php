@@ -10,6 +10,15 @@ abstract class mvc_HtmlView extends mvc_AbstractView {
 
 	abstract protected function renderBodyContent();
 
+
+	// headers
+	public function setHeaders() {
+		header(sf('Content-Type: text/html; charset=%s', $this->getCharset()));
+	}
+	public function getCharset() {
+		return 'utf-8';
+	}
+
 	public function render() {
 		$this->renderDoctype();
 		$this->renderHtml();
