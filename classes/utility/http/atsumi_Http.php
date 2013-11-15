@@ -60,6 +60,41 @@ class atsumi_Http {
 
 	//.. add the rest...
 
+	const	POST_METHOD_CURL		= 1;
+	const 	POST_METHOD_PECL		= 2;
+
+	static public function post ($url, $fields, $method = 1) {
+
+		switch ($method) {
+
+			case self::POST_METHOD_CURL:
+
+
+				$ch = curl_init();
+				curl_setopt($ch, CURLOPT_URL, $url);
+				curl_setopt($ch, CURLOPT_POST, count($fields));
+				curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields));
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+				curl_setopt($ch, CURLOPT_NOBODY, TRUE);
+				$body = curl_exec($ch);
+				$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+				//close connection
+				curl_close($ch);
+
+
+				return new atsumi_HttpResponse(
+					$httpCode,
+					$body
+				);
+
+			case self::POST_METHOD_PECL:
+
+				return http_post_fields($url, $fields);
+
+		}
+	}
+
+
 }
 
 
