@@ -8,6 +8,7 @@
 class atsumi_DateTime {
 	
 	const FORMAT_FRIENDLY = "F j, Y, g:i a";
+	const FORMAT_COMPACT = "d/m/y H:i";
 	
 	private $timestamp;
 

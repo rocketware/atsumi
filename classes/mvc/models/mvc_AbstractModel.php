@@ -12,7 +12,8 @@ abstract class mvc_AbstractModel {
 			$this->set(
 				$k, 
 				isset($properties['default'])?
-					$properties['default']:null
+					$properties['default']:null,
+				true
 			);
 		}
 	}
@@ -44,7 +45,7 @@ abstract class mvc_AbstractModel {
 				
 		if (is_null($o->get('id', false))) {
 			$id = $db->selectOne('select lastval()');
-			$o->set('id', $id->i_lastval);
+			$o->set('id', $id->i_lastval, true);
 		}
 		
 	}
@@ -126,14 +127,52 @@ abstract class mvc_AbstractModel {
 	}
 
 	/* generic */
-	function set ($k, $v) {
+	function set ($k, $v, $force = false) {
+		if (!$force && !$this->structure[$k]['write'])
+			throw new Exception ('Column not writable');
+
 		$this->data[$k] = $v;
 	}
 
 	function increment ($k, $v) {
-		if (!$this->has($k)) throw new Exception('unknown key: '.$k);	
-		if (!is_numeric($this->data[$k])) throw new Exception('Key: '.$k.' is not numeric, can not increment');	
-		$this->data[$k] += $v;
+		if (!$this->has($k)) throw new Exception('unknown key: '.$k);
+
+		// increment different data types
+		switch ($this->structure[$k]['type']) {
+
+			// INTERVAL
+			case 'z':
+			case 'Z':
+
+				// check if it's null
+				if (is_null($this->data[$k]))
+					$this->data[$k] = new atsumi_Interval(0);
+
+				$this->data[$k]->add(new atsumi_Interval($v));
+				break;
+
+			// NUMERIC
+			case 'i':
+			case 'I':
+			case 'e':
+			case 'E':
+			case 'n':
+			case 'N':
+			case 'f':
+			case 'F':
+
+				// check if it's null
+				if (is_null($this->data[$k]))
+					$this->data[$k] = 0;
+
+				$this->data[$k] += $v;
+				break;
+
+
+			default:
+				throw new Exception("Unexpected data type to increment %".$this->structure[$k]['type']);
+
+		}
 	}
 	
 	/* generic */

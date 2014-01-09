@@ -53,6 +53,10 @@ class atsumi_Interval {
 		);
 	}
 
+	public function add (self $interval) {
+		$this->seconds += $interval->inSeconds();
+	}
+
 	public function __toString() {
 		return strval($this->inSeconds());
 	}
@@ -62,11 +66,11 @@ class atsumi_Interval {
 	}
 
 	public function inMinutes() {
-		return floatval($this->seconds / self::DURATION_HOUR);
+		return floatval($this->seconds / self::DURATION_MINUTE);
 	}
 
 	public function inHours() {
-		return floatval($this->seconds / self::DURATION_MINUTE);
+		return floatval($this->seconds / self::DURATION_HOUR);
 	}
 
 	public function inDays() {
@@ -76,6 +80,48 @@ class atsumi_Interval {
 	public function inYears() {
 		return floatval($this->seconds / self::DURATION_YEAR);
 	}
+	public function getFormatBreakdown() {
+
+		$remainder = $this->inSeconds();
+
+		$years = floor($remainder / self::DURATION_YEAR);
+		$remainder -= $years * self::DURATION_YEAR;
+
+		$days = floor($remainder / self::DURATION_DAY);
+		$remainder -= $days * self::DURATION_DAY;
+
+		$hours = floor($remainder / self::DURATION_HOUR);
+		$remainder -= $hours * self::DURATION_HOUR;
+
+		$minutes = floor($remainder / self::DURATION_MINUTE);
+		$remainder -= $minutes * self::DURATION_MINUTE;
+
+		$seconds = floor($remainder);
+
+		return array(
+			'years' => $years,
+			'days' => $days,
+			'hours' => $hours,
+			'minutes' => $minutes,
+			'seconds' => $seconds,
+		);
+	}
+
+	public function format($compact = false) {
+
+		$formatComponents = $this->getFormatBreakdown();
+
+		return sf('%s%s%s:%s:%s',
+			$formatComponents['years']?sf('%sy ',$formatComponents['years']):'',
+			$formatComponents['days']||$formatComponents['days']?sf('%sd ',$formatComponents['days']):'',
+			sprintf('%02d', $formatComponents['hours']),
+			sprintf('%02d', $formatComponents['minutes']),
+			sprintf('%02d', $formatComponents['seconds'])
+
+		);
+
+	}
+
 
 }
 ?>
