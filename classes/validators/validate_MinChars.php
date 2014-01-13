@@ -19,7 +19,7 @@
 
  		if(empty($data) || strlen($data) >= $this->minChars)
  			return true;
- 		else throw new Exception(sf("You must enter more than %s characters",
+ 		else throw new Exception(sf("You must enter %s or more characters",
  										$this->minChars
  									));
 

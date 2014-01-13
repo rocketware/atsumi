@@ -25,7 +25,7 @@
  		if(empty($data) || mb_strlen($data, $this->encoding) <= $this->maxChars)
  			return true;
  		else
- 			throw new Exception(sf("You must enter less than %s characters",
+ 			throw new Exception(sf("You must enter %s characters or less",
  										$this->maxChars
  			));
  	}
