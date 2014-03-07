@@ -56,34 +56,42 @@ abstract class widget_AbstractElement {
 	}
 
 	public function render($options = array()) {
-					
-		$out = $this->preRender();
-		$out .= sfl('<div class="row%s%s%s row_%s"%s>',
+		
+		// If elementOnly is specified, only the form element itself is returned
+		if (isset($options['elementOnly']) && $options['elementOnly']) {
+			$out = $this->renderElement();
+
+		} else {
+			$out = $this->preRender();
+			$out .= sfl('<div class="row%s%s%s row_%s"%s>',
 				$this->style ? " " . $this->style : "",
 				$this->cssClass ? " " . $this->cssClass : "",
 				($this->submitted && !$this->validates) ? " error" : "",
 				$this->name,
 				$this->cssStyle ? " style='" . $this->cssStyle . "'": ""
 			);
-		try {
-			$out .= sf('%s%s<div class="element">%s</div>', 
-				$this->renderErrors(), 
-				(($this->label != '' || $this->getRequired()) && 
-				(!array_key_exists('label', $options) || $options['label'] !== false) ? 
-					$this->renderLabel() : ''), 
-				$this->renderElement());
-		} catch (Exception $e) {
 
-			// if in debug mode display exception details
-			if (atsumi_Debug::getActive())
-				$out .= sfl('Element Exception "%s": %s #%s', $e->getMessage(), $e->getFile(), $e->getLine());
+			try {
+				$out .= sf('%s%s<div class="element">%s</div>', 
+					$this->renderErrors(), 
+					(($this->label != '' || $this->getRequired()) && 
+					(!array_key_exists('label', $options) || $options['label'] !== false) ? 
+						$this->renderLabel() : ''), 
+					$this->renderElement());
+			} catch (Exception $e) {
 
-			// fire error listeners
-			Atsumi::error__listen($e);
+				// if in debug mode display exception details
+				if (atsumi_Debug::getActive())
+					$out .= sfl('Element Exception "%s": %s #%s', $e->getMessage(), $e->getFile(), $e->getLine());
+
+				// fire error listeners
+				Atsumi::error__listen($e);
+			}
+			$out .= '</div>';
+
+			$out .= $this->postRender();
 		}
-		$out .= '</div>';
 
-		$out .= $this->postRender();
 		return $out;
 
 	}

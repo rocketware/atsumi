@@ -251,10 +251,6 @@ class widget_Form {
 		return $this->elementMap[$elementName]->render($options);
 	}
 
-	public function getRawElement($elementName) {
-		return $this->elementMap[$elementName]->renderElement();
-	}
-
 	public function getFormTop() {
 
 		$html = sf('<a name="form_%s"></a><form name="%s" id="%s" method="%s" action="%s" enctype="%s" class="form%s">',
