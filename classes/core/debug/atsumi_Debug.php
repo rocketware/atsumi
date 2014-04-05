@@ -705,13 +705,13 @@ window.onload=function(){
 			<td class="debugConsoleDisplay" id="debugConsoleDisplay">
 				<div class="debugConsoleDisplayInner"  id="debugConsoleDisplayInner">
 				<div id="debugTabContainer_console" class="debugConsoleWindow">
-<? foreach($this->consoleData as $data) : ?>
+<?php foreach($this->consoleData as $data) : ?>
 					<div class="logItem" style="border-color: <?=(isset($this->areas[$data['area']]) ? $this->areas[$data['area']] : 'white');?>">
 						<div class="logTitle"><?=$data['title'];?> <span class="logTimestamp"><?=$data['timestamp'];?></span></div>
 						<div class="logDesc"><?=$data['desc'];?></div>
 						<?=(!is_null($data['data']) ? sf('<div class="logData">%s</div>', $this->format($data['data'])) : '');?>
 					</div>
-<? endforeach; ?>
+<?php endforeach; ?>
 				</div>
 
 				<!-- Parser Data -->
@@ -773,7 +773,7 @@ window.onload=function(){
 				<!-- Database Data -->
 				<div id="debugTabContainer_database" class="debugConsoleWindow">
 					<div class="debugConsoleWindowInner">
-<?
+<?php
 foreach($this->databases as $key => $database) :
 	$totalTime = 0;
 	foreach($database->getQueryTimes() as $query)
@@ -782,7 +782,7 @@ foreach($this->databases as $key => $database) :
 						<h3>Database <?=$key;?></h3>
 						<h5>Total Query time: <?=$totalTime;?></h5>
 						<?=str_replace(array('\t', '\n'), array(" "," "), $this->format($database->getQueryTimes()));?>
-<? endforeach; ?>
+<?php endforeach; ?>
 					</div>
 				</div>
 			</div>
