@@ -49,6 +49,10 @@ class widget_Form {
 		$this->actionPath = $path;
 	}
 
+	public function setMethod($method) {
+		$this->method = $method;
+	}
+
 	public function getTitle() {
 		return $this->title;
 	}
@@ -133,6 +137,10 @@ class widget_Form {
 		// save the new element to the form...
 		$this->elements[] = $element;
 		$this->elementMap[$element->getName()] = &$element;
+	}
+
+	public function setElementError($elementName, $error) {
+		$this->elementMap[$elementName]->setErrorFromString($error);
 	}
 
 	public function remove($elementName) {

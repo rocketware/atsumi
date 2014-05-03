@@ -61,6 +61,12 @@ abstract class widget_AbstractElement {
 		if (isset($options['elementOnly']) && $options['elementOnly']) {
 			$out = $this->renderElement();
 
+		} else if (isset($options['errorsOnly']) && $options['errorsOnly']) {
+			$out = $this->renderErrors();
+
+		} else if (isset($options['labelOnly']) && $options['labelOnly']) {
+			$out = $this->renderLabel();
+
 		} else {
 			$out = $this->preRender();
 			$out .= sfl('<div class="row%s%s%s row_%s"%s>',
@@ -176,7 +182,11 @@ abstract class widget_AbstractElement {
 	}
 
 	public function setError(Exception $e) {
-		$this->errors[] = $e->getMessage();
+		$this->setErrorFromString($e->getMessage());
+	}
+
+	public function setErrorFromString($error) {
+		$this->errors[] = $error;
 	}
 
 	public function setValue($input, $files = array()) {
