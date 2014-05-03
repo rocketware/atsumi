@@ -49,6 +49,10 @@ class widget_Form {
 		$this->actionPath = $path;
 	}
 
+	public function setMethod($method) {
+		$this->method = $method;
+	}
+
 	public function getTitle() {
 		return $this->title;
 	}
