@@ -182,10 +182,10 @@ abstract class widget_AbstractElement {
 	}
 
 	public function setError(Exception $e) {
-		$this->setManualError($e->getMessage());
+		$this->setErrorFromString($e->getMessage());
 	}
 
-	public function setManualError($error) {
+	public function setErrorFromString($error) {
 		$this->errors[] = $error;
 	}
 

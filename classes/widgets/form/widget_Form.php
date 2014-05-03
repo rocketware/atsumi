@@ -140,7 +140,7 @@ class widget_Form {
 	}
 
 	public function setElementError($elementName, $error) {
-		$this->elementMap[$elementName]->setManualError($error);
+		$this->elementMap[$elementName]->setErrorFromString($error);
 	}
 
 	public function remove($elementName) {
