@@ -182,7 +182,11 @@ abstract class widget_AbstractElement {
 	}
 
 	public function setError(Exception $e) {
-		$this->errors[] = $e->getMessage();
+		$this->setManualError($e->getMessage());
+	}
+
+	public function setManualError($error) {
+		$this->errors[] = $error;
 	}
 
 	public function setValue($input, $files = array()) {

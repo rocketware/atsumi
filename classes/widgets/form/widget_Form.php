@@ -139,6 +139,10 @@ class widget_Form {
 		$this->elementMap[$element->getName()] = &$element;
 	}
 
+	public function setElementError($elementName, $error) {
+		$this->elementMap[$elementName]->setManualError($error);
+	}
+
 	public function remove($elementName) {
 		if(!isset($this->elementMap[$elementName])) {
 			throw new Exception('Cannot remove non-existant element');
