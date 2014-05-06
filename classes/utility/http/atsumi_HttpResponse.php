@@ -2,17 +2,20 @@
 class atsumi_HttpResponse {
 
 	private $httpCode;
+	private $header;
 	private $body;
 
-	function __construct($httpCode, $body) {
+	function __construct($httpCode, $header, $body) {
 
 		$this->httpCode = $httpCode;
+		$this->header = $header;
 		$this->body = $body;
 
 	}
 
 	public function getHttpCode() { return $this->httpCode; }
 	public function getBody() { return $this->body; }
+	public function getHeader() { return $this->header; }
 	public function getSuccessResponse() {
 		return $this->httpCode >= 200 && $this->httpCode < 300;
 	}

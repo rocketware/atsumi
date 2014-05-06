@@ -74,16 +74,28 @@ class atsumi_Http {
 				curl_setopt($ch, CURLOPT_URL, $url);
 				curl_setopt($ch, CURLOPT_POST, count($fields));
 				curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields));
+				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-				curl_setopt($ch, CURLOPT_NOBODY, TRUE);
-				$body = curl_exec($ch);
+				curl_setopt($ch, CURLOPT_HEADER, true);
+				curl_setopt($ch, CURLOPT_NOBODY, FALSE);
+				curl_setopt($ch, CURLOPT_VERBOSE, TRUE);
+				curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
+				curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 120);
+				curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+				$response = curl_exec($ch);
 				$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+				$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+				$header = substr($response, 0, $headerSize);
+				$body = substr($response, $headerSize);
+
 				//close connection
 				curl_close($ch);
 
 
 				return new atsumi_HttpResponse(
 					$httpCode,
+					$header,
 					$body
 				);
 
