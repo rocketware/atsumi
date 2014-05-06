@@ -19,6 +19,8 @@
 class cache_MemcacheHandler extends cache_AbstractHandler {
 	/* CONSTANTS */
 
+	const DEFAULT_TTL	= 0;
+
 	/**
 	 * Constant defining a minite storage duration
 	 * @var integer

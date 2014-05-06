@@ -17,6 +17,8 @@
  */
 abstract class cache_AbstractHandler implements cache_HandlerInterface {
 
+	const DEFAULT_TTL = 0;
+
 	/**
 	 * Weather or not cache system should throw exceptions
 	 * @var bool
@@ -60,7 +62,10 @@ abstract class cache_AbstractHandler implements cache_HandlerInterface {
 	 * @param string $namespace The namespace under which the variable is stored [optional, default: 'default']
 	 * @return boolen True on success or, False on failure
 	 */
-	final public function set($key, $data, $ttl = 0, $namespace = 'default') {
+	final public function set($key, $data, $ttl = null, $namespace = 'default') {
+
+		if (is_null($ttl)) $ttl = static::DEFAULT_TTL;
+
 		try {
 			return $this->_set($key, $data, $ttl, $namespace);
 		} catch (Exception $e) {
