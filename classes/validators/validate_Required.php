@@ -18,7 +18,7 @@
  		return $this->required;	
  	}
  	public function validate($data) {
- 		if(!$this->required ||(!is_null($data) && trim(strval($data)) !== "" && !is_array($data)))
+ 		if(!$this->required || (!is_array($data) && !is_null($data) && trim(strval($data)) !== ""))
  			return true;
  		elseif(is_array($data)) {
  			$empty = true;
