@@ -316,6 +316,7 @@ class atsumi_Debug {
 		return round((microtime(true) - $startTime), 3).' microseconds';
 	}
 
+
 	/**
 	 * Records an event along with optional data, timer and area the data belongs to
 	 * Note: This will do nothing if the debugger is not active
@@ -871,6 +872,23 @@ foreach($this->databases as $key => $database) :
 
 	public static function render() {
 		return self::__callStatic(__FUNCTION__, array());
+	}
+
+	public static function getDbQueries() {
+		return self::__callStatic(__FUNCTION__, array());
+	}
+
+	public function _getDbQueries () {
+
+		$out = array();
+		foreach($this->databases as $key => $database) {
+			$db = array();
+			foreach($database->getQueryTimes() as $query) {
+				$db[] = $query;
+			}
+			$out[] = $db;
+		}
+		return $out;
 	}
 }
 ?>
