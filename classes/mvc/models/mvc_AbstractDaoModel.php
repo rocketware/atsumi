@@ -1,77 +1,112 @@
 <?php
 // Abstract data access model
-abstract class mvc_AbstractDaoModel {
-	
-	static public function getAll($db) {
-		
-		dump(get_parent_class());
-		
-		
-		$results  = $db->select($this->selectQuery);
-		$returnArray = array();
-		
-		foreach( $results as $row ) {
-			$forum = new gts_ForumAreaModel($db);
-			$forum->loadFromSqlRow($row);
-			$returnArray[] = $forum;		
+abstract class mvc_AbstractDaoModel extends mvc_AbstractModel {
+
+
+	static public function write ($db, $o) {
+
+
+		$method = !is_null($o->get('id', false))?'update':'insert';
+
+		$args = array();
+
+		if ($method == 'update') {
+			$args[] = sf('%s = %s', 'id', $o->get('id'));
 		}
-		return $returnArray;	
-	}	
 
-	abstract protected function getSelectQuery();
-	
-	final public function __construct($db) {
-		
+//		$vars = $this->getChanges();
+		foreach($o->data as $key => $value) {
+			if (!$o->structure[$key]['write']) continue;
+			$args[] = sf('%s = %%%s', $key, $o->structure[$key]['type']);
+			$args[] = $value;
+		}
+
+		if (!count($args))
+			throw new Exception ('Model has nothing to write...');
+
+		array_unshift($args, static::DB_TABLE_NAME);
+
+		$result = call_user_func_array(array($db, $method), $args);
+
+		if (is_null($o->get('id', false))) {
+			$id = $db->selectOne('select lastval()');
+			$o->set('id', $id->i_lastval, true);
+		}
+
 	}
-	static public function load($db, $id) {
-		if(!is_int($id)) throw new Exception("Identifier must be of type Integer");
-		die(get_class());
-		$file = new gts_ForumAreaModel($db);
-		$file->loadFromId($id);
-		return $file;
+
+	/* generic */
+	static protected function load ($db, $where = null, $orderBy = null, $offset = null, $limit = null) {
+
+		if (is_null($where)) $where = '';
+		else $where = ' where '.$where;
+
+		if (is_null($orderBy)) $orderBy = '';
+		else $orderBy = ' order by '.$orderBy;
+
+		if (is_null($offset)) $offset = '';
+		else $offset = ' offset '.$offset;
+
+		if (is_null($limit)) $limit = '';
+		else $limit = ' limit '.$limit;
+
+		$rows = $db->select('%l %l %l %l %l',
+			static::DB_SELECT_QUERY, $where, $orderBy, $offset, $limit);
+
+		$arrOut = array();
+
+		if (!$rows) return $arrOut;
+
+		foreach ($rows as $row) {
+			$obj = new static();
+			$obj->populateFromSqlRow($row);
+			$arrOut[] = $obj;
+		}
+
+		return $arrOut;
+
 	}
-	
-	public function loadFromId($id) {
-		
-		$row  = $this->db->select_1("	
-					SELECT f.id, f.path, f.user_id, f.size, f.memorial_id,  u.namefirst AS user_firstname, 
-							u.namelast AS user_lastname, u.vc_urllocation AS user_url,
-						f.order, mime_type, uploaded, caption
- 					FROM file f
-						INNER JOIN users u ON f.user_id = u.id
-					WHERE f.id = %i ", $id);
-		
-		$this->loadFromSqlRow($row);
 
-	}		
-	
+	/* generic */
+	function populateFromSqlRow ($r) {
+		$rowData = $r->getData();
+
+		// itterate through the db columns and populate the object
+		foreach ($rowData as $k => $v) {
+
+			// check we're expecting the currently column
+			if (!array_key_exists($k, $this->structure))
+				throw new Exception (sf('Unexpected row column "%s", add this to the models \'structure\' member variable.', $k));
+
+			try {
+
+				$this->data[$k] = caster_PostgreSqlToPhp::cast(sf('%%%s', $this->structure[$k]['type']), $v);
+
+				// if casting error throw a useful exception
+			} catch (Exception $e) {
+				$spec = caster_PostgreSqlToPhp::getSpec();
+
+				if (!array_key_exists($this->structure[$k]['type'], $spec))
+					throw new caster_Exception (
+						sf("Caster doesn't support format: %%%s",
+							$this->structure[$k]['type']
+						)
+					);
+
+				throw new caster_Exception (
+					sf("%s: '%s' could not be cast as '%s' (%%%s)",
+						$k,
+						is_null($v)?'NULL':$v,
+						$spec[$this->structure[$k]['type']],
+						$this->structure[$k]['type']
+					)
+				);
+			}
+		}
+	}
+
+
 }
-
-/*
- * ORM Implementation - put on ice
- *
-class gts_ForumAreaModel extends orm_AbstractModel {
-	 public function __construct() {
-	 	
-	 	// TODO : This is only here as PHP won't let this be declared
-	 	// by default...
-	 	
-		$this->id 			= new orm_DataType_Integer(); 
-		$this->name 		= new orm_DataType_Text();
-		$this->sef_name 	= new orm_DataType_Text();
-		$this->description 	= new orm_DataType_Text();
-	
-	
-	
-
-	 	$this->map("id", 			new orm_DataType_Integer()); 
-	 	$this->map("name", 			new orm_DataType_Text()); 
-	 	$this->map("sef_name", 		new orm_DataType_Text()); 
-	 	$this->map("description", 	new orm_DataType_Text()); 
-	 	
-	 }
-}
-	*/
 	
 	
 
