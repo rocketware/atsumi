@@ -110,6 +110,24 @@ abstract class mvc_AbstractModel {
 		*/
 	}
 
+	static function outputItem ($value, $type) {
+
+		// if abstract model then output that
+		if ($value instanceof mvc_AbstractModel)
+			return $value->output($type);
+
+		// if array itterate through
+		elseif (is_array($value)) {
+			$arrayOut = array();
+			foreach ($value as $item)
+				$arrayOut[] = self::outputItem($item, $type);
+				return $arrayOut;
+
+		// otherwise just return value
+		} else
+			return $value;
+
+	}
 
 	function output ($type = self::OUTPUT_FORMAT_ASSOC) {
 
@@ -129,10 +147,7 @@ abstract class mvc_AbstractModel {
 						$this->structure[$key]['output'] == false)
 						continue;
 
-					if ($value instanceof mvc_AbstractModel)
-						$out[$key] = $value->output($type);
-					else
-						$out[$key] = $value;
+					$out[$key] = self::outputItem($value, $type);
 				}
 				return $out;
 
