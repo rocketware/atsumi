@@ -153,6 +153,10 @@ abstract class caster_Abstract  {
 			if(array_key_exists($ch, $this->spec) && method_exists($this,$this->spec[$ch])) {
 				$methodName = $this->spec[$ch];
 				$ret .= $this->$methodName($args[$i++]);
+
+			} elseif(array_key_exists($ch, $this->spec) && method_exists($this,'cast_'.$this->spec[$ch])) {
+				$methodName = 'cast_'.$this->spec[$ch];
+				$ret .= $this->$methodName($args[$i++]);
 			} elseif($ch == '%') {
 				$ret .= '%';
 			} else {
@@ -194,6 +198,14 @@ abstract class caster_Abstract  {
 			}
 		}
 		return $ret;
+	}
+
+	static function getCastName($format) {
+		$caster = new static;
+		return $caster->getCastNameReal($format);
+	}
+	function getCastNameReal ($format) {
+		return $this->spec[$format];
 	}
 
 	/* DEPRECATED METHODS */
