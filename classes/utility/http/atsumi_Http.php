@@ -63,7 +63,7 @@ class atsumi_Http {
 	const	POST_METHOD_CURL		= 1;
 	const 	POST_METHOD_PECL		= 2;
 
-	static public function post ($url, $fields, $method = 1) {
+	static public function post ($url, $fields, $method = 1, $contentType = null) {
 
 		switch ($method) {
 
@@ -73,7 +73,7 @@ class atsumi_Http {
 				$ch = curl_init();
 				curl_setopt($ch, CURLOPT_URL, $url);
 				curl_setopt($ch, CURLOPT_POST, count($fields));
-				curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields));
+				curl_setopt($ch, CURLOPT_POSTFIELDS, is_array($fields)?http_build_query($fields):$fields);
 				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 				curl_setopt($ch, CURLOPT_HEADER, true);
@@ -82,6 +82,13 @@ class atsumi_Http {
 				curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
 				curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 120);
 				curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+
+				if ($contentType)
+					curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+						'Content-Type: '. $contentType,
+						'Connection: Keep-Alive'
+					));
+
 				$response = curl_exec($ch);
 				$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
