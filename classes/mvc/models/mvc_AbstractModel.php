@@ -36,7 +36,7 @@ abstract class mvc_AbstractModel {
 
 	/* generic */
 	function has ($k) {
-		 return array_key_exists($k, $this->data);
+		 return array_key_exists($k, $this->data) && isset($this->data[$k]);
 	}
 
 	/* generic */
@@ -92,7 +92,11 @@ abstract class mvc_AbstractModel {
 
 		}
 	}
-	
+
+	function __get ($key) {
+		return $this->get($key);
+	}
+
 	/* generic */
 	function get($key, $strict = true) { 
 		if (!array_key_exists($key, $this->data))
@@ -127,6 +131,10 @@ abstract class mvc_AbstractModel {
 		} else
 			return $value;
 
+	}
+
+	function __toString () {
+		return pretty($this->output());
 	}
 
 	function output ($type = self::OUTPUT_FORMAT_ASSOC) {
