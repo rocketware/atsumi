@@ -93,6 +93,10 @@ abstract class mvc_AbstractModel {
 		}
 	}
 
+	function getStructure () {
+		return $this->structure;
+	}
+
 	function __get ($key) {
 		return $this->get($key);
 	}

@@ -13,7 +13,9 @@ class caster_Json extends caster_Abstract {
 
 			'b'	=> 'boolean',
 			'a'	=> 'array',
-			'o'	=> 'object'
+			'o'	=> 'object',
+
+			't'	=> 'timestamp'
 		);
 
 	/* annoyance due to PHP scope issue */
@@ -41,6 +43,9 @@ class caster_Json extends caster_Abstract {
 
 	static function cast_array ($in) {
 		return json_encode($in);
+	}
+	static function cast_timestamp ($in) {
+		return intval($in);
 	}
 
 	static function cast_object ($in) {
