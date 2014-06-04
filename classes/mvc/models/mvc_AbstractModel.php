@@ -103,10 +103,13 @@ abstract class mvc_AbstractModel {
 
 	/* generic */
 	function get($key, $strict = true) { 
-		if (!array_key_exists($key, $this->data))
+		if (!array_key_exists($key, $this->data) && !array_key_exists('default', $this->structure[$key]))
 			throw new Exception ('Unknown model key: '. $key);
-		
-		return $this->data[$key];
+
+		if (!array_key_exists($key, $this->data))
+			return $this->structure[$key]['default'];
+
+		else return $this->data[$key];
 		/*
 		try {
 			$value = caster_PostgreSqlToPhp::cast(sf('%%%s', $this->structure[$key]['type']), $this->data[$key]);
@@ -149,32 +152,38 @@ abstract class mvc_AbstractModel {
 
 			// Native object
 			case self::OUTPUT_FORMAT_OBJECT:
+
+				foreach($this->structure as $key => $properties) {
+					if (isset($this->structure[$key]['output']) &&
+						$this->structure[$key]['output'] == false)
+						continue;
+
+					self::outputItem($this->get($key), $type);
+				}
+
 				return $this;
 
 			// Associative array
 			case self::OUTPUT_FORMAT_ASSOC:
 				$out = array();
-				foreach($this->data as $key => $value) {
+				foreach($this->structure as $key => $properties) {
 					if (isset($this->structure[$key]['output']) &&
 						$this->structure[$key]['output'] == false)
 						continue;
 
-					$out[$key] = self::outputItem($value, $type);
+					$out[$key] = self::outputItem($this->get($key), $type);
 				}
 				return $out;
 
 			// Std Class
 			case self::OUTPUT_FORMAT_STD_CLASS:
 				$out = new stdClass();
-				foreach($this->data as $key => $value) {
+				foreach($this->structure as $key => $properties) {
 					if (isset($this->structure[$key]['output']) &&
 						$this->structure[$key]['output'] == false)
 						continue;
 
-					if ($value instanceof mvc_AbstractModel)
-						$out[$key] = $value->output($type);
-					else
-						$out[$key] = $value;
+					$out[$key] = self::outputItem($this->get($key), $type);
 				}
 				return $out;
 		}
