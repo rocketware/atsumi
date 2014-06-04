@@ -22,6 +22,9 @@ abstract class mvc_AbstractController {
 		return $this->data[$key];
 	}
 
+	function __get ($key) {
+		return $this->get($key);
+	}
 	public function getViewHandler() {
 		return $this->viewHandler;
 	}
@@ -179,16 +182,24 @@ abstract class mvc_AbstractController {
 
 		// TODO: This only works for page_ not other methods....
 
-		$method = is_null($method)?substr($entity['method'][count($entity['method'])-1]['name'],5):$method;
+		// is method is an index?
+		if (is_integer($method))
+			$method = $method = substr($entity['method'][count($entity['method'])-1-$method]['name'],5);
+
+		// is it null?
+		else if (is_null($method))
+			$method = substr($entity['method'][count($entity['method'])-1]['name'],5);
+
 		$methodName = sf('data_%s',$method);
 		$pageMethod = null;
 
-		// loop through methods to find the corect one...
-		foreach($entity['method'] as $methodData)
-			if($methodData['name'] == sf('page_%s',$method)) {
-				$pageMethod = $methodData;
-				break;
-			}
+
+			// loop through methods to find the correct one...
+			foreach($entity['method'] as $methodData)
+				if($methodData['name'] == sf('page_%s',$method)) {
+					$pageMethod = $methodData;
+					break;
+				}
 
 		// TODO: Give this it's own exceptions!
 		if(is_null($methodData)) throw new Exception("Method not found...");

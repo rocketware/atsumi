@@ -228,7 +228,7 @@ class atsumi_AppHandler {
 	 * @access public
 	 */
 	public function parseUri() {
-		atsumi_Debug::startTimer();
+		atsumi_Debug::startTimer('app:parse:uri');
 
 		if(!in_array('uriparser_Interface', class_implements($this->uriParser)))
 			throw new Exception('URI Parser must implement uriparser_Interface');
@@ -249,11 +249,13 @@ class atsumi_AppHandler {
 
 		atsumi_Debug::record('Uri Parsing',
 			'Uri was parsed to determine the controller, method and args.',
-			array_merge(array('path' => $this->uri), $this->parserData), true);
+			array_merge(array('path' => $this->uri), $this->parserData),
+			'app:parse:uri'
+		);
 	}
 
 	public function parseCommand() {
-		atsumi_Debug::startTimer();
+		atsumi_Debug::startTimer('app:parse:command');
 		if(!in_array('claparser_Interface', class_implements($this->claParser))) {
 			throw new Exception('Command Line Argument parser must implement claparser_Interface');
 		}
@@ -271,7 +273,9 @@ class atsumi_AppHandler {
 		atsumi_Debug::setParserData($parseData);
 		atsumi_Debug::record('Command Parsing',
 			'Command was parsed to determine the controller, method and args.',
-			array_merge(array('path' => $this->command), $this->parserData), true);
+			array_merge(array('path' => $this->command), $this->parserData),
+			'app:parse:command'
+		);
 	
 	}
 
@@ -295,29 +299,28 @@ class atsumi_AppHandler {
 			throw new app_PageNotFoundException();
 
 		// Get the debugger and start a timer for processing
-		atsumi_Debug::startTimer();
+		atsumi_Debug::startTimer('app:controller:processing');
 
 		// Add the method to the list of processed methods
 		$this->controller->addProcessedMethod($this->parserData['method'], $this->parserData['args']);
 
 		// Time and execute the pre process
-		atsumi_Debug::startTimer();
+		atsumi_Debug::startTimer('app:controller:preProcess');
 		$this->controller->preProcess();
-		atsumi_Debug::record('Controller PreProcess', 'Before the controllers method was called the pre-process function was executed', null, true);
+		atsumi_Debug::record('Controller PreProcess', 'Before the controllers method was called the pre-process function was executed', null, 'app:controller:preProcess');
 
 		// Time and execute the controllers method
-		atsumi_Debug::startTimer();
-		
+		atsumi_Debug::startTimer('app:controller:method');
 		$this->controller->processRequest($this->parserData['method'], $this->parserData['args']);
-		atsumi_Debug::record('Controller Method', 'The controllers requested method was executed', null, true);
+		atsumi_Debug::record('Controller Method', 'The controllers requested method was executed', null, 'app:controller:method');
 
 		// Time and execute the post process
-		atsumi_Debug::startTimer();
+		atsumi_Debug::startTimer('app:controller:postProcess');
 		$this->controller->postProcess();
-		atsumi_Debug::record('Controller PostProcess', 'After the controllers method was called the post-process function was executed', null, true);
+		atsumi_Debug::record('Controller PostProcess', 'After the controllers method was called the post-process function was executed', null, 'app:controller:postProcess');
 
 		// Log the whole processing time
-		atsumi_Debug::record('Controller Processing Complete', 'All processing was completed successfully', null, true);
+		atsumi_Debug::record('Controller Processing Complete', 'All processing was completed successfully', null, 'app:controller:processing');
 	}
 
 	/**
@@ -328,10 +331,10 @@ class atsumi_AppHandler {
 	public function render() {
 
 		// Time and execute the pre render
-		atsumi_Debug::startTimer();
+		atsumi_Debug::startTimer('app:controller:preRender');
 		$this->controller->publishFlashData();
 		$this->controller->preRender();
-		atsumi_Debug::record('Controller PreRender', 'Before rendering was processed the pre-render function was executed', null, true);
+		atsumi_Debug::record('Controller PreRender', 'Before rendering was processed the pre-render function was executed', null, 'app:controller:preRender');
 
 		$viewHandler	= $this->controller->getViewHandler();
 		$view			= $this->controller->getView();
@@ -348,24 +351,24 @@ class atsumi_AppHandler {
 
 
 		// Get the debugger and start a timer for rendering
-		atsumi_Debug::startTimer();
+		atsumi_Debug::startTimer('app:controller:rendering');
 
 		$viewData = $this->controller->getViewData();
 		atsumi_Debug::setViewData($viewData);
 
 
 		// Time and execute the view handler
-		atsumi_Debug::startTimer();
+		atsumi_Debug::startTimer('app:controller:render');
 		$viewHandler->render($view, $viewData);
-		atsumi_Debug::record('Rendering', sf('Rendering was performed by the %s view handler', get_class($viewHandler)), null, true);
+		atsumi_Debug::record('Rendering', sf('Rendering was performed by the %s view handler', get_class($viewHandler)), null, 'app:controller:render');
 
 		// Time and execute the post render
-		atsumi_Debug::startTimer();
+		atsumi_Debug::startTimer('app:controller:postRender');
 		$this->controller->postRender();
-		atsumi_Debug::record('Controller PostRender', 'After the rendering was processed the post-render function was executed', null, true);
+		atsumi_Debug::record('Controller PostRender', 'After the rendering was processed the post-render function was executed', null, 'app:controller:postRender');
 
 		// Log the whole processing time
-		atsumi_Debug::record('Rendering Complete', 'All rendering was completed successfully', null, true);
+		atsumi_Debug::record('Rendering Complete', 'All rendering was completed successfully', null, 'app:controller:rendering');
 	}
 }
 ?>

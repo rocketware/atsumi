@@ -99,6 +99,7 @@ class atsumi_Debug {
 	 * @var array
 	 */
 	protected $timers = array();
+	protected $timerMap = array();
 
 	/**
 	 * Weather the debugger is active and recording information
@@ -302,8 +303,11 @@ class atsumi_Debug {
 	 * Adds a timer point onto a stack of timers
 	 * @access public
 	 */
-	public function _startTimer() {
-		$this->timers[] = microtime(true);
+	public function _startTimer($key = null) {
+		if (!is_null($key))
+			$this->timerMap[$key] = microtime(true);
+		else
+			$this->timers[] = microtime(true);
 	}
 
 	/**
@@ -311,7 +315,15 @@ class atsumi_Debug {
 	 * @access public
 	 * @return string
 	 */
-	public function _endTimer() {
+	public function _endTimer($key = null) {
+
+		if (!is_null($key)) {
+			if (!isset($this->timerMap[$key])) return '??';
+			$ms = round((microtime(true) - $this->timerMap[$key]), 3);
+			unset($this->timerMap[$key]);
+			return $ms;
+		}
+
 		$startTime = array_pop($this->timers);
 		return round((microtime(true) - $startTime), 3).' microseconds';
 	}
@@ -330,12 +342,21 @@ class atsumi_Debug {
 	public function _record($title, $desc, $data = null, $timer = false, $area = self::AREA_GENERAL) {
 		if(!$this->active) return;
 
+		$timerString = '';
+		if ($timer === true)
+			$timerString = '(Process Time: '.self::_endTimer().')';
+		else if (is_string($timer)) {
+			$timerString = '(Process Time: '.self::_endTimer($timer).' ms)';
+		}
+
+
+
 		$this->consoleData[] = array(
 			'title'		=> $title,
 			'desc'		=> $desc,
 			'data'		=> $data,
 			'area'		=> $area,
-			'timestamp'	=>($timer ? '(Process Time: '.self::_endTimer().')' : '')
+			'timestamp'	=>$timerString
 		);
 	}
 
@@ -394,8 +415,18 @@ class atsumi_Debug {
 			return $ret;
 		}
 
-		if(is_object($value)) {
-			return sf('(Class) <span class="typeObject">%s</span>', get_class($value));
+		if(is_object($value) && $value instanceof mvc_AbstractModel) {
+
+			$objOutput = '';
+			$objArray = $value->getStructure();
+			foreach($objArray as $key => $item)
+				$objOutput .= sf('<div class="var">[<span class="typeKey">%s</span>] => %s</div>', $key, stripos($key,'password')?'*****':$this->format($value->get($key)));
+
+
+			return sf('(Model) <span class="typeObject">%s</span>:%s', get_class($value), $objOutput);
+
+		} elseif(is_object($value)) {
+			return sf('(Object) <span class="typeObject">%s</span>', get_class($value));
 			/*
 			if(method_exists($value,'toString'))
 				return $value->toString();
@@ -706,8 +737,12 @@ window.onload=function(){
 			<td class="debugConsoleDisplay" id="debugConsoleDisplay">
 				<div class="debugConsoleDisplayInner"  id="debugConsoleDisplayInner">
 				<div id="debugTabContainer_console" class="debugConsoleWindow">
-<?php foreach($this->consoleData as $data) : ?>
-					<div class="logItem" style="border-color: <?=(isset($this->areas[$data['area']]) ? $this->areas[$data['area']] : 'white');?>">
+<?php foreach($this->consoleData as $data) :
+	$color = dechex(crc32($data['area']));
+	$color = '#'.substr($color, 0, 6);
+
+	?>
+					<div class="logItem" style="border-color: <?=($color)?>">
 						<div class="logTitle"><?=$data['title'];?> <span class="logTimestamp"><?=$data['timestamp'];?></span></div>
 						<div class="logDesc"><?=$data['desc'];?></div>
 						<?=(!is_null($data['data']) ? sf('<div class="logData">%s</div>', $this->format($data['data'])) : '');?>
@@ -781,7 +816,7 @@ foreach($this->databases as $key => $database) :
 		$totalTime += $query['time']
 ?>
 						<h3>Database <?=$key;?></h3>
-						<h5>Total Query time: <?=$totalTime;?></h5>
+						<h5>Total Query time: <?=$totalTime;?> ms</h5>
 						<?=str_replace(array('\t', '\n'), array(" "," "), $this->format($database->getQueryTimes()));?>
 <?php endforeach; ?>
 					</div>
@@ -852,12 +887,12 @@ foreach($this->databases as $key => $database) :
 		self::__callStatic(__FUNCTION__, $args);
 	}
 
-	public static function startTimer() {
-		self::__callStatic(__FUNCTION__, array());
+	public static function startTimer($key = null) {
+		self::__callStatic(__FUNCTION__, func_get_args());
 	}
 
-	public static function endTimer() {
-		return self::__callStatic(__FUNCTION__, array());
+	public static function endTimer($key = null) {
+		return self::__callStatic(__FUNCTION__, func_get_args());
 	}
 
 	public static function record($title, $desc, $data = null, $timer = false, $area = self::AREA_GENERAL) {
