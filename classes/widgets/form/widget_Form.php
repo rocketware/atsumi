@@ -222,7 +222,7 @@ class widget_Form {
 		return strval($this->render());
 	}
 
-	public function render() {
+	public function render($options = array()) {
 
 		// totally forgotten what this force defaults is, do we need it?...
 		// forceDefaults is if you want to force the form to show its default values on reload
@@ -233,13 +233,13 @@ class widget_Form {
 					$row->validate();
 			}
 
-		$html = $this->getFormTop();
+		$html = $this->getFormTop(isset($options['top'])?$options['top']:array());
 
 		foreach($this->elements as $element) {
 			$html .= sfl("%s", $element->render());
 		}
 
-		$html .= $this->getFormBottom();
+		$html .= $this->getFormBottom(isset($options['bottom'])?$options['bottom']:array());
 		return $html;
 	}
 
