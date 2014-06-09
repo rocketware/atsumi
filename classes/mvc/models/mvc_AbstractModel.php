@@ -52,6 +52,11 @@ abstract class mvc_AbstractModel {
 		$this->data[$k] = $v;
 	}
 
+	function setArray ($asoc) {
+		foreach ($asoc as $k => $v)
+			$this->set($k, $v);
+	}
+
 	function increment ($k, $v) {
 		if (!$this->has($k)) throw new Exception('unknown key: '.$k);
 
