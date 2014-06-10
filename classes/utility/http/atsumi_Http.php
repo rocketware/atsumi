@@ -63,7 +63,7 @@ class atsumi_Http {
 	const	POST_METHOD_CURL		= 1;
 	const 	POST_METHOD_PECL		= 2;
 
-	static public function post ($url, $fields, $method = 1, $contentType = null) {
+	static public function post ($url, $fields, $method = 1, $httpHeaders = array()) {
 
 		switch ($method) {
 
@@ -83,11 +83,8 @@ class atsumi_Http {
 				curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 120);
 				curl_setopt($ch, CURLOPT_TIMEOUT, 120);
 
-				if ($contentType)
-					curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-						'Content-Type: '. $contentType,
-						'Connection: Keep-Alive'
-					));
+				if (count($httpHeaders))
+					curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeaders);
 
 				$response = curl_exec($ch);
 
