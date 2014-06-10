@@ -16,24 +16,33 @@ class mvc_LocaleModel extends mvc_AbstractModel {
 		return sf('%s%s',
 			strtolower($this->get('language')),
 			$this->has('country')?
-				sf('_%s', strtoupper($this->has('country'))):''
+				sf('-%s', strtolower($this->get('country'))):''
 		);
 	}
 
-	function uri ($uri) { return sf('/%s%s%s',
-		$this->getUriPrefix(),
-		substr($uri, 0, 1) !== '/'?'/':'',
-		$uri
-	);
-	}
-	function getUriPrefix () {
-		return sf('%s%s',
-			strtolower($this->get('language')),
-			$this->has('country')?
-				sf('-%s', strtolower($this->has('country'))):''
+	function uri ($uri) {
+		return sf('/%s%s%s',
+			$this->getLocaleString(),
+			substr($uri, 0, 1) !== '/'?'/':'',
+			$uri
 		);
 	}
+	static public function fromLocaleString ($localeString) {
 
+		$locale = new self();
+		preg_match('/([a-z]{2})(-([a-zA-Z]{2}))*/i',
+			$localeString,
+			$matches
+		);
+		if (array_key_exists(1, $matches))
+			$locale->set('language', strtolower($matches[1]));
+
+		if (array_key_exists(3, $matches))
+			$locale->set('country', strtolower($matches[3]));
+
+		return $locale;
+
+	}
 	static function parseHttpAcceptLanguage ($httpAcceptLanguage) {
 
 		$langs = array();
