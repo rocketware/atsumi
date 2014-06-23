@@ -812,11 +812,12 @@ window.onload=function(){
 <?php
 foreach($this->databases as $key => $database) :
 	$totalTime = 0;
-	foreach($database->getQueryTimes() as $query)
-		$totalTime += $query['time']
+	foreach($database->getQueryTimes() as $query) {
+		$totalTime += $query['time'];
+	}
 ?>
-						<h3>Database <?=$key;?></h3>
-						<h5>Total Query time: <?=$totalTime;?> ms</h5>
+						<h3>Database #<?=$key;?></h3>
+						<h5>x<?=count($database->getQueryTimes())?> queries. Time: <?=$totalTime;?> ms</h5>
 						<?=str_replace(array('\t', '\n'), array(" "," "), $this->format($database->getQueryTimes()));?>
 <?php endforeach; ?>
 					</div>
