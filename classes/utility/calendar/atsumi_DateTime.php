@@ -17,7 +17,7 @@ class atsumi_DateTime {
 	}
 
 	public function __toString() {
-		return (String)$this->timestamp;
+		return (String) $this->timestamp;
 	}
 
 	public function format($formatString = null) {
@@ -29,5 +29,8 @@ class atsumi_DateTime {
 		return $d->format($formatString);
 	}
 
+	public function output ($outputType) {
+		return (String) $this->timestamp;
+	}
 }
 ?>

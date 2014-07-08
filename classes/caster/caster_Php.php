@@ -13,6 +13,8 @@ class caster_Php extends caster_Abstract {
 
 			'b'	=> 'boolean',
 
+			't'	=> 'timestamp',
+
 			'a'	=> 'array',
 			'o'	=> 'object'
 		);
@@ -43,6 +45,9 @@ class caster_Php extends caster_Abstract {
 	}
 	static function cast_boolean ($in) {
 		return boolval($in);
+	}
+	static function cast_timestamp ($in) {
+		return intval($in);
 	}
 
 	static function cast_array ($in) {

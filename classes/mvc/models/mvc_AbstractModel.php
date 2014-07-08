@@ -41,6 +41,7 @@ abstract class mvc_AbstractModel {
 
 	/* generic */
 	function set ($k, $v, $force = false) {
+
 		if (!$force &&
 			(
 				isset($this->structure[$k]['write']) &&
@@ -130,6 +131,9 @@ abstract class mvc_AbstractModel {
 
 		// if abstract model then output that
 		if ($value instanceof mvc_AbstractModel)
+			return $value->output($type);
+
+		elseif (is_object($value) && method_exists($value, 'output'))
 			return $value->output($type);
 
 		// if array itterate through
