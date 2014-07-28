@@ -138,7 +138,7 @@ class mvc_PhpTemplateViewHandler implements mvc_ViewHandlerInterface {
 			return self::processTemplateString($templateString, $data, $this->surpressErrors);
 				
 		} else {
-			throw new Exception ('Unknown template type');
+			throw new Exception ('Unknown template type: '.$template);
 		}
 	}
 	
