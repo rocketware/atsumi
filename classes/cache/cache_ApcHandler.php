@@ -17,6 +17,9 @@
  */
 class cache_ApcHandler extends cache_AbstractHandler {
 	/* CONSTANTS */
+
+	const DEFAULT_TTL	= 0;
+
 	/* PROPERTIES */
 	/* CONSTRUCTOR & DESTRUCTOR */
 

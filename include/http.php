@@ -1,4 +1,4 @@
-<?
+<?php
 
 function http_post($host, $path, $headers_in, $in, &$headers_out, &$out) {
 	$matches = null;

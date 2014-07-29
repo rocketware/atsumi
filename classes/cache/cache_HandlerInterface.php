@@ -18,6 +18,7 @@
  */
 interface cache_HandlerInterface {
 	/* CONSTRUCTOR & DESTRUCTOR */
+
 	/* GET METHODS */
 
 	/**
