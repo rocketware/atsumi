@@ -41,6 +41,14 @@ class Atsumi {
 	 */
 	private $errorHandler;
 
+
+	/**
+	 * A data store
+	 * @access private
+	 * @var mvc_DynamicModel
+	 */
+	private $store;
+	
 	/* CONSTRUCTOR & DESTRUCTOR */
 
 	/**
@@ -54,6 +62,8 @@ class Atsumi {
 
 		// Load some helpful files
 		atsumi_Loader::references(atsumi_Loader::getAtsumiDir(), 'caster utility/http');
+
+
 	}
 
 	/* GET METHODS */
@@ -103,6 +113,9 @@ class Atsumi {
 		if(preg_match('/^error__(.+)$/', $name, $matches))
 			return call_user_func_array(array($atsumi->errorHandler, $matches[1]), $arguments);
 
+		if(preg_match('/^store__(.+)$/', $name, $matches))
+			return call_user_func_array(array($atsumi->store, $matches[1]), $arguments);
+		
 		if(method_exists($atsumi, '_'.$name))
 			return call_user_func_array(array($atsumi, '_'.$name), $arguments);
 
@@ -142,9 +155,16 @@ class Atsumi {
 			$this->errorHandler->setDisplayErrors(false);
 		}
 
-		$this->appHandler = new atsumi_AppHandler($settings, $this->errorHandler);
+			
+		$this->appHandler 	= new atsumi_AppHandler($settings, $this->errorHandler);
+		
 	}
 
+	public function _initStore () {
+		if (class_exists('mvc_DynamicModel'))
+			$this->store 		= new mvc_DynamicModel();
+	}
+	
 	/*
 	 * NOTE: Below are all static functions which will be removed when php 5.3.0+ becomes the
 	 * common and the PHP magic function __callStatic works correctly
@@ -155,6 +175,11 @@ class Atsumi {
 	}
 
 	public static function initApp($settings, $debug = false) {
+		$args = func_get_args();
+		return self::__callStatic(__FUNCTION__, $args);
+	}
+
+	public static function initStore() {
 		$args = func_get_args();
 		return self::__callStatic(__FUNCTION__, $args);
 	}
@@ -195,6 +220,15 @@ class Atsumi {
 	}
 
 	public static function app__createUri($controller, $method) {
+		$args = func_get_args();
+		return self::__callStatic(__FUNCTION__, $args);
+	}
+
+	public static function store__set($k, $v) {
+		$args = func_get_args();
+		return self::__callStatic(__FUNCTION__, $args);
+	}
+	public static function store__get($k) {
 		$args = func_get_args();
 		return self::__callStatic(__FUNCTION__, $args);
 	}
