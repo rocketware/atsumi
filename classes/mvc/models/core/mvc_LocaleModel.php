@@ -69,6 +69,35 @@ class mvc_LocaleModel extends mvc_AbstractModel {
 
 		return $langs;
 	}
+	static function interpolate ($str, $vars) {
+		$originalStr = $str;
+		while (preg_match('/\$\{(.*?)\}/sm', $str, $m)) {
+			list($src, $var) = $m;
+
+			// retrieve variable to interpolate in context, throw an exception
+			// if not found.
+			
+			if (!array_key_exists($var, $vars)) {
+				
+				// TODO: Add a custom exception
+				Atsumi::error__listen(
+					new Exception (
+						sf('Locale interpolation failed in for var: "%s" in str: "%s"',
+							$var, $originalStr
+						)
+					)
+				);
+				$value = '';
+			} else $value = $vars[$var];
+			$str = str_replace($src, $value, $str);
+		}
+		
+		foreach ($vars as $key => $replacement) {
+			$str = str_replace ('${'.$key.'}', $replacement, $str);
+		}
+		return $str;		
+		
+	}
 
 }
 
