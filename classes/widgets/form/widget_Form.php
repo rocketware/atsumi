@@ -246,6 +246,7 @@ class widget_Form {
 	public function hasElement($elementName) {
 		return array_key_exists($elementName, $this->elementMap);
 	}
+
 	public function getElement($elementName, $options = array()) {
 		return $this->elementMap[$elementName]->render($options);
 	}

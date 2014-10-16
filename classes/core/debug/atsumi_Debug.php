@@ -737,12 +737,14 @@ window.onload=function(){
 			<td class="debugConsoleDisplay" id="debugConsoleDisplay">
 				<div class="debugConsoleDisplayInner"  id="debugConsoleDisplayInner">
 				<div id="debugTabContainer_console" class="debugConsoleWindow">
+
 <?php foreach($this->consoleData as $data) :
 	$color = dechex(crc32($data['area']));
 	$color = '#'.substr($color, 0, 6);
 
 	?>
 					<div class="logItem" style="border-color: <?=($color)?>">
+
 						<div class="logTitle"><?=$data['title'];?> <span class="logTimestamp"><?=$data['timestamp'];?></span></div>
 						<div class="logDesc"><?=$data['desc'];?></div>
 						<?=(!is_null($data['data']) ? sf('<div class="logData">%s</div>', $this->format($data['data'])) : '');?>
