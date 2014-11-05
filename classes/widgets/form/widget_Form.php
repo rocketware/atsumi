@@ -126,6 +126,7 @@ class widget_Form {
 		try {
 			$element->setValue($this->userInput, $this->userFiles);
 		} catch(Exception $e) {
+			Atsumi::error__listen($e);
 			$element->setError($e);
 		}
 		$element->validate();
