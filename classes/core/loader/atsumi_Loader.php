@@ -178,7 +178,8 @@ class atsumi_Loader {
 				if (empty($part)) continue;
 				$success = false;
 				if($this->useRequire($domain, $part)) $success = true;
-				if($this->useClasses($domain, $part)) $success = true;
+				if($this->useDir($domain, $part, 'src')) $success = true;
+				if($this->useDir($domain, $part, 'classes')) $success = true;
 
 				if(!$success) throw new Exception(sprintf('Unknown reference in atsumi_Loader::references() : %s:%s', $domain, $part));
 			}
@@ -192,7 +193,7 @@ class atsumi_Loader {
 	 * @param string $part The subfolder to process
 	 * @return boolean If the part was found
 	 */
-	protected function useClasses($domain, $part) {
+	protected function useDir ($domain, $part, $dir = 'src') {
 		$path = sprintf('%s/%s/classes/%s', $this->workspace, $domain, $part);
 		if(!is_dir($path)) return false;
 		self::useClassDir($path);
