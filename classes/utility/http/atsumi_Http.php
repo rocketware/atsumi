@@ -91,7 +91,10 @@ class atsumi_Http {
 				$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
 				if ($httpCode == 0)
-					throw new Exception ('CURL error: '.curl_errno($ch));
+					throw new atsumi_HttpException (
+						'CURL error: #'.curl_errno($ch), 
+						curl_errno($ch)
+					);
 
 				$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 				$header = substr($response, 0, $headerSize);
