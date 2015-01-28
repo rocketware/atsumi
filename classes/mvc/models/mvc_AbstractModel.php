@@ -9,8 +9,51 @@ abstract class mvc_AbstractModel {
 	protected $data = array();
 
 
+	static public function from ($data) {
+
+		switch (gettype($data)) {
+			case 'array':
+				return self::fromArray($data);
+				
+			case 'object':
+				if ($data instanceof self) 
+					return self::fromModel($data);
+			default:
+				throw new Exception ('Can not create new model. Unexpected input: '.gettype($data));
+		}
+		
+	}
+
+
 	static public function fromArray ($data) {
 		return new static ($data);
+	}
+	static public function fromModel (self $data) {
+		
+		$o = new static();
+		$o->_fromModel($data);
+		return $o;
+	}
+	
+	private function _fromModel (self $data) {
+	
+		foreach($this->structure as $key => $properties) {
+			switch ($properties['type']) {
+				case 'o':
+					if (isset($properties['model']) && $data->has($key)) {
+						$m = $properties['model']::from($data->get($key));
+						
+						$this->set($key, $m, true);
+						break;	
+						
+					}
+				default:
+					$this->set($key, $data->get($key), true);
+
+			}
+			
+		}
+		return $this;
 	}
 
 	/* generic */
