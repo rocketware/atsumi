@@ -101,7 +101,7 @@ abstract class mvc_AbstractModel {
 			$this->set($k, $v);
 	}
 
-	function increment ($k, $v) {
+	function increment ($k, $v = 1) {
 		if (!$this->has($k)) throw new Exception('unknown key: '.$k);
 
 		// increment different data types
