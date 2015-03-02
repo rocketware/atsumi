@@ -151,15 +151,24 @@ abstract class mvc_AbstractModel {
 	}
 
 	/* generic */
-	function get($key, $strict = true) { 
-		if (!array_key_exists($key, $this->data) && !array_key_exists('default', $this->structure[$key]))
-			throw new Exception ('Unknown model key: '. $key);
+	function get($key, $strict = true) {
 
-		if (!array_key_exists($key, $this->data))
+		if (array_key_exists($key, $this->data))
+			return $this->data[$key];
+			
+		else if (!array_key_exists($key, $this->data) && !array_key_exists($key, $this->structure)) 
+			throw new Exception ($key. ' is not a known property of ' .get_called_class());
+
+		else if (!array_key_exists($key, $this->data) && array_key_exists('default', $this->structure[$key]))
 			return $this->structure[$key]['default'];
+		
+		else if (!array_key_exists($key, $this->data))
+			throw new Exception ('property: '.$key. ' has no default value in ' .get_called_class());
 
-		else return $this->data[$key];
+
+		
 		/*
+		 * TODO: casting
 		try {
 			$value = caster_PostgreSqlToPhp::cast(sf('%%%s', $this->structure[$key]['type']), $this->data[$key]);
 			return $value;
