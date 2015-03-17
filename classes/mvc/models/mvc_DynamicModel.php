@@ -10,6 +10,7 @@ class mvc_DynamicModel extends mvc_AbstractModel {
 		$data = array();
 		foreach ($spec as $k => $properties) {
 			$this->add($k, $properties);
+			
 			if (isset($properties['value']))
 				$data[$k] = $properties['value'];
 			elseif (isset($properties['default']))

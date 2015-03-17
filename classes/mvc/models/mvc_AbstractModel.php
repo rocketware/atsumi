@@ -58,7 +58,6 @@ abstract class mvc_AbstractModel {
 
 	/* generic */
 	public function __construct ($data = array()) {
-
 		
 		foreach ($this->structure as $k => $properties) {
 			switch ($properties['type']) {
@@ -66,7 +65,7 @@ abstract class mvc_AbstractModel {
 				case 'o':
 					
 					// do the objects want to be created
-					if (isset($properties['create'])) {
+					if (isset($properties['create']) && $properties['create'] == true) {
 						
 						if (isset($properties['model']) && !is_null($properties['model'])) {
 							$this->set($k, new $properties['model']);
@@ -260,7 +259,7 @@ abstract class mvc_AbstractModel {
 	}
 
 	function output ($type = self::OUTPUT_FORMAT_ASSOC) {
-
+		
 		$this->preOutput($type);
 
 		switch ($type) {
