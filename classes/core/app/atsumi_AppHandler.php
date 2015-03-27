@@ -137,6 +137,10 @@ class atsumi_AppHandler {
 	public function getBaseUri() {
 		return $this->baseUri;
 	}
+
+	public function getController() {
+		return $this->controller;
+	}
 	
 	// SET FUNCTIONS
 
