@@ -145,12 +145,18 @@ class atsumi_Debug {
 	 * @access public
 	 */
 	public function __destruct() {
-		try {
-			if($this->active && $this->autoRender)
-				 echo $this->render();
-		} catch (Exception $e) { }
+		self::printIfRequired();
 	}
 
+	static function printIfRequired() {
+
+		$d = self::getInstance();
+		try {
+			if($d->active && $d->autoRender)
+				echo $d->render();
+		} catch (Exception $e) { }
+	}
+	
 	/* GET FUNCTIONS */
 
 	/**
@@ -700,7 +706,6 @@ window.onload=function(){
 	 * @return string The debugger as a valid HTML5 string
 	 */
 	public function _render() {
-
 		if(!$this->active) return;
 
 
