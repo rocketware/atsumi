@@ -148,6 +148,11 @@ class atsumi_Debug {
 		self::printIfRequired();
 	}
 
+	static function getConsoleData() {
+		$d = self::getInstance();
+		return $d->_getConsoleData();
+	}
+	
 	static function printIfRequired() {
 
 		$d = self::getInstance();
@@ -348,12 +353,13 @@ class atsumi_Debug {
 	public function _record($title, $desc, $data = null, $timer = false, $area = self::AREA_GENERAL) {
 		if(!$this->active) return;
 
-		$timerString = '';
 		if ($timer === true)
-			$timerString = '(Process Time: '.self::_endTimer().')';
+			$time = self::_endTimer();
 		else if (is_string($timer)) {
-			$timerString = '(Process Time: '.self::_endTimer($timer).' ms)';
+			$time = self::_endTimer($timer);
 		}
+
+		$timerString = '(Process Time: '.$time.')';
 
 
 
@@ -362,7 +368,8 @@ class atsumi_Debug {
 			'desc'		=> $desc,
 			'data'		=> $data,
 			'area'		=> $area,
-			'timestamp'	=>$timerString
+			'time'		=> $time,
+			'timestamp'	=> $timerString
 		);
 	}
 
@@ -387,6 +394,10 @@ class atsumi_Debug {
 		$this->areas[$name] = $color;
 	}
 
+	public function _getConsoleData() {
+		return $this->consoleData;
+	}
+	
 	/**
 	 * Formats a variable into a html5 valid string representation
 	 * @access protected
