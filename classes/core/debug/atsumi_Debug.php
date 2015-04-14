@@ -102,10 +102,16 @@ class atsumi_Debug {
 	protected $timerMap = array();
 
 	/**
-	 * Weather the debugger is active and recording information
+	 * Is the debugger active and recording information
 	 * @var boolean
 	 */
 	protected $active = false;
+
+	/**
+	 * If this is set to true then it will record data regardless of active
+	 * @var boolean
+	 */
+	protected $record = false;
 
 	/**
 	 * A path to a log file used to output debug data
@@ -179,7 +185,7 @@ class atsumi_Debug {
 	}
 
 	/**
-	 * Returns weather or not the debugger is actively recording data
+	 * Returns debugger active
 	 * @access public
 	 * @return boolean
 	 */
@@ -190,12 +196,16 @@ class atsumi_Debug {
 	/* SET FUNCTIONS */
 
 	/**
-	 * Sets weather or not the debugger is actively recording data
+	 * Sets if debugger is actively recording data
 	 * @access public
 	 * @param boolean $val If the debugger should be recording [optional, default: true]
 	 */
 	public function _setActive($val = true) {
 		$this->active = $val;
+	}
+	
+	public function _setRecord($val = true) {
+		$this->record = $val;
 	}
 
 	/**
@@ -351,7 +361,7 @@ class atsumi_Debug {
 	 * @param string $area The area to add the data to
 	 */
 	public function _record($title, $desc, $data = null, $timer = false, $area = self::AREA_GENERAL) {
-		if(!$this->active) return;
+		if(!$this->active && !$this->record) return;
 
 		if ($timer === true)
 			$time = self::_endTimer();
@@ -885,6 +895,12 @@ foreach($this->databases as $key => $database) :
 		$args = func_get_args();
 		self::__callStatic(__FUNCTION__, $args);
 	}
+	
+	public static function setRecord($data) {
+		$args = func_get_args();
+		self::__callStatic(__FUNCTION__, $args);
+	}
+	
 
 	public static function setParserData($data) {
 		$args = func_get_args();

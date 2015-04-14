@@ -259,7 +259,7 @@ abstract class mvc_AbstractModel {
 	}
 
 	function output ($type = self::OUTPUT_FORMAT_ASSOC) {
-		
+
 		$this->preOutput($type);
 
 		switch ($type) {
