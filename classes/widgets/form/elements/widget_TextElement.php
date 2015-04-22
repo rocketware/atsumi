@@ -10,6 +10,7 @@ class widget_TextElement extends widget_AbstractElement {
 	protected $onFocus			= null;
 	protected $onBlur			= null;
 	protected $disabled			= false;
+	protected $attributes		= array();
 	protected $rows;
 
 	public function __construct($args) {
@@ -33,17 +34,31 @@ class widget_TextElement extends widget_AbstractElement {
 
 		if (array_key_exists('disabled', $args) && is_bool($args['disabled']))
 			$this->disabled = $args['disabled'];
-			
+		
+		
+		if (array_key_exists('attributes', $args) && is_array($args['attributes']))
+			$this->attributes = $args['attributes'];
+
+
+
 	}
 
 	function renderElement() {
-		return(sf('<input type="%s" name="%s" value="%s" %s id="form_%s" class="%s" %s%s%s%s%s%s />',
+		
+		$attributesHtml = '';
+		if (count($this->attributes)) 
+			foreach ($this->attributes as $key => $val)
+				$attributesHtml.= sf(' %s="%s" ', $key, $val);
+		
+		
+		return(sf('<input type="%s" name="%s" value="%s" %s id="form_%s" class="%s" %s%s%s%s%s%s%s />',
 			$this->htmlType,
 			$this->getName(),
 			parent::makeInputSafe($this->getValue()),
 			($this->tabindex) ? sf('tabindex="%s"', $this->tabindex) : '',
 			$this->getName(),
 			$this->cssClassName,
+			$attributesHtml,
 			strlen($this->placeholder)?sf(' placeholder="%s"', $this->placeholder):'',
 			!is_null($this->onChange) && strlen($this->onChange)?sf(' onChange="%s"', $this->onChange):'',
 			!is_null($this->onKeydown) && strlen($this->onKeydown)?sf(' onKeydown="%s"', $this->onKeydown):'',
