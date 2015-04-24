@@ -252,16 +252,17 @@ class widget_Form {
 		return $this->elementMap[$elementName]->render($options);
 	}
 
-	public function getFormTop() {
+	public function getFormTop($options = array()) {
 
-		$html = sf('<a name="form_%s"></a><form name="%s" id="%s" method="%s" action="%s" enctype="%s" class="form%s">',
+		$html = sf('<a name="form_%s" class="form_anchor"></a><form name="%s" id="%s" method="%s" action="%s" enctype="%s" class="form%s"%s>',
 			$this->name,
 			$this->name,
 			$this->name,
 			$this->method,
 			$this->ancorJump ? sf('%s#form_%s', $this->actionPath, $this->name) : $this->actionPath,
 			$this->encoding,
-			count($this->cssClasses)?' '.implode(' ', $this->cssClasses):''
+			count($this->cssClasses)?' '.implode(' ', $this->cssClasses):'',
+			isset($options['onSubmit'])?sf(' onsubmit="%s"',$options['onSubmit']):''
 		);
 
 		// add a hidden field to verify if this form has been posted
@@ -276,14 +277,21 @@ class widget_Form {
 	public function getFormBottom($options = array()) {
 
 		// add the submit to the bottom of the form for now(will convert to element in next version)
-		$html  = sfl('	<div class="submit rowSubmit%s">', array_key_exists('rowClasses',$options)?' '.$options['rowClasses']:'');
+		$html  = '';
+		if (!isset($options['buttonOnly']) || $options['buttonOnly'] == false)
+			$html  = sfl('	<div class="submit rowSubmit%s">', array_key_exists('rowClasses',$options)?' '.$options['rowClasses']:'');
+
 		$html .= sfl('	%s<button type="submit" class="button button-submit%s" id="submit_%s">%s</button>%s', 
 			array_key_exists('preButtonHtml', $options)?$options['preButtonHtml']:'',
 			array_key_exists('buttonClasses',$options)?' '.$options['buttonClasses']:'',
-			$this->name, $this->getSubmit(),
+			$this->name,
+			$this->getSubmit(),
 			array_key_exists('postButtonHtml', $options)?$options['postButtonHtml']:''
 		);
-		$html .= sfl('	</div>');
+
+		if (!isset($options['buttonOnly']) || $options['buttonOnly'] == false)
+			$html .= sfl('	</div>');
+
 		$html .= sfl('</form>');
 
 		return $html;
