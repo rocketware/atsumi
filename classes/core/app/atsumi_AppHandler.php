@@ -370,13 +370,6 @@ class atsumi_AppHandler {
 
 		// tell the debug to print if required as connection will be closed by __destruct
 		atsumi_Debug::printIfRequired();
-
-		// close the connection
-//		flush();
-//		ob_flush();
-//		if (session_id()) session_write_close();
-
-		
 		
 		// Time and execute the post render
 		atsumi_Debug::startTimer('app:controller:postRender');

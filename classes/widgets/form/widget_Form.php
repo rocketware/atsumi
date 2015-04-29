@@ -281,11 +281,11 @@ class widget_Form {
 		if (!isset($options['buttonOnly']) || $options['buttonOnly'] == false)
 			$html  = sfl('	<div class="submit rowSubmit%s">', array_key_exists('rowClasses',$options)?' '.$options['rowClasses']:'');
 
-		$html .= sfl('	%s<button type="submit" class="button button-submit%s" id="submit_%s">%s</button>%s', 
+		$html .= sfl('	%s<button type="submit" class="%s" id="submit_%s">%s</button>%s', 
 			array_key_exists('preButtonHtml', $options)?$options['preButtonHtml']:'',
-			array_key_exists('buttonClasses',$options)?' '.$options['buttonClasses']:'',
+			array_key_exists('buttonClasses',$options)?' '.$options['buttonClasses']:'button button-submit',
 			$this->name,
-			$this->getSubmit(),
+			array_key_exists('innerButtonHtml', $options)?$options['innerButtonHtml']:$this->getSubmit(),
 			array_key_exists('postButtonHtml', $options)?$options['postButtonHtml']:''
 		);
 
