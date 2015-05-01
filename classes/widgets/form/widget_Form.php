@@ -18,6 +18,7 @@ class widget_Form {
 	private $ancorJump		= false;		// will the form jump to the ancor?
 	private $actionPath		= '';
 	private $cssClasses		= array();
+	private $onSubmit		= null;
 
 	public function __construct($formName = null, $autoLoadFormData = true) {
 		if(!is_null($formName)) $this->setName($formName);
@@ -192,6 +193,10 @@ class widget_Form {
 		$this->ancorJump = $jump;
 	}
 
+	public function setOnSubmit($in) {
+		$this->onSubmit = $in;
+	}
+
 	public function setSubmit($in) {
 		if(!is_string($in))
 			throw new Exception("Submit text should be of type String");
@@ -262,7 +267,9 @@ class widget_Form {
 			$this->ancorJump ? sf('%s#form_%s', $this->actionPath, $this->name) : $this->actionPath,
 			$this->encoding,
 			count($this->cssClasses)?' '.implode(' ', $this->cssClasses):'',
-			isset($options['onSubmit'])?sf(' onsubmit="%s"',$options['onSubmit']):''
+			isset($options['onSubmit'])?
+				sf(' onsubmit="%s"',$options['onSubmit']):
+				(isset($this->onSubmit)?sf(' onsubmit="%s"',$this->onSubmit):'')
 		);
 
 		// add a hidden field to verify if this form has been posted

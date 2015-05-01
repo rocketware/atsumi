@@ -63,7 +63,7 @@ class atsumi_Http {
 	const	POST_METHOD_CURL		= 1;
 	const 	POST_METHOD_PECL		= 2;
 
-	static public function post ($url, $fields, $method = 1, $httpHeaders = array(), &$httpRequestHeaders = false) {
+	static public function post ($url, $fields, $method = 1, $httpHeaders = array(), &$httpRequestHeaders = false, $options = array()) {
 
 		switch ($method) {
 
@@ -87,6 +87,11 @@ class atsumi_Http {
 				if (count($httpHeaders))
 					curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeaders);
 
+				foreach ($options as $opt => $val)
+					curl_setopt($ch, $opt, $val);
+						
+				
+				
 				$response = curl_exec($ch);
 
 				$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
