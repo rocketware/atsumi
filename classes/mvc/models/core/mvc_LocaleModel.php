@@ -9,6 +9,10 @@ class mvc_LocaleModel extends mvc_AbstractModel {
 		),
 		'country'		=> array(
 			'type'		=> 's',
+		),
+		'localiseUris'	=> array(
+			'type'		=> 'b',
+			'default'	=> true
 		)
 	);
 
@@ -21,6 +25,9 @@ class mvc_LocaleModel extends mvc_AbstractModel {
 	}
 
 	function uri ($uri) {
+		
+		if (!$this->get('localiseUris')) return $uri;
+		
 		return sf('/%s%s%s',
 			$this->getLocaleString(),
 			substr($uri, 0, 1) !== '/'?'/':'',
