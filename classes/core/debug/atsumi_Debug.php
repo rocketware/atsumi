@@ -368,6 +368,7 @@ class atsumi_Debug {
 		else if (is_string($timer)) {
 			$time = self::_endTimer($timer);
 		}
+		else $time = 0;
 
 		$timerString = '(Process Time: '.$time.')';
 
