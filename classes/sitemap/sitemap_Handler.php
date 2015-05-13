@@ -6,51 +6,60 @@ class sitemap_Handler {
 
 	/* deletes all urls for a host */
 	static public function purgeUrlsForHost($db, $host) {
-
 			$db->delete('sitemap', 'host = %s', $host);
 	}
 
 	/* adds a url to the sitemap table for inclusion next time the sitemap is generated */
 	static public function writeUrl(&$db, $loc, $lastMod = null, $changeFreq = null, $priority = null, $tableName = 'sitemap') {
 
-		$loc = trim($loc);
-		$checksum = crc32($loc);
-
-		/* get the host name from url */
-		preg_match('@^(?:http://)?([^/]+)@i', $loc, $matches);
-		$host = $matches[1];
-
-		$row = $db->select_1('select * from sitemap where checksum = \'%l\'::bigint AND loc = %s', $checksum, $loc);
-
-		/* new location */
-		if(is_null($row)) {
-			$db->insert(
-				'sitemap',
-				'checksum = \'%l\'::bigint',	$checksum,
-				'host = %s', 					$host,
-				'loc = %s', 					$loc,
-				'last_mod = %T', 				$lastMod,
-				'change_freq = %S', 			$changeFreq,
-				'priority = %l', 				is_null($priority)?'NULL':$priority
+		try {
+			
+			$loc = trim($loc);
+			$checksum = crc32($loc);
+	
+			/* get the host name from url */
+			preg_match('@^(?:https?:\/\/)?((?:www\.)?[^\/]+)@i', $loc, $matches);
+			
+			$host = $matches[1];
+	
+			$row = $db->select_1(
+				'select * from sitemap where loc = %s', 
+				$loc
 			);
-
-		/* update as details have changed */
-		} elseif($row->t_last_mod != $lastMod || $row->s_change_freq != $changeFreq || $row->s_priority != $priority) {
-			$db->update_1(
-				'sitemap',
-				'checksum = \'%l\'::bigint AND loc = %s', $row->i_checksum, $loc,
-				'last_mod = %T', 		$lastMod,
-				'change_freq = %S', 	$changeFreq,
-				'priority = %l', 		is_null($priority)?'NULL':$priority
-			);
-
+	
+			/* new location */
+			if(is_null($row)) {
+				$db->insert(
+					'sitemap',
+					'checksum = \'%l\'::bigint',	$checksum,
+					'host = %s', 					$host,
+					'loc = %s', 					$loc,
+					'last_mod = %T', 				$lastMod,
+					'change_freq = %S', 			$changeFreq,
+					'priority = %l', 				is_null($priority)?'NULL':$priority
+				);
+	
+			/* update as details have changed */
+			} elseif($row->t_last_mod != $lastMod || $row->s_change_freq != $changeFreq || $row->s_priority != $priority) {
+				$db->update_1(
+					'sitemap',
+					'loc = %s', 			$loc,
+					'last_mod = %T', 		$lastMod,
+					'change_freq = %S', 	$changeFreq,
+					'priority = %l', 		is_null($priority)?'NULL':$priority
+				);
+	
+			}
+	
+			/* nulling used variables (big sitemaps need every scrap of memory!) */
+			$row = null;
+			$host = null;
+			$checksum = null;
+			$matches = null;
+				
+		} catch (Exception $e) {
+			Atsumi::error__listen($e);
 		}
-
-		/* nulling used variables (big sitemaps need every scrap of memory!) */
-		$row = null;
-		$host = null;
-		$checksum = null;
-		$matches = null;
 	}
 
 	/* gets total number of urls for host */
@@ -73,9 +82,11 @@ class sitemap_Handler {
 
 		if(is_null($maxUrlsPerSitemap)) $maxUrlsPerSitemap = self::MAX_URLS_PER_SITEMAP;
 
+		
 		/* how many items required */
 		$count = self::getUrlCount($db, $host, $tablename);
 
+		
 		/* array of sitemap files */
 		$siteMapArr = array();
 
