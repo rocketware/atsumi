@@ -96,7 +96,10 @@ abstract class widget_AbstractElement {
 
 	}
 
-	protected function renderErrors() {
+    public function hasErrors () {
+        return count($this->errors)?true:false;
+    }
+	public function renderErrors() {
 		if(!count($this->errors) || !$this->submitted || $this->forceDefault) return;
 		$div = "<div class='errors'>";
 		$div .= "<ol>";

@@ -32,6 +32,12 @@ class widget_FileElement extends widget_AbstractElement {
 		}
 
 	}
+    public function clear() {
+        $this->fileToken = null;
+        $this->originalName = '';
+        $this->value = null;
+    }
+
 	protected function outputGeneric() {
 
 		return array(	"name"			=> $this->getName(),
