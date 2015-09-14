@@ -11,10 +11,10 @@
  */
 
 // Manually require the core components as loader is not initalised at this point
-require_once(dirname(__FILE__).'/classes/core/loader/atsumi_Loader.php');
+require_once(dirname(__FILE__).'/classes/core/loader/Loader.php');
 
 // Load everything else
-atsumi_Loader::references(atsumi_Loader::getAtsumiDir(), 'core');
+\Atsumi\Core\Loader::references(\Atsumi\Core\Loader::getAtsumiDir(), 'core');
 
 // Start atsumi
 Atsumi::start();

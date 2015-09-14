@@ -1,0 +1,1 @@
+<?php class atsumi_HttpException extends Exception { } ?>

@@ -65,7 +65,7 @@ class atsumi_ErrorParser {
 			case self::PLAINTEXT:
 				$out .= sfl('###### ATSUMI has caught an Exception : %s', date(DATE_ATOM));
 				$out .= sfl("\n".' >> %s <<', $e->getMessage());
-				$out .= sfl("\n".'Exception type: '.get_class($e));
+				$out .= sfl("\n".'Exception type: %s',get_class($e));
 				if($e instanceof ErrorException)
 					$out .= sfl("\n".'Severity level: '.$e->getSeverity());
 

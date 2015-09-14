@@ -9,19 +9,84 @@ abstract class mvc_AbstractModel {
 	protected $data = array();
 
 
+	static public function from ($data) {
+
+		switch (gettype($data)) {
+			case 'array':
+				return self::fromArray($data);
+				
+			case 'object':
+				if ($data instanceof self) 
+					return self::fromModel($data);
+			default:
+				throw new Exception ('Can not create new model. Unexpected input: '.gettype($data));
+		}
+		
+	}
+
+
 	static public function fromArray ($data) {
 		return new static ($data);
+	}
+	static public function fromModel (self $data) {
+		
+		$o = new static();
+		$o->_fromModel($data);
+		return $o;
+	}
+	
+	private function _fromModel (self $data) {
+	
+		foreach($this->structure as $key => $properties) {
+			switch ($properties['type']) {
+				case 'o':
+					if (isset($properties['model']) && $data->has($key)) {
+						$m = $properties['model']::from($data->get($key));
+						
+						$this->set($key, $m, true);
+						break;	
+						
+					}
+				default:
+					$this->set($key, $data->get($key), true);
+
+			}
+			
+		}
+		return $this;
 	}
 
 	/* generic */
 	public function __construct ($data = array()) {
+		
 		foreach ($this->structure as $k => $properties) {
+			switch ($properties['type']) {
+				
+				case 'o':
+					
+					// do the objects want to be created
+					if (isset($properties['create']) && $properties['create'] == true) {
+						
+						if (isset($properties['model']) && !is_null($properties['model'])) {
+							$this->set($k, new $properties['model']);
+							
+						// if it's a dynamic model - create it
+						} else if (isset($properties['structure']) && !is_null($properties['structure'])) {
+							$this->set($k, new mvc_DynamicModel($properties['structure']));
+						}
+
+					}
+					
+			}
+
 			$this->set(
-				$k, 
+				$k,
 				isset($properties['default'])?
 					$properties['default']:null,
 				true
 			);
+			
+			
 		}
 
 		// set data
@@ -50,15 +115,45 @@ abstract class mvc_AbstractModel {
 		)
 			throw new Exception ('Column not writable');
 
-		$this->data[$k] = $v;
+		
+		if (isset($this->structure[$k]['type']) && 
+			$this->structure[$k]['type'] == 'o' && 
+			isset($this->data[$k]) && $this->data[$k] instanceof mvc_AbstractModel
+		) {
+			if (is_array($v)) {
+				$this->data[$k]->setArray($v);
+			} else if ($v instanceof mvc_AbstractModel) {
+				$this->data[$k] = $v;
+			} else if (is_null($v)) {
+		//		$this->data[$k] = $v;
+			} else {
+				// at this point we don't have valud data for an object...
+			//	 dump(array('dont know what to do', $k, $v));
+			}
+		} else
+			$this->data[$k] = $v;
 	}
 
-	function setArray ($asoc) {
-		foreach ($asoc as $k => $v)
+	
+	// setup the properties that are objects
+	// TODO: this shouldn't be required - __construct should this automatically...
+	function setupObjectsFromStructure ($structure) {
+		foreach ($structure as $k => $v)
+			if ($this->structure[$k]['type'] == 'o' && isset($v['structure'])) {
+				$o = new mvc_DynamicModel($v['structure']);
+				$o->setupObjectsFromStructure($v['structure']);
+				$this->set($k, $o);
+			}
+	}
+	
+	
+	
+	function setArray ($assoc) {
+		foreach ($assoc as $k => $v)
 			$this->set($k, $v);
 	}
 
-	function increment ($k, $v) {
+	function increment ($k, $v = 1) {
 		if (!$this->has($k)) throw new Exception('unknown key: '.$k);
 
 		// increment different data types
@@ -108,15 +203,25 @@ abstract class mvc_AbstractModel {
 	}
 
 	/* generic */
-	function get($key, $strict = true) { 
-		if (!array_key_exists($key, $this->data) && !array_key_exists('default', $this->structure[$key]))
-			throw new Exception ('Unknown model key: '. $key);
+	function get($key, $strict = true) {
 
-		if (!array_key_exists($key, $this->data))
+		if (array_key_exists($key, $this->data))
+			return $this->data[$key];
+			
+		else if (!array_key_exists($key, $this->data) && !array_key_exists($key, $this->structure))
+			throw new Exception ('>>'.$key. '<< is not a known property of >>' .get_called_class().'<<');
+		
+
+		else if (!array_key_exists($key, $this->data) && array_key_exists('default', $this->structure[$key]))
 			return $this->structure[$key]['default'];
+		
+		else if (!array_key_exists($key, $this->data))
+			throw new Exception ('property: >>'.$key. '<< has no default value in >>' .get_called_class().'<<');
 
-		else return $this->data[$key];
+
+		
 		/*
+		 * TODO: casting
 		try {
 			$value = caster_PostgreSqlToPhp::cast(sf('%%%s', $this->structure[$key]['type']), $this->data[$key]);
 			return $value;

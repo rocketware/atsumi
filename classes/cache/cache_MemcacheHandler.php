@@ -48,10 +48,17 @@ class cache_MemcacheHandler extends cache_AbstractHandler {
 		$this->useExceptions = $useExceptions;
 		$this->memcache = new Memcache;
 
+		if (is_null($host)) return;
+		
 		if(!$this->memcache->connect($host, $port))
 			throw new cache_CouldNotConnectException('Could not connect to Memcache server');
 	}
-
+	
+	// adds a memcached server to the connection pool
+	public function addServer ($host, $port = 11211) {
+		$this->memcache->addServer($host, $port);
+	}
+	
 	/* GET METHODS */
 
 	/**

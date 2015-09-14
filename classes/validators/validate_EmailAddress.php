@@ -20,7 +20,8 @@ class validate_EmailAddress extends validate_AbstractValidator {
  	
  	public function validate($data) {
  		if(is_array($data)) $data = $data[$this->arrayIndex];
- 		if(empty($data) || $this->validEmailAddress($data)) {
+		if (is_null($data) || !strlen($data)) return true;
+		if($this->validEmailAddress($data)) {
  			if($this->testDomain) {
 	 			if($this->checkDomainExists($data)) { 
 	 				return true;

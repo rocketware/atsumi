@@ -137,6 +137,10 @@ class atsumi_AppHandler {
 	public function getBaseUri() {
 		return $this->baseUri;
 	}
+
+	public function getController() {
+		return $this->controller;
+	}
 	
 	// SET FUNCTIONS
 
@@ -362,6 +366,11 @@ class atsumi_AppHandler {
 		$viewHandler->render($view, $viewData);
 		atsumi_Debug::record('Rendering', sf('Rendering was performed by the %s view handler', get_class($viewHandler)), null, 'app:controller:render');
 
+
+
+		// tell the debug to print if required as connection will be closed by __destruct
+		atsumi_Debug::printIfRequired();
+		
 		// Time and execute the post render
 		atsumi_Debug::startTimer('app:controller:postRender');
 		$this->controller->postRender();
@@ -369,6 +378,25 @@ class atsumi_AppHandler {
 
 		// Log the whole processing time
 		atsumi_Debug::record('Rendering Complete', 'All rendering was completed successfully', null, 'app:controller:rendering');
+	}
+	
+	public function dispatchConnection () {
+
+		flush();
+		ob_flush();
+		if (session_id()) session_write_close();
+
+		fastcgi_finish_request();
+	}
+	
+	public function postConnectionProcess () {
+		
+		// page_name turns in to after_name 
+		$afterMethod = 'after_'.substr($this->parserData['method'],5);
+		
+		if (method_exists($this->controller, $afterMethod)) 
+			$this->controller->processRequest($afterMethod, $this->parserData['args']);
+
 	}
 }
 ?>

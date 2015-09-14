@@ -22,12 +22,20 @@ class widget_CheckBoxArrayElement extends widget_AbstractElement {
 	}
 
 	function setValue($input, $files = array()) {
-		if(empty($input[$this->name])) $input[$this->name] = $this->default;
+
+		if (!isset($input[$this->name]))
+			$input[$this->name] = array();
+		
+		if(empty($input[$this->name])) 
+			$input[$this->name] = $this->default;
+
 		// creates an array of ids holding boolean values
-		foreach($this->options as $option => $name) {
-			if(!isset($input[$this->name][$option]) || !$input[$this->name][$option]) $input[$this->name][$option] = false;
-			else $input[$this->name][$option] = true;
-		}
+		if (count($input[$this->name]))
+			foreach($this->options as $option => $name) {
+				if(!isset($input[$this->name][$option]) || !$input[$this->name][$option]) $input[$this->name][$option] = false;
+				else $input[$this->name][$option] = true;
+			}
+
 		$this->value = $input[$this->name];
 	}
 
@@ -36,10 +44,10 @@ class widget_CheckBoxArrayElement extends widget_AbstractElement {
 		$valueArr = $this->getValue();
 
 		//sort the options into 3 cols
-		if($this->sort) {
+		if($this->sort) 
 			asort($this->options);
-
-		}
+		
+		
 		foreach($this->options as $value => $option) {
 			$out.=(sf("<div class='inputCheckboxContainer'><input type='checkbox' name='%s[%s]' %s %s id='form_%s[%s]' class='inputCheckbox' /><label for='form_%s[%s]'  class='inputCheckboxLabel'>%s</label>%s</div>",
 						$this->getName(),$value,
@@ -50,6 +58,7 @@ class widget_CheckBoxArrayElement extends widget_AbstractElement {
 						$option, $this->delimiter
 					));
 		}
+
 		return "<div class='inputCheckboxArray'>".$out."<br clear='both' /></div>";
 	}
 

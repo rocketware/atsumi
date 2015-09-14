@@ -34,6 +34,22 @@ abstract class mvc_AbstractDaoModel extends mvc_AbstractModel {
 		}
 
 	}
+	
+	/*
+	static public function writeInsert ($db, $o) {
+
+		$args = array();
+		foreach($o->data as $key => $value) {
+			if (!$o->structure[$key]['write']) continue;
+			$args[] = sf('%s = %%%s', $key, $o->structure[$key]['type']);
+			$args[] = $value;
+		}
+
+		array_unshift($args, static::DB_TABLE_NAME);
+
+		$result = call_user_func_array(array($db, 'insert'), $args);
+	}
+	*/
 
 	/* generic */
 	static protected function load ($db, $where = null, $orderBy = null, $offset = null, $limit = null) {

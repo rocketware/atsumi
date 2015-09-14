@@ -19,8 +19,8 @@ class widget_FileElement extends widget_AbstractElement {
 
 		if(is_array($uploadedFile) && $uploadedFile['error'] == 0) {
 			$this->fileToken = md5(microtime());
-			copy($uploadedFile['tmp_name'], "/tmp/".$this->fileToken);
-			$uploadedFile['tmp_name'] = "/tmp/".$this->fileToken;
+			copy($uploadedFile['tmp_name'], ini_get('upload_tmp_dir')."/".$this->fileToken);
+			$uploadedFile['tmp_name'] = ini_get('upload_tmp_dir')."/".$this->fileToken;
 			$this->originalName = $uploadedFile['name'];
 			$_SESSION[$this->fileToken] = $uploadedFile;
 			$this->value = $uploadedFile;
@@ -32,6 +32,12 @@ class widget_FileElement extends widget_AbstractElement {
 		}
 
 	}
+    public function clear() {
+        $this->fileToken = null;
+        $this->originalName = '';
+        $this->value = null;
+    }
+
 	protected function outputGeneric() {
 
 		return array(	"name"			=> $this->getName(),

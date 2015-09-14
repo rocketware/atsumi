@@ -63,7 +63,7 @@ class atsumi_Http {
 	const	POST_METHOD_CURL		= 1;
 	const 	POST_METHOD_PECL		= 2;
 
-	static public function post ($url, $fields, $method = 1, $httpHeaders = array()) {
+	static public function post ($url, $fields, $method = 1, $httpHeaders = array(), &$httpRequestHeaders = false, $options = array()) {
 
 		switch ($method) {
 
@@ -82,21 +82,32 @@ class atsumi_Http {
 				curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
 				curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 120);
 				curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+				curl_setopt($ch, CURLINFO_HEADER_OUT, true);
 
 				if (count($httpHeaders))
 					curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeaders);
 
+				foreach ($options as $opt => $val)
+					curl_setopt($ch, $opt, $val);
+						
+				
+				
 				$response = curl_exec($ch);
 
 				$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
 				if ($httpCode == 0)
-					throw new Exception ('CURL error: '.curl_errno($ch));
+					throw new atsumi_HttpException (
+						'CURL error: #'.curl_errno($ch), 
+						curl_errno($ch)
+					);
 
 				$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 				$header = substr($response, 0, $headerSize);
 				$body = substr($response, $headerSize);
 
+				$httpRequestHeaders = curl_getinfo($ch, CURLINFO_HEADER_OUT );
+				
 				//close connection
 				curl_close($ch);
 

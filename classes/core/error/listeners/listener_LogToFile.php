@@ -52,12 +52,13 @@ class listener_LogToFile implements atsumi_Observer {
 	 */
 	protected function writeToLog($dataIn) {
 		$filename = $this->filePrefix.($this->filePrefix?'-':'').date('Y-m-d').'.log';
-		$handle = @fopen($this->logDir.$filename, 'a');
+		$filePath = $this->logDir.DIRECTORY_SEPARATOR.$filename;
+		$handle = @fopen($filePath, 'a');
 		if(!$handle)
-			throw new errorHandler_ListenerException('Cannot open log file: '.$this->logDir.$filename);
+			throw new errorHandler_ListenerException('Cannot open log file: '.$filePath);
 
 		$write = fwrite($handle, $dataIn);
-		if ($write === false) throw new errorHandler_ListenerException('Cannot no write log file: '.$this->logDir.$filename);
+		if ($write === false) throw new errorHandler_ListenerException('Cannot no write log file: '.$filePath);
 		fclose($handle);
 	}
 

@@ -18,6 +18,7 @@ class widget_Form {
 	private $ancorJump		= false;		// will the form jump to the ancor?
 	private $actionPath		= '';
 	private $cssClasses		= array();
+	private $onSubmit		= null;
 
 	public function __construct($formName = null, $autoLoadFormData = true) {
 		if(!is_null($formName)) $this->setName($formName);
@@ -126,6 +127,7 @@ class widget_Form {
 		try {
 			$element->setValue($this->userInput, $this->userFiles);
 		} catch(Exception $e) {
+			Atsumi::error__listen($e);
 			$element->setError($e);
 		}
 		$element->validate();
@@ -191,6 +193,10 @@ class widget_Form {
 		$this->ancorJump = $jump;
 	}
 
+	public function setOnSubmit($in) {
+		$this->onSubmit = $in;
+	}
+
 	public function setSubmit($in) {
 		if(!is_string($in))
 			throw new Exception("Submit text should be of type String");
@@ -251,16 +257,19 @@ class widget_Form {
 		return $this->elementMap[$elementName]->render($options);
 	}
 
-	public function getFormTop() {
+	public function getFormTop($options = array()) {
 
-		$html = sf('<a name="form_%s"></a><form name="%s" id="%s" method="%s" action="%s" enctype="%s" class="form%s">',
+		$html = sf('<a name="form_%s" class="form_anchor"></a><form name="%s" id="%s" method="%s" action="%s" enctype="%s" class="form%s"%s>',
 			$this->name,
 			$this->name,
 			$this->name,
 			$this->method,
 			$this->ancorJump ? sf('%s#form_%s', $this->actionPath, $this->name) : $this->actionPath,
 			$this->encoding,
-			count($this->cssClasses)?' '.implode(' ', $this->cssClasses):''
+			count($this->cssClasses)?' '.implode(' ', $this->cssClasses):'',
+			isset($options['onSubmit'])?
+				sf(' onsubmit="%s"',$options['onSubmit']):
+				(isset($this->onSubmit)?sf(' onsubmit="%s"',$this->onSubmit):'')
 		);
 
 		// add a hidden field to verify if this form has been posted
@@ -275,11 +284,21 @@ class widget_Form {
 	public function getFormBottom($options = array()) {
 
 		// add the submit to the bottom of the form for now(will convert to element in next version)
-		$html  = sfl('	<div class="submit rowSubmit%s">', array_key_exists('rowClasses',$options)?' '.$options['rowClasses']:'');
-		$html .= sfl('		<button type="submit" class="button button-submit%s" id="submit_%s">%s</button>', 
-			array_key_exists('buttonClasses',$options)?' '.$options['buttonClasses']:'',
-			$this->name, $this->getSubmit());
-		$html .= sfl('	</div>');
+		$html  = '';
+		if (!isset($options['buttonOnly']) || $options['buttonOnly'] == false)
+			$html  = sfl('	<div class="submit rowSubmit%s">', array_key_exists('rowClasses',$options)?' '.$options['rowClasses']:'');
+
+		$html .= sfl('	%s<button type="submit" class="%s" id="submit_%s">%s</button>%s', 
+			array_key_exists('preButtonHtml', $options)?$options['preButtonHtml']:'',
+			array_key_exists('buttonClasses',$options)?' '.$options['buttonClasses']:'button button-submit',
+			$this->name,
+			array_key_exists('innerButtonHtml', $options)?$options['innerButtonHtml']:$this->getSubmit(),
+			array_key_exists('postButtonHtml', $options)?$options['postButtonHtml']:''
+		);
+
+		if (!isset($options['buttonOnly']) || $options['buttonOnly'] == false)
+			$html .= sfl('	</div>');
+
 		$html .= sfl('</form>');
 
 		return $html;
